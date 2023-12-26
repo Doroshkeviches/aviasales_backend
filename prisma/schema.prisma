@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"] // for macOS
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRoles {
+  Admin   @map("admin")
+  Client  @map("client")
+  Manager @map("manager")
+}
+
+enum FlightStatus {
+  Planned   @map("planned")
+  Flying    @map("flying")
+  Fullfield @map("fullfield")
+  Canceled  @map("canceled")
+}
+
+enum OrderStatus {
+  InProcess @map("in process")
+  Rejected  @map("rejected")
+  Accepted  @map("accepted")
+}
+
+enum UserPermissions {
+  All @map("permissions.all")
+}
+
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  first_name    String
+  last_name     String
+  role_id       String    @db.Uuid
+  role_type     UserRoles
+  role          Role      @relation(fields: [role_id, role_type], references: [id, type])
+  email         String    @unique
+  refresh_token String?
+  password      String
+  orders        Order[]
+
+  @@index([id])
+  @@map("users")
+}
+
+model Order {
+  id      String      @id @default(uuid()) @db.Uuid
+  user_id String      @db.Uuid
+  status  OrderStatus
+  tickets Ticket[]
+  user    User?       @relation(fields: [user_id], references: [id])
+
+  @@index([id])
+  @@map("orders")
+}
+
+model Ticket {
+  id                String  @id @default(uuid()) @db.Uuid
+  holdet_first_name String
+  holder_last_name  String
+  flight            Flight  @relation(fields: [flight_id], references: [id])
+  order             Order?  @relation(fields: [order_id], references: [id])
+  order_id          String? @db.Uuid
+  flight_id          String  @db.Uuid
+
+  @@index([id])
+  @@map("tickets")
+}
+
+model Flight {
+  id                String       @id @default(uuid()) @db.Uuid
+  from_city_id      String       @db.Uuid
+  to_city_id        String       @db.Uuid
+  from_city         City         @relation(name: "from_city", fields: [from_city_id], references: [id])
+  to_city           City         @relation(name: "to_city", fields: [to_city_id], references: [id])
+  start_flight_date DateTime
+  end_flight_date   DateTime
+  status            FlightStatus
+  price             Int
+  available_seats   Int
+  ticket            Ticket[]
+  plane             Plane        @relation(fields: [plane_id], references: [id])
+  plane_id          String       @db.Uuid
+
+  @@index([id, from_city_id, to_city_id])
+  @@map("flights")
+}
+
+model Plane {
+  id      String   @id @default(uuid()) @db.Uuid
+  title   String
+  seats   Int
+  flights Flight[]
+
+  @@index([id])
+  @@map("planes")
+}
+
+model City {
+  id                String   @id @default(uuid()) @db.Uuid
+  title             String
+  flights_from_city Flight[] @relation("from_city")
+  flights_to_city   Flight[] @relation("to_city")
+
+  @@index([id])
+  @@map("cities")
+}
+
+model Role {
+  id          String            @id @default(uuid()) @db.Uuid
+  type        UserRoles
+  users       User[]
+  permissions UserPermissions[]
+
+  @@unique([id, type])
+  @@map("roles")
+}

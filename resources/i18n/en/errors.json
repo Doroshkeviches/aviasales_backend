@@ -1,0 +1,10 @@
+{
+  "invalid-form": "Invalid form data.",
+  "not-authorized.request": "You are not authorized to perform this request.",
+  "no-user": "No this user",
+  "invalid-password": "Invalid password",
+  "expired-token": "Expired token",
+  "alredy-registered": "User with this email already registered",
+  "create-user": "Cannot create user",
+  "error": "Error"
+}
