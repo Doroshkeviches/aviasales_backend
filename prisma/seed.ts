@@ -1,4 +1,4 @@
-import { PrismaClient, UserPermissions } from "@prisma/client";
+import { PrismaClient, UserPermissions, UserRoles } from "@prisma/client";
 import { mockCityData } from "./mock-city-data";
 import { mockPlaneData } from "./mock-plane-data";
 
@@ -6,21 +6,21 @@ const prisma = new PrismaClient();
 async function main() {
   const Client = await prisma.role.create({
     data: {
-      type: "Client",
+      type: UserRoles.Client,
       permissions: [UserPermissions.All],
     },
   });
 
   const Manager = await prisma.role.create({
     data: {
-      type: "Manager",
+      type: UserRoles.Manager,
       permissions: [UserPermissions.All],
     },
   });
 
   const Admin = await prisma.role.create({
     data: {
-      type: "Admin",
+      type: UserRoles.Admin,
       permissions: [UserPermissions.All],
     },
   });
@@ -28,14 +28,12 @@ async function main() {
   mockCityData.map(async (city) => {
     await prisma.city.create({
       data: { ...city },
-      include: { flights_from_city: true, flights_to_city: true },
     });
   });
 
   mockPlaneData.map(async (plane) => {
     await prisma.plane.create({
       data: { ...plane },
-      include: { flights: true },
     });
   });
 }
