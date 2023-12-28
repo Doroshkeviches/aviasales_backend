@@ -1,12 +1,12 @@
 import { IsEmail } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Category } from "@prisma/client"
-import { IsNotEmpty, IsString, validate } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID, validate } from 'class-validator';
 
 export class SignInForm {
     @ApiProperty({
         description: 'email',
     })
+    @IsEmail()
     email: string;
 
     @ApiProperty({
@@ -16,16 +16,24 @@ export class SignInForm {
     @IsNotEmpty()
     password: string;
 
+    @ApiProperty({
+      description: 'device id',
+    })
+    @IsUUID(undefined, {
+      // message: UuidErrorMessage,
+    })
+    device_id!: string;
+
     static from(form?: SignInForm) {
-        const it = {
-          email: form?.email,
-          password: form?.password,
-        };
-        return it;
-      }
+      const it = new SignInForm();
+      it.email = form?.email;
+      it.password = form?.password;
+      it.device_id = form?.device_id;
+      return it;
+    }
     
-      static async validate(form: SignInForm) {
-        const errors = await validate(form);
-        return errors.length ? errors : false;
-      }
+    static async validate(form: SignInForm) {
+      const errors = await validate(form);
+      return errors.length ? errors : false;
+    }
 }
