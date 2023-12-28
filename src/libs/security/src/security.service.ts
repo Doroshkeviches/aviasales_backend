@@ -43,9 +43,9 @@ export class SecurityService {
         return this.rolesRepos.getRoleById(id)
     }
 
-    async hashPassword(password: Pick<User, 'password'>) {
+    async hashPassword({ password }: Pick<User, 'password'>) {
         // Method generates hashed password with SHA256
         const salt = 5;
-        return await bcrypt.hash(password.password, salt)
+        return await bcrypt.hash(password, salt)
     }
 }
