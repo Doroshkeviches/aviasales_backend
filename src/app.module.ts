@@ -8,10 +8,9 @@ import config_security from './config/security.config';
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { APP_FILTER } from '@nestjs/core';
 import { PrismaClientExceptionFilter } from './libs/exceptions/global-exception.filter';
-import { RoleModule } from './app/role/role.module';
 
 @Module({
-  imports: [AuthModule,RoleModule, ConfigModule.forRoot({
+  imports: [AuthModule, ConfigModule.forRoot({
     envFilePath: '.env',
     load: [config_app, config_i18n, config_security],
     isGlobal: true,

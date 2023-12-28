@@ -10,7 +10,7 @@ import { TokenDto } from './domain/TokenDto';
 import { decoded_user } from '@/src/types/decoded-user.type';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { User, UserPermissions } from '@prisma/client';
-import { SignoutForm } from './domain/SIgnoutForm';
+import { SignoutForm } from './domain/SignoutForm';
 import { ForgotPasswordForm } from './domain/ForgotPasswordForm';
 import { ResetTokenDto } from './domain/ResetTokenDto';
 import { ResetPasswordForm } from './domain/ResetPasswordForm';
@@ -125,7 +125,7 @@ export class AuthController {
         type: TokenDto,
     })
     @ApiResponse({ status: 400, description: 'Bad request' })
-    @Post('/reset-password')
+    @Post('reset-password')
     async resetPassword(@Body() body: ResetPasswordForm) {
         const form = ResetPasswordForm.from(body)
         const errors = await ResetPasswordForm.validate(form)
