@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RolesReposService } from 'src/domain/repos/roles-repos.service';
 import { UsersRepoService } from 'src/domain/repos/user-repos.service';
 import { ConfigService } from '@nestjs/config';
-import { Role, User } from '@prisma/client';
+import { Device, Role, User } from '@prisma/client';
 import { user_id } from '@/src/types/user-id.type';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class SecurityService {
         return tokens
     }
 
-    async decodeUserFromToken(token: Pick<User, 'refresh_token'>) {
+    async decodeUserFromToken(token: Pick<Device, 'refresh_token'>) {
         const user = this.jwtService.verify(token.refresh_token)
         return user
     }
