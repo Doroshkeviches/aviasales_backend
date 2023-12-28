@@ -4,7 +4,6 @@ import { UsersRepoService } from 'src/domain/repos/user-repos.service';
 import { SecurityService } from 'src/libs/security/src';
 import * as bcrypt from 'bcryptjs';
 import { Device, User, UserRoles } from '@prisma/client';
-import { decoded_user } from '@/src/types/decoded-user.type';
 import { DeviceRepoService } from '@/src/domain/repos/device-repos.service';
 import { v4 } from 'uuid';
 
@@ -21,7 +20,7 @@ export class AuthService {
 
     async updateTokens(user: User, device_id: Pick<Device, 'device_id'>) {
         const tokens = await this.securityService.generateTokens(user)
-        const updatedUser = await this.deviceRepo.updateResetToken({ user_id: user.id }, device_id, { refresh_token: tokens.refresh_token })
+        await this.deviceRepo.updateResetToken({ user_id: user.id, device_id: device_id.device_id, refresh_token: tokens.refresh_token })
         return tokens;
     }
     async getUserByEmail(email: Pick<User, 'email'>) {
@@ -31,22 +30,23 @@ export class AuthService {
     }
     async comparePassword(user: User, password: Pick<User, 'password'>) {
         const isCompare = await bcrypt.compare(password.password, user.password)
-        console.log(password.password, user.password, isCompare)
         return isCompare
 
     }
 
-    async findSessionByEmailAndDeviceId(email: Pick<User, 'email'>, device_id: Pick<Device, 'device_id'>) {
-        return await this.deviceRepo.findSessionByEmailAndDeviceId(email, device_id);
+    async findSessionByEmailAndDeviceId(data: Pick<User, 'email'> & Pick<Device, 'device_id'>) {
+        return await this.deviceRepo.findSessionByEmailAndDeviceId(data);
     }
 
 
     async setResetToken(session: Device & { user: User }) {
         const token = v4();
         const entity = await this.deviceRepo.updateResetToken(
-            { user_id: session.user.id },
-            { device_id: session.device_id },
-            { refresh_token: token },
+            {
+                user_id: session.user.id,
+                device_id: session.device_id,
+                refresh_token: token
+            },
         );
         return entity ? token : undefined;
     }
@@ -56,7 +56,7 @@ export class AuthService {
         const role = await this.rolesRepo.getRole(UserRoles.Client)
         const password = await this.securityService.hashPassword(data)
         const user = await this.usersRepo.createUser(data, role, { password })
-        await this.deviceRepo.updateSession(user, { device_id: data.device_id })
+        await this.deviceRepo.updateSession(user, data)
         return user
     }
 
@@ -76,7 +76,7 @@ export class AuthService {
     }
 
     async changePassword(user: User, data: Pick<User, 'password'>) {
-        const password = await this.securityService.hashPassword({ password: data.password });
+        const password = await this.securityService.hashPassword(data);
         return await this.usersRepo.changePassword(user, { password });
     }
 

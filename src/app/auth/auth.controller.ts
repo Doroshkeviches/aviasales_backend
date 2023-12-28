@@ -35,11 +35,14 @@ export class AuthController {
         const form = SignInForm.from(body)
         const errors = await SignInForm.validate(form)
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
-        const user = await this.authService.getUserByEmail({ email: form.email })
+
+        const user = await this.authService.getUserByEmail(form)
         if (!user) throw new ApiException(ErrorCodes.NotExists_User)
-        const isCompare = await this.authService.comparePassword(user, { password: form.password })
+
+        const isCompare = await this.authService.comparePassword(user, form)
         if (!isCompare) throw new ApiException(ErrorCodes.InvalidPassword)
-        const tokens = await this.authService.authenticate(user, { device_id: form.device_id },)
+
+        const tokens = await this.authService.authenticate(user, form,)
 
         return TokenDto.toEntity(tokens)
     }
@@ -57,15 +60,16 @@ export class AuthController {
         const form = SignUpForm.from(body)
         const errors = await SignUpForm.validate(form)
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
-        const candidate = await this.authService.getUserByEmail({ email: form.email })
+
+        const candidate = await this.authService.getUserByEmail(form)
         if (candidate) {
             throw new ApiException(ErrorCodes.AlreadyRegistered)
         }
-        const user = await this.authService.signUp(form)
 
+        const user = await this.authService.signUp(form)
         if (!user) throw new ApiException(ErrorCodes.CreateUserError)
 
-        const tokens = await this.authService.updateTokens(user, { device_id: body.device_id })
+        const tokens = await this.authService.updateTokens(user, form)
         return TokenDto.toEntity(tokens)
     }
 
@@ -83,7 +87,8 @@ export class AuthController {
         const form = SignoutForm.from(body)
         const errors = await SignoutForm.validate(form)
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
-        await this.authService.signout(user, { device_id: form.device_id })
+
+        await this.authService.signout(user, form)
         return true
     }
 
@@ -102,10 +107,7 @@ export class AuthController {
         const form = ForgotPasswordForm.from(body)
         const errors = await ForgotPasswordForm.validate(form)
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
-        const session = await this.authService.findSessionByEmailAndDeviceId(
-            { email: form.email },
-            { device_id: form.device_id }
-        );
+        const session = await this.authService.findSessionByEmailAndDeviceId(form);
         const token = await this.authService.setResetToken(session);
         if (!token) {
             throw new ApiException(ErrorCodes.NotExists_User);
@@ -129,9 +131,9 @@ export class AuthController {
         const errors = await ResetPasswordForm.validate(form)
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
         const entity = await this.authService.findSessionByResetToken(form);
-        const user = await this.authService.changePassword(entity.user, { password: form.password });
-        await this.authService.deleteRefreshToken(user, { device_id: form.device_id });
-        const tokens = await this.authService.authenticate(user, { device_id: form.device_id });
+        const user = await this.authService.changePassword(entity.user, form);
+        await this.authService.deleteRefreshToken(user, form);
+        const tokens = await this.authService.authenticate(user, form);
         TokenDto.toEntity(tokens)
     }
 
@@ -147,11 +149,11 @@ export class AuthController {
     @RequirePermissions(UserPermissions.RefreshToken)
     @Get('refresh')
     async refresh(@CurrentUser() user: decoded_user) {
-        const user_entity = await this.authService.getUserByEmail({ email: user.email })
+        const user_entity = await this.authService.getUserByEmail(user)
         if (!user_entity) {
             throw new ApiException(ErrorCodes.NotExists_User)
         }
-        const tokens = await this.securityService.refresh(user_entity, { device_id: user.device_id })
+        const tokens = await this.securityService.refresh(user_entity, user)
         return TokenDto.toEntity(tokens)
     }
 }

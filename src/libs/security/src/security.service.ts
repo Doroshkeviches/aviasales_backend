@@ -26,7 +26,7 @@ export class SecurityService {
 
     async refresh(user: User, device_id: Pick<Device, 'device_id'>) {
         const tokens = await this.generateTokens(user)
-        const updatedUser = await this.deviceRepos.updateSession(user, device_id)
+        await this.deviceRepos.updateSession(user, device_id)
 
         return tokens
     }

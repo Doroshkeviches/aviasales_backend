@@ -57,7 +57,7 @@ export class UsersRepoService {
                 role_type: role.type,
             },
             include: {
-                role: true
+                role: true,
             }
 
         })
