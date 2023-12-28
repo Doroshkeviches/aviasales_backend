@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
-import { UserPermissions } from '@prisma/client';
+import { UserPermissions, UserRoles } from '@prisma/client';
 import { PERMISSION_KEY } from '../decorators/permission.decorator';
 import { SecurityService } from '../src';
 import { UserSessionDto } from '../src/dtos/UserSessionDto';
@@ -48,18 +48,21 @@ export class JwtAuthGuard
       const bearer = authHeader.split(' ')[0];
       const token = authHeader.split(' ')[1];
       const decodedUser = UserSessionDto.fromPayload(this.jwtService.verify(token));
-
       request.user = decodedUser
-      const user = await this.securityService.getUserById({id: decodedUser.id})
+      const user = await this.securityService.getUserById({ id: decodedUser.id })
       if (!user) {
         throw new ApiException(ErrorCodes.NotAuthorizedRequest);
       }
-      const roleEntity = await this.securityService.getRoleById({id: decodedUser.role_id})
+      const roleEntity = await this.securityService.getRoleById({ id: decodedUser.role_id })
       if (!requiredPemissions) {
         return true;
       }
+      if (roleEntity.type === UserRoles.Client) { //TODO change to Admin
+        return true
+      }
       return requiredPemissions.some((permission) => roleEntity.permissions?.includes(permission));
     } catch (error) {
+      console.log(error)
       throw new ApiException(ErrorCodes.NotAuthorizedRequest);
     }
   }

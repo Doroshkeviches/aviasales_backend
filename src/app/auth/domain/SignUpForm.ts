@@ -1,7 +1,6 @@
 import { IsEmail } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Category } from "@prisma/client"
-import { IsNotEmpty, IsString, validate } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID, validate } from 'class-validator';
 
 export class SignUpForm {
   @ApiProperty({
@@ -32,12 +31,19 @@ export class SignUpForm {
   @IsNotEmpty()
   last_name: string;
 
+  @ApiProperty({
+    description: 'device id',
+  })
+  @IsUUID()
+  device_id!: string;
+
   static from(form?: SignUpForm) {
     const it = new SignUpForm()
     it.email = form?.email;
     it.password = form?.password;
     it.first_name = form.first_name;
     it.last_name = form.last_name;
+    it.device_id = form.device_id
     return it;
   }
 
