@@ -5,22 +5,22 @@ import { PrismaService } from '@/src/libs/prisma/src';
 @Injectable()
 export class DeviceRepoService {
     constructor(private prisma: PrismaService) { }
-    async updateSession(user: User, device_id: Pick<Device, 'device_id'>) {
+    async updateSession(user: User, { device_id }: Pick<Device, 'device_id'>) {
         console.log(user, device_id, 'id')
         return this.prisma.device.upsert({
             where: {
                 user_id_device_id: {
                     user_id: user.id,
-                    device_id: device_id.device_id
+                    device_id,
                 },
             },
             create: {
                 user_id: user.id,
-                device_id: device_id.device_id
+                device_id,
             },
             update: {
                 user_id: user.id,
-                device_id: device_id.device_id
+                device_id,
             },
         });
     }
@@ -35,9 +35,9 @@ export class DeviceRepoService {
         });
     }
 
-    async deleteRecord(user: User, device_id: Pick<Device, 'device_id'>) {
+    async deleteRecord(user: User, { device_id }: Pick<Device, 'device_id'>) {
         return this.prisma.device.delete({
-            where: { user_id_device_id: { user_id: user.id, device_id: device_id.device_id } },
+            where: { user_id_device_id: { user_id: user.id, device_id, } },
         });
     }
 
@@ -79,13 +79,12 @@ export class DeviceRepoService {
         });
     }
 
-    async deleteRefreshToken(user: Partial<User>, device_id: Pick<Device, 'device_id'>) {
-        console.log(user)
+    async deleteRefreshToken(user: Partial<User>, { device_id }: Pick<Device, 'device_id'>) {
         return this.prisma.device.update({
             where: {
                 user_id_device_id: {
                     user_id: user.id,
-                    device_id: device_id.device_id,
+                    device_id,
                 },
             },
             data: {
@@ -93,7 +92,7 @@ export class DeviceRepoService {
             },
         });
     }
-    async getRoleById(id: Pick<Role, 'id'>) {
-        return this.prisma.role.findUnique({ where: { id: id.id } })
+    async getRoleById({ id }: Pick<Role, 'id'>) {
+        return this.prisma.role.findUnique({ where: { id } })
     }
 }

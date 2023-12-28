@@ -18,9 +18,9 @@ export class AuthService {
         private securityService: SecurityService,
     ) { }
 
-    async updateTokens(user: User, device_id: Pick<Device, 'device_id'>) {
+    async updateTokens(user: User, {device_id}: Pick<Device, 'device_id'>) {
         const tokens = await this.securityService.generateTokens(user)
-        await this.deviceRepo.updateResetToken({ user_id: user.id, device_id: device_id.device_id, refresh_token: tokens.refresh_token })
+        await this.deviceRepo.updateResetToken({ user_id: user.id, device_id, refresh_token: tokens.refresh_token })
         return tokens;
     }
     async getUserByEmail(email: Pick<User, 'email'>) {

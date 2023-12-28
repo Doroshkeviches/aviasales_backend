@@ -25,16 +25,16 @@ export class UsersRepoService {
         })
     }
 
-    async getUserByEmail(email: Pick<User, "email">) {
+    async getUserByEmail({ email }: Pick<User, "email">) {
         return this.prisma.user.findUnique({
-            where: { email: email.email },
+            where: { email },
         })
     }
 
 
-    async getOneUserById(id: user_id) {
+    async getOneUserById({ id }: user_id) {
         const user = await this.prisma.user.findUnique({
-            where: { id: id.id },
+            where: { id },
             select: {
                 id: true,
                 email: true,
@@ -45,12 +45,12 @@ export class UsersRepoService {
         return user
     }
 
-    async createUser(dto: Pick<User, 'email' | 'first_name' | 'last_name'>, role: Role, password: Pick<User,'password'>) {
+    async createUser(dto: Pick<User, 'email' | 'first_name' | 'last_name'>, role: Role, { password }: Pick<User, 'password'>) {
         const { email, first_name, last_name } = dto
         const user = await this.prisma.user.create({
             data: {
                 email,
-                password: password.password,
+                password,
                 first_name,
                 last_name,
                 role_id: role.id,
@@ -65,19 +65,19 @@ export class UsersRepoService {
     }
 
 
-    async deleteUser(id: user_id) {
+    async deleteUser({ id }: user_id) {
         return this.prisma.user.delete({
-            where: { ...id }
+            where: { id }
         })
     }
 
     async changePassword(user: User, data: Partial<User>) {
         return this.prisma.user.update({
-          where: { id: user.id },
-          data: { password: data.password },
-          include: {
-            role: true,
-          },
+            where: { id: user.id },
+            data: { password: data.password },
+            include: {
+                role: true,
+            },
         });
-      }
+    }
 }
