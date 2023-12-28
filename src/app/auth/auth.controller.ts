@@ -100,8 +100,6 @@ export class AuthController {
         type: ResetTokenDto,
     })
     @ApiResponse({ status: 400, description: 'Bad request' })
-    @UseGuards(JwtAuthGuard)
-    @RequirePermissions(UserPermissions.PasswordChange)
     @Post('forgot-password')
     async forgotPassword(@Body() body: ForgotPasswordForm) {
         const form = ForgotPasswordForm.from(body)
