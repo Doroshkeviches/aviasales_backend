@@ -25,9 +25,9 @@ export class UsersRepoService {
         })
     }
 
-    async getOneUserByEmail(email: Pick<User, "email">) {
+    async getUserByEmail(email: Pick<User, "email">) {
         return this.prisma.user.findUnique({
-            where: { ...email },
+            where: { email: email.email },
         })
     }
 
@@ -45,36 +45,39 @@ export class UsersRepoService {
         return user
     }
 
-    async createUser(dto: Pick<User, 'email' | 'first_name' | 'last_name' | 'password'>, role: Role) {
-        const { email, password, first_name, last_name } = dto
-        const hashPassword = await bcrypt.hash(password, 5)
+    async createUser(dto: Pick<User, 'email' | 'first_name' | 'last_name'>, role: Role, password: Pick<User,'password'>) {
+        const { email, first_name, last_name } = dto
         const user = await this.prisma.user.create({
             data: {
                 email,
-                password: hashPassword,
+                password: password.password,
                 first_name,
                 last_name,
                 role_id: role.id,
                 role_type: role.type,
             },
-
-        })
-        return user
-    }
-
-    async updateUserRefreshToken(id: user_id, refresh_token: Pick<User, 'refresh_token'>) {
-        const user = await this.prisma.user.update({
-            where: { id: id.id },
-            data: {
-                ...refresh_token
+            include: {
+                role: true
             }
+
         })
         return user
     }
+
 
     async deleteUser(id: user_id) {
         return this.prisma.user.delete({
             where: { ...id }
         })
     }
+
+    async changePassword(user: User, data: Partial<User>) {
+        return this.prisma.user.update({
+          where: { id: user.id },
+          data: { password: data.password },
+          include: {
+            role: true,
+          },
+        });
+      }
 }

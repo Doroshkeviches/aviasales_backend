@@ -2,16 +2,20 @@ import { Body, Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common
 import { AuthService } from './auth.service';
 import { SecurityService } from 'src/libs/security/src';
 import { SignUpForm } from './domain/SignUpForm'
-import { UserPermissions } from '@prisma/client';
 import { SignInForm } from './domain/SignInForm';
-import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
 import { CurrentUser, JwtAuthGuard } from '@/src/libs/security/guards/security.guard';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { ApiException } from '@/src/libs/exceptions/api-exception';
 import { TokenDto } from './domain/TokenDto';
 import { decoded_user } from '@/src/types/decoded-user.type';
-import { SignoutDto } from './domain/SignoutDto';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { User, UserPermissions } from '@prisma/client';
+import { SignoutForm } from './domain/SIgnoutForm';
+import { ForgotPasswordForm } from './domain/ForgotPasswordForm';
+import { ResetTokenDto } from './domain/ResetTokenDto';
+import { ResetPasswordForm } from './domain/ResetPasswordForm';
+import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
+import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
 @Controller('auth')
 export class AuthController {
     constructor(
@@ -22,31 +26,29 @@ export class AuthController {
     @ApiResponse({
         status: 200,
         description: 'Successfully login',
-        type: Boolean,
+        type: TokenDto,
     })
     @ApiResponse({ status: 400, description: 'Bad request' })
     @ApiBody({ type: SignInForm })
-    @Post('login')
+    @Post('signin')
     async signIn(@Body() body: SignInForm) {
         const form = SignInForm.from(body)
         const errors = await SignInForm.validate(form)
-        if (errors) throw new ApiException(ErrorCodes.InvalidForm)
-
-        const user = await this.authService.getUserByEmail({ email: body.email })
-        if (!user) throw new ApiException(ErrorCodes.NoUser)
-        const isCompare = await this.authService.comparePassword(user, { password: body.password })
-
+        if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
+        const user = await this.authService.getUserByEmail({ email: form.email })
+        if (!user) throw new ApiException(ErrorCodes.NotExists_User)
+        const isCompare = await this.authService.comparePassword(user, { password: form.password })
         if (!isCompare) throw new ApiException(ErrorCodes.InvalidPassword)
-        const tokens = await this.authService.updateTokens(user)
+        const tokens = await this.authService.authenticate(user, { device_id: form.device_id },)
 
         return TokenDto.toEntity(tokens)
     }
 
     @HttpCode(200)
     @ApiResponse({
-      status: 200,
-      description: 'Successfully created a new user',
-      type: Boolean,
+        status: 200,
+        description: 'Successfully created a new user',
+        type: TokenDto,
     })
     @ApiResponse({ status: 400, description: 'Bad request' })
     @ApiBody({ type: SignUpForm })
@@ -54,48 +56,102 @@ export class AuthController {
     async signUp(@Body() body: SignUpForm) {
         const form = SignUpForm.from(body)
         const errors = await SignUpForm.validate(form)
-        if (errors) throw new ApiException(ErrorCodes.InvalidForm)
+        if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
         const candidate = await this.authService.getUserByEmail({ email: form.email })
         if (candidate) {
             throw new ApiException(ErrorCodes.AlreadyRegistered)
         }
         const user = await this.authService.signUp(form)
+
         if (!user) throw new ApiException(ErrorCodes.CreateUserError)
 
-        const tokens = await this.authService.updateTokens(user)
+        const tokens = await this.authService.updateTokens(user, { device_id: body.device_id })
         return TokenDto.toEntity(tokens)
     }
 
     @HttpCode(200)
     @ApiResponse({
-      status: 200,
-      description: 'Successfully signout',
-      type: Boolean,
+        status: 200,
+        description: 'Successfully signout',
+        type: Boolean,
     })
     @ApiResponse({ status: 400, description: 'Bad request' })
     @UseGuards(JwtAuthGuard)
-    @RequirePermissions(UserPermissions.SignOut)
+    @RequirePermissions(UserPermissions.Signout)
     @Post('signout')
-    async signOut(@CurrentUser() user: decoded_user) {
-        const isTokenDelete = await this.authService.signout(user)
-        if (!isTokenDelete) {
-            throw new ApiException(ErrorCodes.CannotSingout)
-        }
-        return SignoutDto.toEntity(isTokenDelete)
+    async signOut(@CurrentUser() user: User, @Body() body: SignoutForm) {
+        const form = SignoutForm.from(body)
+        const errors = await SignoutForm.validate(form)
+        if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
+        await this.authService.signout(user, { device_id: form.device_id })
+        return true
     }
+
+
     @HttpCode(200)
     @ApiResponse({
-      status: 200,
-      description: 'refresh',
-      type: Boolean,
+        status: 200,
+        description: 'password changed',
+        type: ResetTokenDto,
+    })
+    @ApiResponse({ status: 400, description: 'Bad request' })
+    @UseGuards(JwtAuthGuard)
+    @RequirePermissions(UserPermissions.PasswordChange)
+    @Post('forgot-password')
+    async forgotPassword(@Body() body: ForgotPasswordForm) {
+        const form = ForgotPasswordForm.from(body)
+        const errors = await ForgotPasswordForm.validate(form)
+        if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
+        const session = await this.authService.findSessionByEmailAndDeviceId(
+            { email: form.email },
+            { device_id: form.device_id }
+        );
+        const token = await this.authService.setResetToken(session);
+        if (!token) {
+            throw new ApiException(ErrorCodes.NotExists_User);
+        }
+        return ResetTokenDto.toEntity({ token });
+    }
+
+
+
+
+    @HttpCode(200)
+    @ApiResponse({
+        status: 200,
+        description: 'reset password',
+        type: TokenDto,
+    })
+    @ApiResponse({ status: 400, description: 'Bad request' })
+    @Post('/reset-password')
+    async resetPassword(@Body() body: ResetPasswordForm) {
+        const form = ResetPasswordForm.from(body)
+        const errors = await ResetPasswordForm.validate(form)
+        if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
+        const entity = await this.authService.findSessionByResetToken(form);
+        const user = await this.authService.changePassword(entity.user, { password: form.password });
+        await this.authService.deleteRefreshToken(user, { device_id: form.device_id });
+        const tokens = await this.authService.authenticate(user, { device_id: form.device_id });
+        TokenDto.toEntity(tokens)
+    }
+
+
+    @HttpCode(200)
+    @ApiResponse({
+        status: 200,
+        description: 'refresh',
+        type: TokenDto,
     })
     @ApiResponse({ status: 400, description: 'Bad request' })
     @UseGuards(JwtAuthGuard)
     @RequirePermissions(UserPermissions.RefreshToken)
     @Get('refresh')
     async refresh(@CurrentUser() user: decoded_user) {
-        const tokens = await this.securityService.refresh(user)
+        const user_entity = await this.authService.getUserByEmail({ email: user.email })
+        if (!user_entity) {
+            throw new ApiException(ErrorCodes.NotExists_User)
+        }
+        const tokens = await this.securityService.refresh(user_entity, { device_id: user.device_id })
         return TokenDto.toEntity(tokens)
-
     }
 }

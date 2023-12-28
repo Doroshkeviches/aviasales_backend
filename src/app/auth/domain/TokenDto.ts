@@ -1,6 +1,5 @@
 import { IsEmail } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Category } from "@prisma/client"
 import { IsNotEmpty, IsString, validate } from 'class-validator';
 
 export class TokenDto {

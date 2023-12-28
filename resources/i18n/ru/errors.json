@@ -1,10 +1,15 @@
 {
+    "field-invalid.should-be-string": "Поле должно быть строкой.",
+    "field-invalid.should-be-number": "Поле должно быть числом.",
+    "field-invalid.should-be-enum": "Поле должно быть одним из допустимых значений.",
+    "field-invalid.should-be-email": "Поле должно содержать действительный адрес электронной почты.",
+    "field-invalid.should-be-uuid": "Поле должно содержать uuid",
     "invalid-form": "Некорректные данные формы.",
     "not-authorized.request": "У вас нет прав для выполнения этого запроса.",
+    "auth.not-exists.user": "Пользователь не существует.",
     "invalid-password": "Неверный пароль",
-    "no-user": "Юзера не существует",
     "expired-token": "Токен устарел",
     "alredy-registered": "Пользователь с таким Email уже зарегистрирован",
     "create-user": "Ошибка создания пользователя",
-    "error" : "Ошибка"
+    "error": "Ошибка"
 }

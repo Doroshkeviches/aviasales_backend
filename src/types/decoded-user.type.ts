@@ -1,3 +1,3 @@
-import { User } from "@prisma/client";
+import { Device, User } from "@prisma/client";
 
-export type decoded_user = Pick<User, 'id' | 'email' | 'role_type'>
+export type decoded_user = Pick<User, 'id' | 'email' | 'role_type'> & Pick<Device, 'device_id'>
