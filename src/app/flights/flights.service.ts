@@ -1,31 +1,25 @@
+import { CityReposService } from '@/src/domain/repos/city-repos.service';
 import { FlightsRepoService } from '@/src/domain/repos/flights-repos.service';
 import { Injectable } from '@nestjs/common';
 import { City, Flight } from '@prisma/client';
 
 @Injectable()
 export class FlightsService {
-    constructor(private flightRepo: FlightsRepoService) { }
-    async getArrayOfPaths(from_city: City, to_city: City, start_flight_date: Pick<Flight, 'start_flight_date'>) {
-
-        const flights = await this.getAllFlights(start_flight_date)
-        const graph = this.convertToGraph(flights)
-        const paths = this.findAllPaths(graph, from_city, to_city, start_flight_date)
-        return paths
-    }
+    constructor(private flightRepo: FlightsRepoService,
+        private cityRepo: CityReposService) { }
     async convertToGraph(arr: Flight[]) {
         const graph = {};
-
-        arr.forEach(({ from_city_id, to_city_id, start_flight_date, end_flight_date, price }) => {
+        arr.forEach((flight: Flight) => {
             // Create nodes in the graph if not already present
-            if (!graph[from_city_id]) {
-                graph[from_city_id] = {};
+            if (!graph[flight.from_city_id]) {
+                graph[flight.from_city_id] = {};
             }
-            if (!graph[to_city_id]) {
-                graph[to_city_id] = {};
+            if (!graph[flight.to_city_id]) {
+                graph[flight.to_city_id] = {};
             }
 
             // Add edges with weights to represent start_date, end_date, or price
-            graph[from_city_id][to_city_id] = { start_flight_date, end_flight_date, price };
+            graph[flight.from_city_id][flight.to_city_id] = { ...flight };
         });
 
         return graph;
@@ -33,11 +27,10 @@ export class FlightsService {
     async getAllFlights(start_flight_date: Pick<Flight, 'start_flight_date'>) {
         return this.flightRepo.getAllFlights(start_flight_date)
     }
-
-    async findAllPaths(graph, start: City, end: City, { start_flight_date }: Pick<Flight, 'start_flight_date'>) {
-        const queue = [[{ [start.id]: { end_date: start_flight_date } }]]
+    async findAllPaths(graph, start: City, end: City) {
+        const queue = [[{ [start.id]: { end_flight_date: 0 } }]]
         const path = []
-        const maximum_number_of_transfers = 3 // Максимальное количество городов? в одном пути (n-1 = количество полетов) (n-2 количество пересадок)
+        const maximum_number_of_transfers = 30 // Максимальное количество городов? в одном пути (n-1 = количество полетов) (n-2 количество пересадок)
 
         while (queue.length > 0) {
             const currentPath = queue.shift()
@@ -45,17 +38,18 @@ export class FlightsService {
                 continue
             }
             const currentPathKeys = currentPath.reduce((container, obj) => [...container, ...Object.keys(obj)], []);
-            const currentNode = Object.keys(currentPath.at(-1))[0]
-            const currentNodeNode = currentPath.at(-1)[currentNode]
+            const current_node_id = Object.keys(currentPath.at(-1))[0] // получаю айди последнего элемента в нынешнем пути
+            const currentNode = currentPath.at(-1)[current_node_id] // получаю данные последнего полета по айди
 
-            if (currentNode === end.id) {
-                path.push(currentPath)
+            if (current_node_id === end.id) { //если попали в конечный город , то сохраняем путь 
+                const transformedPath = this.transformPathToArrayOfFlights(currentPath)
+                path.push(transformedPath)
             } else {
-                for (const neighbor in graph[currentNode]) {
-                    const prev_fluing_time = currentNodeNode.end_date //change to real end_date
-                    const next_fluing_time = graph[currentNode][neighbor].start_date
+                for (const neighbor in graph[current_node_id]) {
+                    const prev_fluing_time = currentNode.end_flight_date
+                    const next_fluing_time = graph[current_node_id][neighbor].start_flight_date
                     if (!currentPathKeys.includes(neighbor) && prev_fluing_time <= next_fluing_time) {
-                        queue.push([...currentPath, { [neighbor]: graph[currentNode][neighbor], }])
+                        queue.push([...currentPath, { [neighbor]: graph[current_node_id][neighbor], }])
                     }
                 }
             }
@@ -63,7 +57,6 @@ export class FlightsService {
         }
         return path
     }
-
     async changeFlightStatus(data: Pick<Flight, 'id' | 'status'>) {
         return this.flightRepo.changeFlightStatus(data)
     }
@@ -72,5 +65,15 @@ export class FlightsService {
     }
     async getFlightById(id: Pick<Flight, 'id'>) {
         return this.flightRepo.getFlightById(id)
+    }
+    async getCityByTitle(title: Pick<City, 'title'>) {
+        return this.cityRepo.getCityByTitle(title)
+    }
+    transformPathToArrayOfFlights(path) {
+        path.shift() // delete empty object
+        return path.map(path => {
+            return Object.values(path)[0]
+        })
+
     }
 }

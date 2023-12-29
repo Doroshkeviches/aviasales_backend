@@ -12,22 +12,11 @@ import { PrismaClientExceptionFilter } from './libs/exceptions/global-exception.
 import { FlightsModule } from './app/flights/flights.module';
 
 @Module({
-<<<<<<< HEAD
-  imports: [AuthModule, FlightsModule, ConfigModule.forRoot({
+  imports: [AuthModule,CityModule, FlightsModule, ConfigModule.forRoot({
     envFilePath: '.env',
     load: [config_app, config_i18n, config_security],
     isGlobal: true,
   }),
-=======
-  imports: [
-    AuthModule,
-    CityModule,
-    ConfigModule.forRoot({
-      envFilePath: '.env',
-      load: [config_app, config_i18n, config_security],
-      isGlobal: true,
-    }),
->>>>>>> ff081d9b6ac9cb6543b0e79d4eaff886eb7317c3
     I18nModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

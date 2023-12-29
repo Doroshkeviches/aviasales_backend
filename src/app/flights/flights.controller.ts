@@ -1,18 +1,29 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { FlightsService } from './flights.service';
-import { City } from '@prisma/client';
 import { ChangeFlightStatus } from './domain/ChangeFlightStatusForm';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
 import { ChangeFlightPrice } from './domain/ChangeFlightPriceForm';
+import { ApiException } from '@/src/libs/exceptions/api-exception';
 
 @Controller('flights')
 export class FlightsController {
     constructor(private flightService: FlightsService) { }
-    @Post()
-    async getArrayOfPath(@Param('from_city') from_city: string, @Param('to_city') to_city: string, @Param('start_flight_date') start_flight_date: string) {
-        //get two cities from citiesRepo 
-        // return this.flightService.getArrayOfPaths(city1, city2, start_flight_date)
+    @Get()
+    async getArrayOfPath(@Query('from_city') from_city: string, @Query('to_city') to_city: string, @Query('date') date_string: string) {
+        const start_flight_date = new Date(date_string)
+        const from_city_entity = await this.flightService.getCityByTitle({ title: from_city })
+        const to_city_entity = await this.flightService.getCityByTitle({ title: to_city })
+        if (!from_city_entity || !to_city_entity) {
+            throw new ApiException(ErrorCodes.NoCity)
+        }
+        const flights = await this.flightService.getAllFlights({start_flight_date})
+        if (!flights) {
+            throw new ApiException(ErrorCodes.NoFlights)
+        }
+        const graph = await this.flightService.convertToGraph(flights)
+        const path = await this.flightService.findAllPaths(graph, from_city_entity, to_city_entity)
+        return path
     }
 
     @Post('status')
