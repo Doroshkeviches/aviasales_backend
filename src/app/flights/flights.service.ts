@@ -5,8 +5,37 @@ import { City, Flight } from '@prisma/client';
 @Injectable()
 export class FlightsService {
     constructor(private flightRepo: FlightsRepoService) { }
-    async createArrayOfPaths(graph, start: City, end: City, date: number) {
-        const queue = [[{ [start.id]: { end_date: date } }]]
+    async getArrayOfPaths(from_city: City, to_city: City, start_flight_date: Pick<Flight, 'start_flight_date'>) {
+
+        const flights = await this.getAllFlights(start_flight_date)
+        const graph = this.convertToGraph(flights)
+        const paths = this.findAllPaths(graph, from_city, to_city, start_flight_date)
+        return paths
+    }
+    async convertToGraph(arr: Flight[]) {
+        const graph = {};
+
+        arr.forEach(({ from_city_id, to_city_id, start_flight_date, end_flight_date, price }) => {
+            // Create nodes in the graph if not already present
+            if (!graph[from_city_id]) {
+                graph[from_city_id] = {};
+            }
+            if (!graph[to_city_id]) {
+                graph[to_city_id] = {};
+            }
+
+            // Add edges with weights to represent start_date, end_date, or price
+            graph[from_city_id][to_city_id] = { start_flight_date, end_flight_date, price };
+        });
+
+        return graph;
+    }
+    async getAllFlights(start_flight_date: Pick<Flight, 'start_flight_date'>) {
+        return this.flightRepo.getAllFlights(start_flight_date)
+    }
+
+    async findAllPaths(graph, start: City, end: City, { start_flight_date }: Pick<Flight, 'start_flight_date'>) {
+        const queue = [[{ [start.id]: { end_date: start_flight_date } }]]
         const path = []
         const maximum_number_of_transfers = 3 // Максимальное количество городов? в одном пути (n-1 = количество полетов) (n-2 количество пересадок)
 
@@ -34,28 +63,14 @@ export class FlightsService {
         }
         return path
     }
-    async convertToGraph(arr: Flight[]) {
-        const graph = {};
 
-        arr.forEach(({ from_city_id, to_city_id, start_flight_date, end_flight_date, price }) => {
-            // Create nodes in the graph if not already present
-            if (!graph[from_city_id]) {
-                graph[from_city_id] = {};
-            }
-            if (!graph[to_city_id]) {
-                graph[to_city_id] = {};
-            }
-
-            // Add edges with weights to represent start_date, end_date, or price
-            graph[from_city_id][to_city_id] = { start_flight_date, end_flight_date, price };
-        });
-
-        return graph;
+    async changeFlightStatus(data: Pick<Flight, 'id' | 'status'>) {
+        return this.flightRepo.changeFlightStatus(data)
     }
-    async getAllFlights(start_flight_date: Pick<Flight, 'start_flight_date'>) {
-        return this.flightRepo.getAllFlights(start_flight_date)
+    async changeFlightPrice(data: Pick<Flight, 'id' | 'price'>) {
+        return this.flightRepo.changeFlightPrice(data)
     }
-    async createFlight(start, end, plane, price: any) {
-        return this.flightRepo.createFlight(start, end, plane, price)
+    async getFlightById(id: Pick<Flight, 'id'>) {
+        return this.flightRepo.getFlightById(id)
     }
 }

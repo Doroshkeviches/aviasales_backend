@@ -1,43 +1,33 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { FlightsService } from './flights.service';
 import { City } from '@prisma/client';
+import { ChangeFlightStatus } from './domain/ChangeFlightStatusForm';
+import { ErrorCodes } from '@/src/enums/error-codes.enum';
+import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
+import { ChangeFlightPrice } from './domain/ChangeFlightPriceForm';
 
 @Controller('flights')
 export class FlightsController {
     constructor(private flightService: FlightsService) { }
-    @Get()
-    async getArrayOfPath(@Query('start_date') start_flight_date: Date) {
-        const flights = await this.flightService.getAllFlights({ start_flight_date })
-        console.log(flights, 'flights')
-        const graph = await this.flightService.convertToGraph(flights)
-        console.log(graph, 'graph')
-        const start = {
-            id: '86d6bbf0-e68a-4ab6-8216-fbf900c4b2c5',
-            title: 'Minsk'
-        }
-        const end = {
-            id: 'ae94164f-2a89-4b8c-9d93-8d4d8c49a2ee',
-            title: "Msk"
-        }
-    }
     @Post()
-    async createFlight(body: any) {
-        const start = {
-            id: '86d6bbf0-e68a-4ab6-8216-fbf900c4b2c5',
-            title: 'Minsk'
-        }
-        const end = {
-            id: 'ae94164f-2a89-4b8c-9d93-8d4d8c49a2ee',
-            title: "Msk"
-        }
-        const plain = {
-            id: 'ae94163f-2a89-4b8c-9d93-8d4d8c49a2ee',
-            title: "Msk",
-            seats: 40
-        }
-        return this.flightService.createFlight(start, end, plain, body)
+    async getArrayOfPath(@Param('from_city') from_city: string, @Param('to_city') to_city: string, @Param('start_flight_date') start_flight_date: string) {
+        //get two cities from citiesRepo 
+        // return this.flightService.getArrayOfPaths(city1, city2, start_flight_date)
     }
-    async generateGraph() {
 
+    @Post('status')
+    async changeFlightStatus(@Body() body: ChangeFlightStatus) {
+        const form = ChangeFlightStatus.from(body)
+        const errors = ChangeFlightStatus.validate(form)
+        if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
+        return this.flightService.changeFlightStatus(form)
+    }
+
+    @Post('price')
+    async changeFlightPrice(@Body() body: ChangeFlightPrice) {
+        const form = ChangeFlightPrice.from(body)
+        const errors = ChangeFlightPrice.validate(form)
+        if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
+        return this.flightService.changeFlightPrice(form)
     }
 }

@@ -20,20 +20,20 @@ export class FlightsRepoService {
             }
         })
     }
-    async changeFlightStatus({ id }: Pick<Flight, 'id'>, status: Pick<Flight, 'status'>) {
+    async changeFlightStatus(data: Pick<Flight, 'id' | 'status'>) {
         return this.prisma.flight.update({
-            where: { id },
+            where: { id: data.id },
             data: {
-                status: status.status
+                status: data.status
             }
         })
     }
 
-    async changeFlightPrice({ id }: Pick<Flight, 'id'>, price: Pick<Flight, 'price'>) {
+    async changeFlightPrice(data: Pick<Flight, 'id' | "price">) {
         return this.prisma.flight.update({
-            where: { id },
+            where: { id: data.id },
             data: {
-                price: price.price
+                price: data.price
             }
         })
     }
@@ -54,6 +54,18 @@ export class FlightsRepoService {
                 start_flight_date: {
                     gte: start_flight_date
                 }
+            },
+            include: {
+                plane: true,
+            }
+
+        })
+    }
+    async getFlightById({ id }: Pick<Flight, 'id'>) {
+        return this.prisma.flight.findUnique({
+            where: { id },
+            include: {
+                plane: true
             }
         })
     }
