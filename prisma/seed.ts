@@ -1,8 +1,10 @@
 import { PrismaClient, UserPermissions, UserRoles } from "@prisma/client";
 import { mockCityData } from "./mock-city-data";
 import { mockPlaneData } from "./mock-plane-data";
+import { mock } from "./mock-flight-data";
 
 const prisma = new PrismaClient();
+
 async function main() {
   const Client = await prisma.role.create({
     data: {
@@ -36,6 +38,17 @@ async function main() {
       data: { ...plane },
     });
   });
+
+  const cities = await prisma.city.findMany();
+  const planes = await prisma.plane.findMany();
+
+  mock(cities, planes).then((mockFlightsData) =>
+    mockFlightsData.map(async (flight) => {
+      await prisma.flight.create({
+        data: { ...flight },
+      });
+    })
+  );
 }
 
 main()

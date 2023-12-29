@@ -97,8 +97,8 @@ model Flight {
   to_city_id        String       @db.Uuid
   from_city         City         @relation(name: "from_city", fields: [from_city_id], references: [id])
   to_city           City         @relation(name: "to_city", fields: [to_city_id], references: [id])
-  start_flight_date DateTime
-  end_flight_date   DateTime
+  start_flight_date DateTime     @db.Timestamptz()
+  end_flight_date   DateTime     @db.Timestamptz()
   status            FlightStatus
   price             Int
   available_seats   Int
