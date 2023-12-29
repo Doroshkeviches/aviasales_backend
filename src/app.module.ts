@@ -1,6 +1,7 @@
 import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './app/auth/auth.module';
+import { CityModule } from './app/city/city.module';
 
 import config_app from './config/app.config';
 import config_i18n from './config/i18n.config';
@@ -11,11 +12,22 @@ import { PrismaClientExceptionFilter } from './libs/exceptions/global-exception.
 import { FlightsModule } from './app/flights/flights.module';
 
 @Module({
+<<<<<<< HEAD
   imports: [AuthModule, FlightsModule, ConfigModule.forRoot({
     envFilePath: '.env',
     load: [config_app, config_i18n, config_security],
     isGlobal: true,
   }),
+=======
+  imports: [
+    AuthModule,
+    CityModule,
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      load: [config_app, config_i18n, config_security],
+      isGlobal: true,
+    }),
+>>>>>>> ff081d9b6ac9cb6543b0e79d4eaff886eb7317c3
     I18nModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -24,7 +36,8 @@ import { FlightsModule } from './app/flights/flights.module';
         AcceptLanguageResolver,
       ],
       useFactory: (config: ConfigService) => config.get('i18n'),
-    }),],
+    }),
+  ],
   controllers: [],
   providers: [
     {
@@ -33,4 +46,4 @@ import { FlightsModule } from './app/flights/flights.module';
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}
