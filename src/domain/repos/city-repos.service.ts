@@ -22,15 +22,15 @@ export class CityReposService {
     });
   }
 
-  async deleteCityById(id: Pick<City, 'id'>) {
+  async deleteCityById({ id }: Pick<City, 'id'>) {
     return await this.prisma.city.delete({
-      where: { id: id.id },
+      where: { id },
     });
   }
 
-  async updateCityTitleById(id: Pick<City, 'id'>, title: Pick<City, 'title'>) {
+  async updateCityTitleById(id: string, title: Pick<City, 'title'>) {
     const city = await this.prisma.city.update({
-      where: { id: id.id },
+      where: { id },
       data: { ...title },
     });
     return city;

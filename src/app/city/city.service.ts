@@ -19,7 +19,7 @@ export class CityService {
   }
 
   async updateCityTitleById(
-    id: Pick<City, 'id'>,
+    id: string,
     newTitle: Pick<City, 'title'>
   ) {
     return await this.cityRepo.updateCityTitleById(id, newTitle);

@@ -11,5 +11,6 @@
   "expired-token": "Expired token",
   "alredy-registered": "User with this email already registered",
   "create-user": "Cannot create user",
-  "error": "Error"
+  "error": "Error",
+  "existed-city": "City already exists"
 }

@@ -65,7 +65,7 @@ export class CityController {
   @HttpCode(200)
   @ApiBody({ type: CityForm })
   async updateCityTitleById(
-    @Param('id') city_id: Pick<City, 'id'>,
+    @Param('id') city_id: string,
     @Body() body: CityForm
   ) {
     const form = CityForm.from(body);
