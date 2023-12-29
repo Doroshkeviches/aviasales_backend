@@ -1,12 +1,12 @@
-import { Module } from "@nestjs/common";
-import { CityService } from "./city.service";
-import { CityReposService } from "@/src/domain/repos/city-repos.service";
-import { CityController } from "./city.controller";
-import { PrismaModule } from "@/src/libs/prisma/src";
+import { Module } from '@nestjs/common';
+import { CityService } from './city.service';
+import { CityController } from './city.controller';
+import { DomainModule } from '@/src/domain';
+import { SecurityModule } from '@/src/libs/security/src';
 
 @Module({
-  imports: [PrismaModule],
-  providers: [CityService, CityReposService],
+  imports: [DomainModule, SecurityModule],
+  providers: [CityService],
   controllers: [CityController],
 })
 export class CityModule {}

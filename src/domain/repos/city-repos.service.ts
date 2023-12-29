@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
-import { City } from "@prisma/client";
-import { PrismaService } from "@/src/libs/prisma/src";
+import { Injectable } from '@nestjs/common';
+import { City } from '@prisma/client';
+import { PrismaService } from '@/src/libs/prisma/src';
 
 @Injectable()
 export class CityReposService {
@@ -10,10 +10,10 @@ export class CityReposService {
     return await this.prisma.city.findMany();
   }
 
-  async getCityById(id: Pick<City, "id">) {
+  async getCityById({ id }: Pick<City, 'id'>) {
     return await this.prisma.city.findUnique({
       where: {
-        id: id.id,
+        id,
       },
       include: {
         flights_from_city: true,
@@ -22,28 +22,31 @@ export class CityReposService {
     });
   }
 
-  async deleteCityById(id: Pick<City, "id">) {
+  async deleteCityById(id: Pick<City, 'id'>) {
     return await this.prisma.city.delete({
       where: { id: id.id },
     });
   }
 
-  async updateCityTitleById(
-    id: Pick<City, "id">,
-    newTitle: Pick<City, "title">
-  ) {
+  async updateCityTitleById(id: Pick<City, 'id'>, title: Pick<City, 'title'>) {
     const city = await this.prisma.city.update({
       where: { id: id.id },
-      data: { ...newTitle },
+      data: { ...title },
     });
     return city;
   }
 
-  async createNewCity(data: Pick<City, "title">) {
+  async createNewCity(data: Pick<City, 'title'>) {
     const { title } = data;
     const newCity = await this.prisma.city.create({
       data: { title },
     });
     return newCity;
+  }
+
+  async getCityByTitle(title: Pick<City, 'title'>) {
+    return this.prisma.city.findFirst({
+      where: { ...title },
+    });
   }
 }

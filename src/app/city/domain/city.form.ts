@@ -1,6 +1,10 @@
-import { IsNotEmpty, IsString, validate } from "class-validator";
+import { IsNotEmpty, IsString, validate } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CityForm {
+  @ApiProperty({
+    description: 'city title',
+  })
   @IsString()
   @IsNotEmpty()
   title: string;
