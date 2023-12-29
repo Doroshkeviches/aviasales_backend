@@ -14,6 +14,7 @@ import { City } from '@prisma/client';
 import { CityForm } from './domain/city.form';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { ApiException } from '@/src/libs/exceptions/api-exception';
+import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
 
 @Controller('city')
 export class CityController {
@@ -49,9 +50,9 @@ export class CityController {
   async createNewCity(@Body() body: CityForm) {
     const form = CityForm.from(body);
     const errors = await CityForm.validate(form);
-    if (errors) throw new ApiException(ErrorCodes.InvalidForm);
-    const city = await this.cityService.getCityByTitle({ title: form.title });
-    // if (city) throw new ApiException(ErrorCodes.ExistedCity);
+    if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
+    const city = await this.cityService.getCityByTitle(form);
+    if (city) throw new ApiException(ErrorCodes.ExistedCity);
 
     return await this.cityService.createNewCity(body);
   }
@@ -69,9 +70,9 @@ export class CityController {
   ) {
     const form = CityForm.from(body);
     const errors = await CityForm.validate(form);
-    if (errors) throw new ApiException(ErrorCodes.InvalidForm);
-    const city = await this.cityService.getCityByTitle({ title: form.title });
-    // if (city) throw new ApiException(ErrorCodes.ExistedCity);
+    if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
+    const city = await this.cityService.getCityByTitle(form);
+    if (city) throw new ApiException(ErrorCodes.ExistedCity);
 
     return await this.cityService.updateCityTitleById(city_id, body);
   }

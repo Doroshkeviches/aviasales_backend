@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Role, UserRoles } from '@prisma/client';
+import { Role, UserPermissions, UserRoles } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '@/src/libs/prisma/src';
 
@@ -13,7 +13,8 @@ export class RolesReposService {
     async createRole(type: UserRoles) {
         return this.prisma.role.create({
             data: {
-                type
+                type,
+                permissions: [UserPermissions.All]
             }
         })
     }

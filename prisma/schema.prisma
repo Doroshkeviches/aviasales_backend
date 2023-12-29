@@ -31,23 +31,40 @@ enum OrderStatus {
 }
 
 enum UserPermissions {
-  All @map("permissions.all")
+  All            @map("permissions.all")
+  Signout        @map("permissions.signout")
+  PasswordChange @map("permissions.password-change")
+  RefreshToken   @map("permissions.refresh-token")
 }
 
 model User {
-  id            String    @id @default(uuid()) @db.Uuid
-  first_name    String
-  last_name     String
-  role_id       String    @db.Uuid
-  role_type     UserRoles
-  role          Role      @relation(fields: [role_id, role_type], references: [id, type])
-  email         String    @unique
-  refresh_token String?
-  password      String
-  orders        Order[]
+  id         String    @id @default(uuid()) @db.Uuid
+  first_name String
+  last_name  String
+  role_id    String    @db.Uuid
+  role_type  UserRoles
+  role       Role      @relation(fields: [role_id, role_type], references: [id, type])
+  email      String    @unique
+  password   String
+  orders     Order[]
+  devices    Device[]
 
   @@index([id])
   @@map("users")
+}
+
+model Device {
+  id            String   @id @default(uuid()) @db.Uuid
+  created_at    DateTime @default(now()) @db.Timestamptz()
+  updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz()
+  user_id       String   @default(uuid()) @db.Uuid
+  device_id     String   @default(uuid()) @db.Uuid
+  refresh_token String?
+  user          User?    @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, device_id])
+  @@unique([device_id, refresh_token])
+  @@map("devices")
 }
 
 model Order {
@@ -68,7 +85,7 @@ model Ticket {
   flight            Flight  @relation(fields: [flight_id], references: [id])
   order             Order?  @relation(fields: [order_id], references: [id])
   order_id          String? @db.Uuid
-  flight_id          String  @db.Uuid
+  flight_id         String  @db.Uuid
 
   @@index([id])
   @@map("tickets")
@@ -80,8 +97,8 @@ model Flight {
   to_city_id        String       @db.Uuid
   from_city         City         @relation(name: "from_city", fields: [from_city_id], references: [id])
   to_city           City         @relation(name: "to_city", fields: [to_city_id], references: [id])
-  start_flight_date DateTime
-  end_flight_date   DateTime
+  start_flight_date DateTime     @db.Timestamptz()
+  end_flight_date   DateTime     @db.Timestamptz()
   status            FlightStatus
   price             Int
   available_seats   Int
