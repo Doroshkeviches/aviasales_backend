@@ -50,6 +50,31 @@ export class AuthController {
     @HttpCode(200)
     @ApiResponse({
         status: 200,
+        description: 'Successfully login',
+        type: TokenDto,
+    })
+    @ApiResponse({ status: 400, description: 'Bad request' })
+    @ApiBody({ type: SignInForm })
+    @Post('admin/signin')
+    async adminSignin(@Body() body: SignInForm) {
+        const form = SignInForm.from(body)
+        const errors = await SignInForm.validate(form)
+        if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
+
+        const user = await this.authService.getAdminByEmail(form)
+        if (!user) throw new ApiException(ErrorCodes.NotExists_User)
+
+        const isCompare = await this.authService.comparePassword(user, form)
+        if (!isCompare) throw new ApiException(ErrorCodes.InvalidPassword)
+
+        const tokens = await this.authService.authenticate(user, form,)
+
+        return TokenDto.toEntity(tokens)
+    }
+
+    @HttpCode(200)
+    @ApiResponse({
+        status: 200,
         description: 'Successfully created a new user',
         type: TokenDto,
     })

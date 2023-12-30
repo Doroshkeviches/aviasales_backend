@@ -18,7 +18,7 @@ export class AuthService {
         private securityService: SecurityService,
     ) { }
 
-    async updateTokens(user: User, {device_id}: Pick<Device, 'device_id'>) {
+    async updateTokens(user: User, { device_id }: Pick<Device, 'device_id'>) {
         const tokens = await this.securityService.generateTokens(user)
         await this.deviceRepo.updateResetToken({ user_id: user.id, device_id, refresh_token: tokens.refresh_token })
         return tokens;
@@ -27,6 +27,9 @@ export class AuthService {
 
         const user = await this.usersRepo.getUserByEmail(email);
         return user
+    }
+    async getAdminByEmail(email: Pick<User, 'email'>) {
+        return this.usersRepo.getAdminByEmail(email)
     }
     async comparePassword(user: User, password: Pick<User, 'password'>) {
         const isCompare = await bcrypt.compare(password.password, user.password)
