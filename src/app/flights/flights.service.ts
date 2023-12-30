@@ -27,10 +27,10 @@ export class FlightsService {
     async getAllFlights(start_flight_date: Pick<Flight, 'start_flight_date'>) {
         return this.flightRepo.getAllFlights(start_flight_date)
     }
-    async findAllPaths(graph, start: City, end: City) {
+    async findAllPaths(graph, start: City, end: City, maximum_number_of_transfers: number = 5) {
         const queue = [[{ [start.id]: { end_flight_date: 0 } }]]
         const path = []
-        const maximum_number_of_transfers = 30 // Максимальное количество городов? в одном пути (n-1 = количество полетов) (n-2 количество пересадок)
+        // const maximum_number_of_transfers = 30 // Максимальное количество городов? в одном пути (n-1 = количество полетов) (n-2 количество пересадок)
 
         while (queue.length > 0) {
             const currentPath = queue.shift()
@@ -75,5 +75,13 @@ export class FlightsService {
             return Object.values(path)[0]
         })
 
+    }
+    sortArraysByTotalPrice(arrays) {
+        return arrays.map(subArray => {
+            const totalPrice = subArray.reduce((sum, item) => sum + item.price, 0);
+            return { subArray, totalPrice };
+        })
+            .sort((a, b) => a.totalPrice - b.totalPrice)
+            .map(entry => entry.subArray);
     }
 }

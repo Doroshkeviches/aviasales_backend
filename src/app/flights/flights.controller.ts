@@ -23,7 +23,11 @@ export class FlightsController {
         }
         const graph = await this.flightService.convertToGraph(flights)
         const path = await this.flightService.findAllPaths(graph, from_city_entity, to_city_entity)
-        return path
+        if(!path[0]) {
+            throw new ApiException(ErrorCodes.NoFlights) // TODO change to no-path
+        }
+        const sortedPathByPrice = this.flightService.sortArraysByTotalPrice(path)
+        return sortedPathByPrice
     }
 
     @Post('status')
