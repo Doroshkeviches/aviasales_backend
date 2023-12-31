@@ -9,11 +9,13 @@ import config_security from './config/security.config';
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { APP_FILTER } from '@nestjs/core';
 import { PrismaClientExceptionFilter } from './libs/exceptions/global-exception.filter';
+import { OrdersModule } from './app/orders/orders.module';
 
 @Module({
   imports: [
     AuthModule,
     CityModule,
+    OrdersModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
       load: [config_app, config_i18n, config_security],

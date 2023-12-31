@@ -4,10 +4,12 @@ import { PrismaModule } from '../libs/prisma/src/prisma.module';
 import { RolesReposService } from './repos/roles-repos.service';
 import { DeviceRepoService } from './repos/device-repos.service';
 import { CityReposService } from './repos/city-repos.service';
+import { OrdersRepoService } from './repos/orders-repos.service';
+import { TicketsRepoService } from './repos/tickets-repos.service';
 
 @Module({
   imports: [PrismaModule],
-  providers: [UsersRepoService, RolesReposService, CityReposService,DeviceRepoService],
-  exports: [UsersRepoService, RolesReposService, CityReposService,DeviceRepoService],
+  providers: [UsersRepoService, RolesReposService, CityReposService,DeviceRepoService,OrdersRepoService, TicketsRepoService],
+  exports: [UsersRepoService, RolesReposService, CityReposService,DeviceRepoService,OrdersRepoService, TicketsRepoService],
 })
 export class DomainModule {}
