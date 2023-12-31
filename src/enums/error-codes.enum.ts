@@ -11,5 +11,6 @@ export enum ErrorCodes {
   AlreadyRegistered = 'errors.alredy-registered',
   CreateUserError = 'errors.create-user',
   NotExists_User = 'errors.auth.not-exists.user',
-  Error = 'errors.error'
+  Error = 'errors.error',
+  ExistedCity = 'errors.existed-city',
 }
