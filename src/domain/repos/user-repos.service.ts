@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Role, User } from "@prisma/client";
+import { Role, User, UserRoles } from "@prisma/client";
 import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from "@/src/libs/prisma/src";
@@ -79,5 +79,18 @@ export class UsersRepoService {
                 role: true,
             },
         });
+    }
+    async getAdminByEmail({ email }: Pick<User, 'email'>) {
+        return this.prisma.user.findUnique({
+            where: {
+                email,
+                role_type: {
+                    in: [UserRoles.Admin, UserRoles.Manager]
+                }
+            },
+            include: {
+                role: true
+            }
+        })
     }
 }

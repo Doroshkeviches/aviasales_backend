@@ -4,6 +4,8 @@ import { PrismaModule } from '../libs/prisma/src/prisma.module';
 import { RolesReposService } from './repos/roles-repos.service';
 import { DeviceRepoService } from './repos/device-repos.service';
 import { CityReposService } from './repos/city-repos.service';
+import { FlightsRepoService } from './repos/flights-repos.service';
+import { OrdersRepoService } from './repos/orders-repos.service';
 import { TicketReposService } from './repos/ticket-repos.service';
 
 @Module({
@@ -11,15 +13,19 @@ import { TicketReposService } from './repos/ticket-repos.service';
   providers: [
     UsersRepoService,
     RolesReposService,
-    CityReposService,
     DeviceRepoService,
+    CityReposService,
+    FlightsRepoService,
+    OrdersRepoService,
     TicketReposService,
   ],
   exports: [
     UsersRepoService,
     RolesReposService,
-    CityReposService,
     DeviceRepoService,
+    CityReposService,
+    FlightsRepoService,
+    OrdersRepoService,
     TicketReposService,
   ],
 })

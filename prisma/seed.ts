@@ -41,14 +41,17 @@ async function main() {
 
   const cities = await prisma.city.findMany();
   const planes = await prisma.plane.findMany();
+  setTimeout(() => {
+    mock(cities, planes).then((mockFlightsData) =>
+      mockFlightsData.map(async (flight) => {
+        console.log(flight)
+        await prisma.flight.create({
+          data: { ...flight },
+        });
+      })
+    );
+  }, 2000)
 
-  mock(cities, planes).then((mockFlightsData) =>
-    mockFlightsData.map(async (flight) => {
-      await prisma.flight.create({
-        data: { ...flight },
-      });
-    })
-  );
 }
 
 main()
