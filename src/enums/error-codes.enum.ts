@@ -14,5 +14,6 @@ export enum ErrorCodes {
   Error = 'errors.error',
   ExistedCity = 'errors.existed-city',
   NoCity = 'errors.no-city',
-  NoFlights = 'errors.no-flights'
+  NoFlights = 'errors.no-flights',
+  NoPath = 'errors.no-path'
 }

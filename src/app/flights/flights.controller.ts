@@ -17,14 +17,17 @@ export class FlightsController {
         if (!from_city_entity || !to_city_entity) {
             throw new ApiException(ErrorCodes.NoCity)
         }
-        const flights = await this.flightService.getAllFlights({start_flight_date})
+        const flights = await this.flightService.getAllFlights({
+            start_flight_date,
+            from_city_id: from_city_entity.id
+        })
         if (!flights) {
             throw new ApiException(ErrorCodes.NoFlights)
         }
         const graph = await this.flightService.convertToGraph(flights)
         const path = await this.flightService.findAllPaths(graph, from_city_entity, to_city_entity)
-        if(!path[0]) {
-            throw new ApiException(ErrorCodes.NoFlights) // TODO change to no-path
+        if (!path.length) {
+            throw new ApiException(ErrorCodes.NoPath)
         }
         const sortedPathByPrice = this.flightService.sortArraysByTotalPrice(path)
         return sortedPathByPrice

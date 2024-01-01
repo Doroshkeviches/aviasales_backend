@@ -24,8 +24,8 @@ export class FlightsService {
 
         return graph;
     }
-    async getAllFlights(start_flight_date: Pick<Flight, 'start_flight_date'>) {
-        return this.flightRepo.getAllFlights(start_flight_date)
+    async getAllFlights(data: Pick<Flight, 'start_flight_date' | 'from_city_id'>) {
+        return this.flightRepo.getAllFlights(data)
     }
     async findAllPaths(graph, start: City, end: City, maximum_number_of_transfers: number = 5) {
         const queue = [[{ [start.id]: { end_flight_date: 0 } }]]

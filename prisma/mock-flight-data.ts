@@ -12,7 +12,7 @@ function generateRandomDates() {
     end = new Date()
     start.setMonth(start.getMonth() - Math.floor(Math.random() * 20))
     end.setMonth(start.getMonth() - Math.floor(Math.random() * 20))
-  } while (start <= end)
+  } while (start >= end)
   return [start, end]
 }
 
