@@ -48,7 +48,6 @@ export class JwtAuthGuard
       const bearer = authHeader.split(' ')[0];
       const token = authHeader.split(' ')[1];
       const decodedUser = UserSessionDto.fromPayload(this.jwtService.verify(token));
-      console.log(decodedUser)
       request.user = decodedUser
       const user = await this.securityService.getUserById({ id: decodedUser.id })
       if (!user) {
