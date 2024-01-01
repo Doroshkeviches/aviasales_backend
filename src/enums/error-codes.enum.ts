@@ -13,4 +13,7 @@ export enum ErrorCodes {
   NotExists_User = 'errors.auth.not-exists.user',
   Error = 'errors.error',
   ExistedCity = 'errors.existed-city',
+  NoCity = 'errors.no-city',
+  NoFlights = 'errors.no-flights',
+  NoPath = 'errors.no-path'
 }

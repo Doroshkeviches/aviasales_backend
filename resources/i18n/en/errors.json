@@ -12,5 +12,8 @@
   "alredy-registered": "User with this email already registered",
   "create-user": "Cannot create user",
   "error": "Error",
-  "existed-city": "City already exists"
+  "existed-city": "City already exists",
+  "no-city": "no such city",
+  "no-flights": "no flights on this date",
+  "no-path" : "no path on this date"
 }
