@@ -19,9 +19,14 @@ export class FlightsService {
             }
 
             // Add edges with weights to represent start_date, end_date, or price
-            graph[flight.from_city_id][flight.to_city_id] = { ...flight };
+            const root = graph[flight.from_city_id][flight.to_city_id]
+            if (root) {
+                console.log(root)
+                graph[flight.from_city_id][flight.to_city_id] = [...root, flight];
+            }
+            graph[flight.from_city_id][flight.to_city_id] = [flight];
         });
-
+        console.log(graph['e8820868-088b-4fd9-98fe-c8958fad7f73']['ae02c872-9f93-4ded-9c23-84c1d4d3db59'])
         return graph;
     }
     async getAllFlights(data: Pick<Flight, 'start_flight_date' | 'from_city_id'>) {
@@ -95,7 +100,6 @@ export class FlightsService {
     sortArraysByTotalTime(arrays) {
         return arrays.map(subArray => {
             const totalTime = subArray.at(-1).end_flight_date - subArray[0].start_flight_date
-            console.log(totalTime,subArray)
             return { subArray, totalTime };
         })
             .sort((a, b) => a.totalPrice - b.totalPrice)
