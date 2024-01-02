@@ -15,6 +15,7 @@ import { CityForm } from './domain/city.form';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { ApiException } from '@/src/libs/exceptions/api-exception';
 import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
+import { CityDto } from '../orders/domain/CityDto';
 
 @Controller('city')
 export class CityController {
@@ -27,7 +28,8 @@ export class CityController {
   @Get()
   @HttpCode(200)
   async getAllCities() {
-    return await this.cityService.getAllCities();
+    const cities = await this.cityService.getAllCities();
+    return CityDto.toEntities(cities);
   }
 
   @ApiResponse({
@@ -37,7 +39,8 @@ export class CityController {
   @Get(':id')
   @HttpCode(200)
   async getCityById(@Param('id') city_id: Pick<City, 'id'>) {
-    return await this.cityService.getCityById(city_id);
+    const city = await this.cityService.getCityById(city_id);
+    return CityDto.toEntity(city);
   }
 
   @ApiResponse({
