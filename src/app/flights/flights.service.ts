@@ -48,9 +48,16 @@ export class FlightsService {
                 for (const neighbor in graph[current_node_id]) {
                     const prev_fluing_time = currentNode.end_flight_date
                     const next_fluing_time = graph[current_node_id][neighbor].start_flight_date
-                    if (!currentPathKeys.includes(neighbor) && prev_fluing_time <= next_fluing_time) {
-                        queue.push([...currentPath, { [neighbor]: graph[current_node_id][neighbor], }])
+                    const transfer_time = next_fluing_time - prev_fluing_time
+                    const max_transfer_time = 24 * 60 * 60 * 1000
+                    if (currentPathKeys.includes(neighbor)) {
+                        continue
                     }
+                    if (transfer_time < 0 || transfer_time > max_transfer_time) { // время пересадки должно быть положительным и не более 24ч
+                        continue
+                    }
+                    queue.push([...currentPath, { [neighbor]: graph[current_node_id][neighbor], }])
+
                 }
             }
 
