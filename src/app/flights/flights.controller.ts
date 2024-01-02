@@ -25,7 +25,7 @@ export class FlightsController {
             throw new ApiException(ErrorCodes.NoFlights)
         }
         const graph = await this.flightService.convertToGraph(flights)
-        const path = await this.flightService.findAllPaths(graph, from_city_entity, to_city_entity)
+        const path = await this.flightService.findAllPaths(graph, from_city_entity, to_city_entity,{start_flight_date})
         if (!path.length) {
             throw new ApiException(ErrorCodes.NoPath)
         }

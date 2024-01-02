@@ -31,18 +31,17 @@ export class FlightsService {
     async getAllFlights(data: Pick<Flight, 'start_flight_date' | 'from_city_id'>) {
         return this.flightRepo.getAllFlights(data)
     }
-    async findAllPaths(graph, start: City, end: City, maximum_number_of_transfers: number = 5) {
-        const queue = [[{ [start.id]: { end_flight_date: 0 } }]]
+    async findAllPaths(graph, start: City, end: City, { start_flight_date }: Pick<Flight, 'start_flight_date'>, maximum_number_of_transfers: number = 3,) {
+        const queue = [[{ [start.id]: { end_flight_date: start_flight_date } }]]
         const path = []
         const max_transfer_time = 24 * 60 * 60 * 1000 //24 часа в мс
-        // const maximum_number_of_transfers = 30 // Максимальное количество городов? в одном пути (n-1 = количество полетов) (n-2 количество пересадок)
 
         while (queue.length > 0) {
             const currentPath = queue.shift()
             if (currentPath.length > maximum_number_of_transfers) { // если полетов больше чем максимум => удаляем путь
                 continue
             }
-            const currentPathKeys = currentPath.reduce((container, obj) => [...container, ...Object.keys(obj)], []);
+            const currentPathKeys = currentPath.reduce((container, obj) => [...container, ...Object.keys(obj)], []);// массив из id посещенных городов
             const current_node_id = Object.keys(currentPath.at(-1))[0] // получаю айди последнего элемента в нынешнем пути
             const currentNode = currentPath.at(-1)[current_node_id] // получаю данные последнего полета по айди
 
@@ -50,21 +49,20 @@ export class FlightsService {
                 const transformedPath = this.transformPathToArrayOfFlights(currentPath)
                 path.push(transformedPath)
             } else {
-                for (const neighbor in graph[current_node_id]) {
-                    for (let i = 0; i < graph[current_node_id][neighbor].length; i++) {
-                        // console.log(graph[current_node_id][neighbor][i], 'neighbor')
-                        console.log(currentNode)
-                        const prev_fluing_time = currentNode.end_flight_date
-                        const next_fluing_time = graph[current_node_id][neighbor][i].start_flight_date
-                        const transfer_time = next_fluing_time - prev_fluing_time
-                        if (currentPathKeys.includes(neighbor)) {
+                for (const neighbor in graph[current_node_id]) {//перебор всех маршрутов (из точки А в В)
+                    const flights = graph[current_node_id][neighbor] //массив всех полетов из точки А в В 
+                    for (let i = 0; i < flights.length; i++) { // перебор всех полетов по маршруту(полеты из точки А в В)
+                        const prev_fluing_time = currentNode.end_flight_date.getTime() //время прибытия в аэропорт
+                        const next_fluing_time = flights[i].start_flight_date.getTime() //время вылета
+                        const transfer_time = next_fluing_time - prev_fluing_time //время пересадки
+                        if (currentPathKeys.includes(neighbor)) { //не залетаем два раза в один и тот же город
                             continue
                         }
-                        if (transfer_time < 0) { // время пересадки должно быть положительным и не более 24ч
+                        if (transfer_time < 0 || transfer_time > max_transfer_time) { // время пересадки должно быть положительным и не более 24ч
                             continue
                         }
-                        queue.push([...currentPath, { [[neighbor][i]]: graph[current_node_id][neighbor][i], }])
 
+                        queue.push([...currentPath, { [neighbor]: flights[i] }]) 
                     }
                 }
             }
