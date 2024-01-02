@@ -30,6 +30,8 @@ export class FlightsController {
             throw new ApiException(ErrorCodes.NoPath)
         }
         const sortedPathByPrice = this.flightService.sortArraysByTotalPrice(path)
+        const sortedPathByTime = this.flightService.sortArraysByTotalTime(path)
+
         return sortedPathByPrice
     }
 

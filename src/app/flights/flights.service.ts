@@ -30,6 +30,7 @@ export class FlightsService {
     async findAllPaths(graph, start: City, end: City, maximum_number_of_transfers: number = 5) {
         const queue = [[{ [start.id]: { end_flight_date: 0 } }]]
         const path = []
+        const max_transfer_time = 24 * 60 * 60 * 1000 //24 часа в мс
         // const maximum_number_of_transfers = 30 // Максимальное количество городов? в одном пути (n-1 = количество полетов) (n-2 количество пересадок)
 
         while (queue.length > 0) {
@@ -49,11 +50,10 @@ export class FlightsService {
                     const prev_fluing_time = currentNode.end_flight_date
                     const next_fluing_time = graph[current_node_id][neighbor].start_flight_date
                     const transfer_time = next_fluing_time - prev_fluing_time
-                    const max_transfer_time = 24 * 60 * 60 * 1000
                     if (currentPathKeys.includes(neighbor)) {
                         continue
                     }
-                    if (transfer_time < 0 || transfer_time > max_transfer_time) { // время пересадки должно быть положительным и не более 24ч
+                    if (transfer_time < 0) { // время пересадки должно быть положительным и не более 24ч
                         continue
                     }
                     queue.push([...currentPath, { [neighbor]: graph[current_node_id][neighbor], }])
@@ -62,6 +62,7 @@ export class FlightsService {
             }
 
         }
+
         return path
     }
     async changeFlightStatus(data: Pick<Flight, 'id' | 'status'>) {
@@ -87,6 +88,15 @@ export class FlightsService {
         return arrays.map(subArray => {
             const totalPrice = subArray.reduce((sum, item) => sum + item.price, 0);
             return { subArray, totalPrice };
+        })
+            .sort((a, b) => a.totalPrice - b.totalPrice)
+            .map(entry => entry.subArray);
+    }
+    sortArraysByTotalTime(arrays) {
+        return arrays.map(subArray => {
+            const totalTime = subArray.at(-1).end_flight_date - subArray[0].start_flight_date
+            console.log(totalTime,subArray)
+            return { subArray, totalTime };
         })
             .sort((a, b) => a.totalPrice - b.totalPrice)
             .map(entry => entry.subArray);
