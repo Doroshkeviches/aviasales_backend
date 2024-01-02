@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Ticket } from '@prisma/client';
+import { Ticket, User } from '@prisma/client';
 import { TicketReposService } from '@/src/domain/repos/ticket-repos.service';
 
 @Injectable()
@@ -22,16 +22,15 @@ export class TicketService {
     return await this.ticketRepo.deleteTicketById({ id });
   }
 
-  async updateTicketStatusById(
-    data: Pick<Ticket, 'id'> & Pick<Ticket, 'status'>
-  ) {
+  async updateTicketStatusById(data: Pick<Ticket, 'id' | 'status'>) {
     return await this.ticketRepo.updateTicketStatusById(data);
   }
 
   async updateTicketHolderCredsById(
+    user: User,
     data: Pick<Ticket, 'id' | 'holder_first_name' | 'holder_last_name'>
   ) {
-    return await this.ticketRepo.updateTicketHolderCredsById(data);
+    return await this.ticketRepo.updateTicketHolderCredsById(user, data);
   }
 
   // empty

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Ticket } from '@prisma/client';
+import { Ticket, User } from '@prisma/client';
 import { PrismaService } from '@/src/libs/prisma/src';
 
 @Injectable()
@@ -10,8 +10,13 @@ export class TicketReposService {
     return await this.prisma.ticket.findUnique({
       where: { id },
       include: {
-        flight: true,
-        order: true,
+        flight: {
+          include: {
+            plane: true,
+            from_city: true,
+            to_city: true,
+          },
+        },
       },
     });
   }
@@ -40,9 +45,7 @@ export class TicketReposService {
     });
   }
 
-  async updateTicketStatusById(
-    data: Pick<Ticket, 'id'> & Pick<Ticket, 'status'>
-  ) {
+  async updateTicketStatusById(data: Pick<Ticket, 'id' | 'status'>) {
     const ticket = await this.prisma.ticket.update({
       where: { id: data.id },
       data: { status: data.status },
@@ -51,10 +54,16 @@ export class TicketReposService {
   }
 
   async updateTicketHolderCredsById(
+    user: User,
     data: Pick<Ticket, 'id' | 'holder_first_name' | 'holder_last_name'>
   ) {
     const ticket = await this.prisma.ticket.update({
-      where: { id: data.id },
+      where: {
+        id: data.id,
+        order: {
+          user_id: user.id,
+        },
+      },
       data: {
         holder_first_name: data.holder_first_name,
         holder_last_name: data.holder_last_name,

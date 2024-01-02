@@ -7,6 +7,7 @@ import {
   HttpCode,
   Param,
   Body,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { TicketService } from './ticket.service';
@@ -14,6 +15,12 @@ import { UpdateTicketCredsForm } from './domain/update-ticket-creds.form';
 import { UpdateTicketStatusForm } from './domain/update-ticket-status.form';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
+import {
+  CurrentUser,
+  JwtAuthGuard,
+} from '@/src/libs/security/guards/security.guard';
+import { User } from '.prisma/client';
+import { TicketDto } from '../orders/domain/TicketDto';
 
 @Controller('ticket')
 export class TicketController {
@@ -26,7 +33,8 @@ export class TicketController {
   @Get(':id')
   @HttpCode(200)
   async getTicketById(@Param('id') id: string) {
-    return await this.ticketService.getTicketById({ id });
+    const ticket = await this.ticketService.getTicketById({ id });
+    return TicketDto.toEntity(ticket);
   }
 
   @ApiResponse({
@@ -55,7 +63,7 @@ export class TicketController {
   })
   @Delete(':id')
   @HttpCode(200)
-  async deleteCityById(@Param('id') id: string) {
+  async deleteTicketById(@Param('id') id: string) {
     return await this.ticketService.deleteTicketById({ id });
   }
 
@@ -63,21 +71,25 @@ export class TicketController {
     status: 200,
     description: 'Successfully update ticket holder credentials',
   })
-  @Put(':id')
+  @Put()
   @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
   @ApiBody({ type: UpdateTicketCredsForm })
-  async updateTicketHolderCredsById(@Body() body: UpdateTicketCredsForm) {
+  async updateTicketHolderCredsById(
+    @CurrentUser() user: User,
+    @Body() body: UpdateTicketCredsForm
+  ) {
     const form = UpdateTicketCredsForm.from(body);
     const errors = await UpdateTicketCredsForm.validate(form);
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
-    return await this.ticketService.updateTicketHolderCredsById(body);
+    return await this.ticketService.updateTicketHolderCredsById(user, body);
   }
 
   @ApiResponse({
     status: 200,
     description: 'Successfully update ticket status',
   })
-  @Put(':id')
+  @Put()
   @HttpCode(200)
   @ApiBody({ type: UpdateTicketStatusForm })
   async updateTicketStatusById(@Body() body: UpdateTicketStatusForm) {
