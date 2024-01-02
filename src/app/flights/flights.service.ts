@@ -21,12 +21,11 @@ export class FlightsService {
             // Add edges with weights to represent start_date, end_date, or price
             const root = graph[flight.from_city_id][flight.to_city_id]
             if (root) {
-                console.log(root)
                 graph[flight.from_city_id][flight.to_city_id] = [...root, flight];
+            } else {
+                graph[flight.from_city_id][flight.to_city_id] = [flight];
             }
-            graph[flight.from_city_id][flight.to_city_id] = [flight];
         });
-        console.log(graph['e8820868-088b-4fd9-98fe-c8958fad7f73']['ae02c872-9f93-4ded-9c23-84c1d4d3db59'])
         return graph;
     }
     async getAllFlights(data: Pick<Flight, 'start_flight_date' | 'from_city_id'>) {
@@ -52,17 +51,21 @@ export class FlightsService {
                 path.push(transformedPath)
             } else {
                 for (const neighbor in graph[current_node_id]) {
-                    const prev_fluing_time = currentNode.end_flight_date
-                    const next_fluing_time = graph[current_node_id][neighbor].start_flight_date
-                    const transfer_time = next_fluing_time - prev_fluing_time
-                    if (currentPathKeys.includes(neighbor)) {
-                        continue
-                    }
-                    if (transfer_time < 0) { // время пересадки должно быть положительным и не более 24ч
-                        continue
-                    }
-                    queue.push([...currentPath, { [neighbor]: graph[current_node_id][neighbor], }])
+                    for (let i = 0; i < graph[current_node_id][neighbor].length; i++) {
+                        // console.log(graph[current_node_id][neighbor][i], 'neighbor')
+                        console.log(currentNode)
+                        const prev_fluing_time = currentNode.end_flight_date
+                        const next_fluing_time = graph[current_node_id][neighbor][i].start_flight_date
+                        const transfer_time = next_fluing_time - prev_fluing_time
+                        if (currentPathKeys.includes(neighbor)) {
+                            continue
+                        }
+                        if (transfer_time < 0) { // время пересадки должно быть положительным и не более 24ч
+                            continue
+                        }
+                        queue.push([...currentPath, { [[neighbor][i]]: graph[current_node_id][neighbor][i], }])
 
+                    }
                 }
             }
 
