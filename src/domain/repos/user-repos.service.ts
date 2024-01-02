@@ -5,21 +5,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from "@/src/libs/prisma/src";
 import { user_id } from "@/src/types/user-id.type";
 
-
-
 @Injectable()
 export class UsersRepoService {
     constructor(private prisma: PrismaService) { }
-    async getAllUsers(page: number, pageSize: number) {
+    async getAllUsers(page: number, pageSize: number = 10) {
         const skip = (page - 1) * pageSize;
         return this.prisma.user.findMany({
-            select: {
-                id: true,
-                email: true,
-                role_type: true,
-                orders: true,
-            },
-
             take: pageSize,
             skip,
         })
@@ -35,12 +26,6 @@ export class UsersRepoService {
     async getOneUserById({ id }: user_id) {
         const user = await this.prisma.user.findUnique({
             where: { id },
-            select: {
-                id: true,
-                email: true,
-                role_type: true,
-                orders: true
-            },
         })
         return user
     }
@@ -90,6 +75,16 @@ export class UsersRepoService {
             },
             include: {
                 role: true
+            }
+        })
+    }
+    async updateUser(user: Partial<User>) {
+        return this.prisma.user.update({
+            where: { id: user.id },
+            data: {
+                first_name: user.first_name,
+                email: user.email,
+                last_name: user.last_name
             }
         })
     }

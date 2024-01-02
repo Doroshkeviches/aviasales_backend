@@ -40,6 +40,9 @@ enum UserPermissions {
   Signout        @map("permissions.signout")
   PasswordChange @map("permissions.password-change")
   RefreshToken   @map("permissions.refresh-token")
+  GetAllUsers @map("permissions.get-all-users")
+  UpdateUser @map("permissions.update-user")
+
 }
 
 model User {

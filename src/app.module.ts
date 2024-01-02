@@ -11,6 +11,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { PrismaClientExceptionFilter } from './libs/exceptions/global-exception.filter';
 import { FlightsModule } from './app/flights/flights.module';
 import { OrdersModule } from './app/orders/orders.module';
+import { UserModule } from './app/user/user.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { OrdersModule } from './app/orders/orders.module';
     CityModule,
     FlightsModule,
     OrdersModule,
+    UserModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
       load: [config_app, config_i18n, config_security],
