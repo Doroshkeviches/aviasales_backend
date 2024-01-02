@@ -6,15 +6,27 @@ import { DeviceRepoService } from './repos/device-repos.service';
 import { CityReposService } from './repos/city-repos.service';
 import { FlightsRepoService } from './repos/flights-repos.service';
 import { OrdersRepoService } from './repos/orders-repos.service';
-
-
-
+import { TicketReposService } from './repos/ticket-repos.service';
 
 @Module({
-  imports: [
-    PrismaModule,
+  imports: [PrismaModule],
+  providers: [
+    UsersRepoService,
+    RolesReposService,
+    DeviceRepoService,
+    CityReposService,
+    FlightsRepoService,
+    OrdersRepoService,
+    TicketReposService,
   ],
-  providers: [UsersRepoService, RolesReposService, DeviceRepoService, CityReposService, FlightsRepoService, OrdersRepoService,],
-  exports: [UsersRepoService, RolesReposService, DeviceRepoService, CityReposService, FlightsRepoService, OrdersRepoService,],
+  exports: [
+    UsersRepoService,
+    RolesReposService,
+    DeviceRepoService,
+    CityReposService,
+    FlightsRepoService,
+    OrdersRepoService,
+    TicketReposService,
+  ],
 })
-export class DomainModule { }
+export class DomainModule {}
