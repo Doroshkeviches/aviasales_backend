@@ -44,7 +44,6 @@ async function main() {
   setTimeout(() => {
     mock(cities, planes).then((mockFlightsData) =>
       mockFlightsData.map(async (flight) => {
-        console.log(flight)
         await prisma.flight.create({
           data: { ...flight },
         });

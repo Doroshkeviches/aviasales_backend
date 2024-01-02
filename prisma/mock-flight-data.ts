@@ -10,8 +10,8 @@ function generateRandomDates() {
   do {
     start = new Date()
     end = new Date()
-    start.setMonth(start.getMonth() - Math.floor(Math.random() * 20))
-    end.setMonth(start.getMonth() - Math.floor(Math.random() * 20))
+    start.setHours(Math.floor(Math.random() * 23))
+    end.setHours(Math.floor(Math.random() * 23))
   } while (start >= end)
   return [start, end]
 }
@@ -38,7 +38,7 @@ export async function mock(cities: City[], planes: Plane[]) {
         from_city_id: cities[random_index].id,
         to_city_id: cities[random_index2].id,
         status: FlightStatus.Planned,
-        price: 100,
+        price: Math.floor(Math.random() * 1000),
         plane_id: planes[indexPlane].id,
         available_seats: planes[indexPlane].seats,
       };
