@@ -23,7 +23,7 @@ export async function mock(cities: City[], planes: Plane[]) {
 
 
   for (let i = 1; i < cities.length; i++) {
-    for (let j = 0; j < 100; j++) {
+    for (let j = 0; j < 10; j++) {
       const [start, end] = generateRandomDates();
 
       const random_index = Math.floor(Math.random() * (cities.length - 1))
