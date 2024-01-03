@@ -26,13 +26,8 @@ enum FlightStatus {
 
 enum TicketStatus {
   Fulfilled @map("fulfilled")
+  InCart    @map("in cart")
   Canceled  @map("canceled")
-}
-
-enum OrderStatus {
-  InProcess @map("in process")
-  Rejected  @map("rejected")
-  Accepted  @map("accepted")
 }
 
 enum UserPermissions {
@@ -51,7 +46,7 @@ model User {
   role       Role      @relation(fields: [role_id, role_type], references: [id, type])
   email      String    @unique
   password   String
-  orders     Order[]
+  tickets    Ticket[]
   devices    Device[]
 
   @@index([id])
@@ -72,26 +67,16 @@ model Device {
   @@map("devices")
 }
 
-model Order {
-  id      String      @id @default(uuid()) @db.Uuid
-  user_id String      @db.Uuid
-  status  OrderStatus
-  tickets Ticket[]
-  user    User?       @relation(fields: [user_id], references: [id])
-
-  @@index([id])
-  @@map("orders")
-}
-
 model Ticket {
   id                String       @id @default(uuid()) @db.Uuid
   holder_first_name String
   holder_last_name  String
   flight            Flight       @relation(fields: [flight_id], references: [id])
-  order             Order?       @relation(fields: [order_id], references: [id])
-  order_id          String?      @db.Uuid
   flight_id         String       @db.Uuid
   status            TicketStatus
+
+  user_id String @db.Uuid
+  user    User?  @relation(fields: [user_id], references: [id])
 
   @@index([id])
   @@map("tickets")

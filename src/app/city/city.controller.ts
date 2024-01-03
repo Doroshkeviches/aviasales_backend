@@ -15,7 +15,7 @@ import { CityForm } from './domain/city.form';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { ApiException } from '@/src/libs/exceptions/api-exception';
 import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
-import { CityDto } from '../orders/domain/CityDto';
+import { CityDto } from './domain/city.dto';
 
 @Controller('city')
 export class CityController {

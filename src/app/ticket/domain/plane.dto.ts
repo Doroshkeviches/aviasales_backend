@@ -1,10 +1,6 @@
-"flight"
-import { FlightStatus } from "@prisma/client"
-import { IsDate, IsInt } from "class-validator"
+import { IsInt } from "class-validator"
 import { ApiProperty } from '@nestjs/swagger';
-import { Order, OrderStatus } from '@prisma/client';
 import { IsNotEmpty, IsString, IsUUID, validate } from 'class-validator';
-import { TicketDto } from './TicketDto';
 
 export class PlaneDto {
     @IsUUID()
@@ -17,7 +13,6 @@ export class PlaneDto {
 
     @IsInt()
     seats: number
-
 
     static toEntity(entity?: PlaneDto) {
         const it = {

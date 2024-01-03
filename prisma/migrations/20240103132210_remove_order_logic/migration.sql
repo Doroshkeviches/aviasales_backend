@@ -2,13 +2,16 @@
 CREATE TYPE "UserRoles" AS ENUM ('admin', 'client', 'manager');
 
 -- CreateEnum
-CREATE TYPE "FlightStatus" AS ENUM ('planned', 'flying', 'fullfield', 'canceled');
+CREATE TYPE "FlightStatus" AS ENUM ('planned', 'flying', 'fulfilled', 'canceled');
+
+-- CreateEnum
+CREATE TYPE "TicketStatus" AS ENUM ('fulfilled', 'in cart', 'canceled');
 
 -- CreateEnum
 CREATE TYPE "OrderStatus" AS ENUM ('in process', 'rejected', 'accepted');
 
 -- CreateEnum
-CREATE TYPE "UserPermissions" AS ENUM ('permissions.all');
+CREATE TYPE "UserPermissions" AS ENUM ('permissions.all', 'permissions.signout', 'permissions.password-change', 'permissions.refresh-token');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -18,28 +21,32 @@ CREATE TABLE "users" (
     "role_id" UUID NOT NULL,
     "role_type" "UserRoles" NOT NULL,
     "email" TEXT NOT NULL,
-    "refresh_token" TEXT,
     "password" TEXT NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "orders" (
+CREATE TABLE "devices" (
     "id" UUID NOT NULL,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "user_id" UUID NOT NULL,
-    "status" "OrderStatus" NOT NULL,
+    "device_id" UUID NOT NULL,
+    "refresh_token" TEXT,
 
-    CONSTRAINT "orders_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "devices_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "tickets" (
     "id" UUID NOT NULL,
-    "holdet_first_name" TEXT NOT NULL,
+    "holder_first_name" TEXT NOT NULL,
     "holder_last_name" TEXT NOT NULL,
     "order_id" UUID,
     "flight_id" UUID NOT NULL,
+    "status" "TicketStatus" NOT NULL,
+    "user_id" UUID NOT NULL,
 
     CONSTRAINT "tickets_pkey" PRIMARY KEY ("id")
 );
@@ -49,8 +56,8 @@ CREATE TABLE "flights" (
     "id" UUID NOT NULL,
     "from_city_id" UUID NOT NULL,
     "to_city_id" UUID NOT NULL,
-    "start_flight_date" TIMESTAMP(3) NOT NULL,
-    "end_flight_date" TIMESTAMP(3) NOT NULL,
+    "start_flight_date" TIMESTAMPTZ NOT NULL,
+    "end_flight_date" TIMESTAMPTZ NOT NULL,
     "status" "FlightStatus" NOT NULL,
     "price" INTEGER NOT NULL,
     "available_seats" INTEGER NOT NULL,
@@ -92,7 +99,10 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE INDEX "users_id_idx" ON "users"("id");
 
 -- CreateIndex
-CREATE INDEX "orders_id_idx" ON "orders"("id");
+CREATE UNIQUE INDEX "devices_user_id_device_id_key" ON "devices"("user_id", "device_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "devices_device_id_refresh_token_key" ON "devices"("device_id", "refresh_token");
 
 -- CreateIndex
 CREATE INDEX "tickets_id_idx" ON "tickets"("id");
@@ -113,13 +123,13 @@ CREATE UNIQUE INDEX "roles_id_type_key" ON "roles"("id", "type");
 ALTER TABLE "users" ADD CONSTRAINT "users_role_id_role_type_fkey" FOREIGN KEY ("role_id", "role_type") REFERENCES "roles"("id", "type") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "orders" ADD CONSTRAINT "orders_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "devices" ADD CONSTRAINT "devices_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "tickets" ADD CONSTRAINT "tickets_flight_id_fkey" FOREIGN KEY ("flight_id") REFERENCES "flights"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "tickets" ADD CONSTRAINT "tickets_order_id_fkey" FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "tickets" ADD CONSTRAINT "tickets_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "flights" ADD CONSTRAINT "flights_from_city_id_fkey" FOREIGN KEY ("from_city_id") REFERENCES "cities"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
