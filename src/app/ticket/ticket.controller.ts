@@ -24,6 +24,8 @@ import { TicketDto } from './domain/ticket.dto';
 import { CreateTicketForm } from './domain/create-ticket.form';
 import { FlightsService } from '../flights/flights.service';
 import { ApiException } from '@/src/libs/exceptions/api-exception';
+import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
+import { UserPermissions } from '@prisma/client';
 
 @Controller('ticket')
 export class TicketController {
@@ -36,8 +38,10 @@ export class TicketController {
     status: 200,
     description: 'Successfully get single ticket',
   })
-  @Get(':id')
   @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetTicketById)
+  @Get(':id')
   async getTicketById(@Param('id') id: string) {
     const ticket = await this.ticketService.getTicketById({ id });
     return TicketDto.toEntity(ticket);
@@ -47,8 +51,10 @@ export class TicketController {
     status: 200,
     description: 'Successfully delete ticket by id',
   })
-  @Delete(':id')
   @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.DeleteTicketById)
+  @Delete(':id')
   async deleteTicketById(@Param('id') id: string) {
     return await this.ticketService.deleteTicketById({ id });
   }
@@ -59,7 +65,6 @@ export class TicketController {
   })
   @Put('updateCreds')
   @HttpCode(200)
-  @UseGuards(JwtAuthGuard)
   @ApiBody({ type: UpdateTicketCredsForm })
   async updateTicketHolderCredsById(
     @CurrentUser() user: User,
