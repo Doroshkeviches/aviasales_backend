@@ -1,14 +1,19 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { FlightsService } from './flights.service';
 import { ChangeFlightStatus } from './domain/ChangeFlightStatusForm';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
 import { ChangeFlightPrice } from './domain/ChangeFlightPriceForm';
 import { ApiException } from '@/src/libs/exceptions/api-exception';
+import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
+import { JwtAuthGuard } from '@/src/libs/security/guards/security.guard';
+import { UserPermissions } from '@prisma/client';
 
 @Controller('flights')
 export class FlightsController {
     constructor(private flightService: FlightsService) { }
+    @UseGuards(JwtAuthGuard)
+    @RequirePermissions(UserPermissions.GetArrayOfPath)
     @Get()
     async getArrayOfPath(@Query('from_city') from_city: string, @Query('to_city') to_city: string, @Query('date') date_string: string) {
         const start_flight_date = new Date(date_string)
@@ -25,16 +30,16 @@ export class FlightsController {
             throw new ApiException(ErrorCodes.NoFlights)
         }
         const graph = await this.flightService.convertToGraph(flights)
-        const path = await this.flightService.findAllPaths(graph, from_city_entity, to_city_entity)
+        const path = await this.flightService.findAllPaths(graph, from_city_entity, to_city_entity,{start_flight_date})
         if (!path.length) {
             throw new ApiException(ErrorCodes.NoPath)
         }
         const sortedPathByPrice = this.flightService.sortArraysByTotalPrice(path)
         const sortedPathByTime = this.flightService.sortArraysByTotalTime(path)
-
         return sortedPathByPrice
     }
-
+    @UseGuards(JwtAuthGuard)
+    @RequirePermissions(UserPermissions.ChangeFlightStatus)
     @Post('status')
     async changeFlightStatus(@Body() body: ChangeFlightStatus) {
         const form = ChangeFlightStatus.from(body)
@@ -42,7 +47,9 @@ export class FlightsController {
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
         return this.flightService.changeFlightStatus(form)
     }
-
+    @UseGuards(JwtAuthGuard)
+    @RequirePermissions(UserPermissions.ChangeFlightPrice)
+   
     @Post('price')
     async changeFlightPrice(@Body() body: ChangeFlightPrice) {
         const form = ChangeFlightPrice.from(body)

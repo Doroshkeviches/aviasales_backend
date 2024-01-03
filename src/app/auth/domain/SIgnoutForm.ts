@@ -1,3 +1,4 @@
+import { UuidErrorMessage } from '@/src/libs/exceptions/i18n-error';
 import { IsEmail } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID, validate } from 'class-validator';
@@ -7,7 +8,7 @@ export class SignoutForm {
         description: 'device id',
     })
     @IsUUID(undefined, {
-        // message: UuidErrorMessage,
+        message: UuidErrorMessage,
     })
     device_id!: string;
 

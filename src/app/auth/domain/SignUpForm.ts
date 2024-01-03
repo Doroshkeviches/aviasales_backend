@@ -1,20 +1,23 @@
+import { EmailErrorMessage, StrongPasswordErrorMessage, UuidErrorMessage } from '@/src/libs/exceptions/i18n-error';
 import { IsEmail } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUUID, validate } from 'class-validator';
+import { IsNotEmpty, IsString, IsStrongPassword, IsUUID, validate } from 'class-validator';
 
 export class SignUpForm {
   @ApiProperty({
     description: 'email',
   })
   @IsEmail()
-  @IsNotEmpty()
+  @IsEmail(undefined, {
+    message: EmailErrorMessage,
+  })
   email: string;
 
   @ApiProperty({
     description: 'password',
   })
   @IsString()
-  @IsNotEmpty()
+  @IsStrongPassword(undefined, { message: StrongPasswordErrorMessage })
   password: string;
 
   @ApiProperty({
@@ -35,6 +38,9 @@ export class SignUpForm {
     description: 'device id',
   })
   @IsUUID()
+  @IsUUID(undefined, {
+    message: UuidErrorMessage,
+  })
   device_id!: string;
 
   static from(form?: SignUpForm) {
