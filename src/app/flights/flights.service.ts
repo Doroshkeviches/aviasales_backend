@@ -97,6 +97,9 @@ export class FlightsService {
   async getFlightById(id: Pick<Flight, 'id'>) {
     return this.flightRepo.getFlightById(id);
   }
+  async getRelevantFlightById(flight_id: Pick<Ticket, 'flight_id'>) {
+    return this.flightRepo.getRelevantFlightById(flight_id);
+  }
   async getCityByTitle(title: Pick<City, 'title'>) {
     return this.cityRepo.getCityByTitle(title);
   }

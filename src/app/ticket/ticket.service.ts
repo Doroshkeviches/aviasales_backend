@@ -18,8 +18,8 @@ export class TicketService {
     return await this.ticketRepo.getTicketsByFlightId({ flight_id });
   }
 
-  async deleteTicketById({ id }: Pick<Ticket, 'id'>) {
-    return await this.ticketRepo.deleteTicketById({ id });
+  async deleteTicketById(user: User, { id }: Pick<Ticket, 'id'>) {
+    return await this.ticketRepo.deleteTicketById(user, { id });
   }
 
   async updateTicketStatusById(data: Pick<Ticket, 'id' | 'status'>) {

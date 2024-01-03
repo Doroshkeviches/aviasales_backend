@@ -55,8 +55,8 @@ export class TicketController {
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.DeleteTicketById)
   @Delete(':id')
-  async deleteTicketById(@Param('id') id: string) {
-    return await this.ticketService.deleteTicketById({ id });
+  async deleteTicketById(@CurrentUser() user: User, @Param('id') id: string) {
+    return await this.ticketService.deleteTicketById(user, { id });
   }
 
   @ApiResponse({
