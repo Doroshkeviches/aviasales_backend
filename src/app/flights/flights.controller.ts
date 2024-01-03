@@ -31,7 +31,7 @@ export class FlightsController {
         }
         const sortedPathByPrice = this.flightService.sortArraysByTotalPrice(path)
         const sortedPathByTime = this.flightService.sortArraysByTotalTime(path)
-        return sortedPathByPrice.length
+        return sortedPathByPrice
     }
 
     @Post('status')
