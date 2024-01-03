@@ -31,14 +31,13 @@ export class FlightsService {
     async getAllFlights(data: Pick<Flight, 'start_flight_date' | 'from_city_id'>) {
         return this.flightRepo.getAllFlights(data)
     }
-    async findAllPaths(graph, start: City, end: City, { start_flight_date }: Pick<Flight, 'start_flight_date'>, maximum_number_of_transfers: number = 3,) {
+    async findAllPaths(graph, start: City, end: City, { start_flight_date }: Pick<Flight, 'start_flight_date'>, maximum_number_of_flights: number = 4) { // максимально 4 полета (3 пересадки)
         const queue = [[{ [start.id]: { end_flight_date: start_flight_date } }]]
         const path = []
         const max_transfer_time = 24 * 60 * 60 * 1000 //24 часа в мс
-
         while (queue.length > 0) {
             const currentPath = queue.shift()
-            if (currentPath.length > maximum_number_of_transfers) { // если полетов больше чем максимум => удаляем путь
+            if (currentPath.length > maximum_number_of_flights) { // если полетов больше чем максимум => удаляем путь
                 continue
             }
             const currentPathKeys = currentPath.reduce((container, obj) => [...container, ...Object.keys(obj)], []);// массив из id посещенных городов
@@ -61,7 +60,7 @@ export class FlightsService {
                         if (transfer_time < 0 || transfer_time > max_transfer_time) { // время пересадки должно быть положительным и не более 24ч
                             return
                         }
-                        queue.push([...currentPath, { [neighbor]: flight }]) 
+                        queue.push([...currentPath, { [neighbor]: flight }])
                     })
                 }
             }
