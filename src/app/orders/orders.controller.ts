@@ -5,10 +5,11 @@ import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception
 import { ApiResponse, ApiBody } from '@nestjs/swagger';
 import { CreateOrderForm } from './domain/CreateOrderForm';
 import { CurrentUser, JwtAuthGuard } from '@/src/libs/security/guards/security.guard';
-import { User } from '@prisma/client';
+import { User, UserPermissions } from '@prisma/client';
 import { ChangeOrderStatusForm } from './domain/ChangeOrderStatusForm';
 import { OrderDto } from './domain/OrderDto';
 import { ApiException } from '@/src/libs/exceptions/api-exception';
+import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
 
 @Controller('orders')
 export class OrdersController {
@@ -22,6 +23,8 @@ export class OrdersController {
     @ApiResponse({ status: 400, description: 'Bad request' })
     @ApiBody({ type: CreateOrderForm })
     @UseGuards(JwtAuthGuard)
+    @RequirePermissions(UserPermissions.CreateOrder)
+   
     @Post()
     async createOrder(@CurrentUser() user: User, @Body() body: CreateOrderForm) {
         const form = CreateOrderForm.from(body)
@@ -46,6 +49,8 @@ export class OrdersController {
     })
     @ApiResponse({ status: 400, description: 'Bad request' })
     @ApiBody({ type: ChangeOrderStatusForm })
+    @UseGuards(JwtAuthGuard)
+    @RequirePermissions(UserPermissions.UpdateOrderStatus)
     @Put()
     async updateOrderStatus(@CurrentUser() user: User, @Body() body: ChangeOrderStatusForm) {
         const form = ChangeOrderStatusForm.from(body)
@@ -63,6 +68,8 @@ export class OrdersController {
         description: 'Successfully deleted an order',
     })
     @ApiResponse({ status: 400, description: 'Bad request' })
+    @UseGuards(JwtAuthGuard)
+    @RequirePermissions(UserPermissions.DeleteOrderById)
     @Delete(':id')
     async deleteOrderById(@CurrentUser() user: User, @Param("id") id: string) {
         const deletedOrder = await this.ordersService.deleteOrderById(user, { id })
@@ -79,6 +86,7 @@ export class OrdersController {
     })
     @ApiResponse({ status: 400, description: 'Bad request' })
     @UseGuards(JwtAuthGuard)
+    @RequirePermissions(UserPermissions.GetOrdersByUserId)
     @Get()
     async getOrdersByUserId(@CurrentUser() user: User) {
         const userOrders = await this.ordersService.getOrdersByUserId(user)

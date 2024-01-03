@@ -21,6 +21,8 @@ import {
 } from '@/src/libs/security/guards/security.guard';
 import { User } from '.prisma/client';
 import { TicketDto } from '../orders/domain/TicketDto';
+import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
+import { UserPermissions } from '@prisma/client';
 
 @Controller('ticket')
 export class TicketController {
@@ -30,8 +32,10 @@ export class TicketController {
     status: 200,
     description: 'Successfully get single ticket',
   })
-  @Get(':id')
   @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetTicketById)
+  @Get(':id')
   async getTicketById(@Param('id') id: string) {
     const ticket = await this.ticketService.getTicketById({ id });
     return TicketDto.toEntity(ticket);
@@ -41,8 +45,10 @@ export class TicketController {
     status: 200,
     description: 'Successfully get tickets from order',
   })
-  @Get(':order_id')
   @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetTicketsByOrderId)
+  @Get(':order_id')
   async getTicketsByOrderId(@Param('order_id') order_id: string) {
     return await this.ticketService.getTicketsByOrderId({ order_id });
   }
@@ -51,8 +57,10 @@ export class TicketController {
     status: 200,
     description: 'Successfully get tickets from flight',
   })
-  @Get(':flight_id')
   @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetTicketsByFlightId)
+  @Get(':flight_id')
   async getTicketsByFlightId(@Param('flight_id') flight_id: string) {
     return await this.ticketService.getTicketsByFlightId({ flight_id });
   }
@@ -61,8 +69,10 @@ export class TicketController {
     status: 200,
     description: 'Successfully delete ticket by id',
   })
-  @Delete(':id')
   @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.DeleteTicketById)
+  @Delete(':id')
   async deleteTicketById(@Param('id') id: string) {
     return await this.ticketService.deleteTicketById({ id });
   }
@@ -73,7 +83,6 @@ export class TicketController {
   })
   @Put()
   @HttpCode(200)
-  @UseGuards(JwtAuthGuard)
   @ApiBody({ type: UpdateTicketCredsForm })
   async updateTicketHolderCredsById(
     @CurrentUser() user: User,
