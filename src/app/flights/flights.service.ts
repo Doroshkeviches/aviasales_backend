@@ -50,23 +50,21 @@ export class FlightsService {
                 path.push(transformedPath)
             } else {
                 for (const neighbor in graph[current_node_id]) {//перебор всех маршрутов (из точки А в В)
-                    const flights = graph[current_node_id][neighbor] //массив всех полетов из точки А в В 
-                    for (let i = 0; i < flights.length; i++) { // перебор всех полетов по маршруту(полеты из точки А в В)
+                    const flights = graph[current_node_id][neighbor] //массив всех полетов из точки А в В
+                    flights.map((flight) => { // перебор всех полетов по маршруту(полеты из точки А в В)
                         const prev_fluing_time = currentNode.end_flight_date.getTime() //время прибытия в аэропорт
-                        const next_fluing_time = flights[i].start_flight_date.getTime() //время вылета
+                        const next_fluing_time = flight.start_flight_date.getTime() //время вылета
                         const transfer_time = next_fluing_time - prev_fluing_time //время пересадки
                         if (currentPathKeys.includes(neighbor)) { //не залетаем два раза в один и тот же город
-                            continue
+                            return
                         }
                         if (transfer_time < 0 || transfer_time > max_transfer_time) { // время пересадки должно быть положительным и не более 24ч
-                            continue
+                            return
                         }
-
-                        queue.push([...currentPath, { [neighbor]: flights[i] }]) 
-                    }
+                        queue.push([...currentPath, { [neighbor]: flight }]) 
+                    })
                 }
             }
-
         }
 
         return path
