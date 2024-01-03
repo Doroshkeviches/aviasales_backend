@@ -1,3 +1,4 @@
+import { UuidErrorMessage } from '@/src/libs/exceptions/i18n-error';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID, validate } from 'class-validator';
 
@@ -6,7 +7,9 @@ export class ResetTokenDto {
         description: 'access-token',
     })
     @IsUUID()
-    @IsNotEmpty()
+    @IsUUID(undefined, {
+        message: UuidErrorMessage,
+    })
     token: string;
 
     static toEntity(entity?: ResetTokenDto) {
