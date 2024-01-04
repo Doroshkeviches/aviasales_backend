@@ -157,7 +157,7 @@ export class AuthController {
         const user = await this.authService.changePassword(entity.user, form);
         await this.authService.deleteRefreshToken(user, form);
         const tokens = await this.authService.authenticate(user, form);
-        TokenDto.toEntity(tokens)
+        return TokenDto.toEntity(tokens)
     }
 
 
