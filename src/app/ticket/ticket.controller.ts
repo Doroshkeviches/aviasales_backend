@@ -69,6 +69,7 @@ export class TicketController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiBody({ type: UpdateTicketCredsForm })
   @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.UpdateTicketHolderCredentials)
   @Put('updateCreds')
   async updateTicketHolderCredsById(
     @CurrentUser() user: User,
@@ -88,6 +89,7 @@ export class TicketController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiBody({ type: UpdateTicketStatusForm })
   @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.UpdateTicketStatus)
   @Put('updateStatus')
   async updateTicketStatusById(@Body() body: UpdateTicketStatusForm) {
     const form = UpdateTicketStatusForm.from(body);
@@ -105,6 +107,7 @@ export class TicketController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiBody({ type: CreateTicketForm })
   @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.CreateNewTicket)
   @Post()
   async createTicket(
     @CurrentUser() user: User,
