@@ -42,8 +42,8 @@ export class PathsDto {
   static toEntity(array?: FlightDto[]) {
     const it = {
       totalPrice: array.reduce((sum, item) => sum + item.price, 0),
-      start_date: array.at(0).start_flight_date,
-      end_date: array.at(-1).end_flight_date,
+      start_date: array.at(0).start_flight_date.valueOf(),
+      end_date: array.at(-1).end_flight_date.valueOf(),
       from_city: array.at(0).from_city.title,
       to_city: array.at(-1).to_city.title,
       paths: array,
