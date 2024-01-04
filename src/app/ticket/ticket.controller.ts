@@ -34,11 +34,12 @@ export class TicketController {
     private flightService: FlightsService
   ) {}
 
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: 'Successfully get single ticket',
   })
-  @HttpCode(200)
+  @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.GetTicketById)
   @Get(':id')
@@ -47,11 +48,12 @@ export class TicketController {
     return TicketDto.toEntity(ticket);
   }
 
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: 'Successfully delete ticket by id',
   })
-  @HttpCode(200)
+  @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.DeleteTicketById)
   @Delete(':id')
@@ -59,13 +61,15 @@ export class TicketController {
     return await this.ticketService.deleteTicketById(user, { id });
   }
 
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: 'Successfully update ticket holder credentials',
   })
-  @Put('updateCreds')
-  @HttpCode(200)
+  @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiBody({ type: UpdateTicketCredsForm })
+  @UseGuards(JwtAuthGuard)
+  @Put('updateCreds')
   async updateTicketHolderCredsById(
     @CurrentUser() user: User,
     @Body() body: UpdateTicketCredsForm
@@ -76,14 +80,15 @@ export class TicketController {
     return await this.ticketService.updateTicketHolderCredsById(user, body);
   }
 
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: 'Successfully update ticket status',
   })
-  @Put('updateStatus')
-  @HttpCode(200)
-  @UseGuards(JwtAuthGuard)
+  @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiBody({ type: UpdateTicketStatusForm })
+  @UseGuards(JwtAuthGuard)
+  @Put('updateStatus')
   async updateTicketStatusById(@Body() body: UpdateTicketStatusForm) {
     const form = UpdateTicketStatusForm.from(body);
     const errors = await UpdateTicketStatusForm.validate(form);

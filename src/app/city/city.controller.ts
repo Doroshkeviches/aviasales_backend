@@ -22,13 +22,14 @@ import { JwtAuthGuard } from '@/src/libs/security/guards/security.guard';
 
 @Controller('city')
 export class CityController {
-  constructor(private cityService: CityService) { }
+  constructor(private cityService: CityService) {}
 
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: 'Successfully get all cities',
   })
-  @HttpCode(200)
+  @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.GetAllCities)
   @Get()
@@ -37,11 +38,12 @@ export class CityController {
     return CityDto.toEntities(cities);
   }
 
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: 'Successfully get single city',
   })
-  @HttpCode(200)
+  @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.GetCityById)
   @Get(':id')
@@ -50,11 +52,12 @@ export class CityController {
     return CityDto.toEntity(city);
   }
 
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: 'Successfully create new city',
   })
-  @HttpCode(200)
+  @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiBody({ type: CityForm })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.CreateNewCity)
@@ -66,18 +69,19 @@ export class CityController {
     const city = await this.cityService.getCityByTitle(form);
     if (city) throw new ApiException(ErrorCodes.ExistedCity);
 
-    return await this.cityService.createNewCity(body);
+    const newCity = await this.cityService.createNewCity(body);
+    return CityDto.toEntity(newCity);
   }
 
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: 'Successfully update city title',
   })
-  @HttpCode(200)
+  @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiBody({ type: CityForm })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.UpdateCityTitleById)
-
   @Put(':id')
   async updateCityTitleById(
     @Param('id') city_id: string,
@@ -92,11 +96,12 @@ export class CityController {
     return await this.cityService.updateCityTitleById(city_id, body);
   }
 
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: 'Successfully delete city',
   })
-  @HttpCode(200)
+  @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.DeleteCityById)
   @Delete(':id')
