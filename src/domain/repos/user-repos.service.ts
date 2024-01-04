@@ -80,12 +80,26 @@ export class UsersRepoService {
             },
         });
     }
+
     async getAdminByEmail({ email }: Pick<User, 'email'>) {
         return this.prisma.user.findUnique({
             where: {
                 email,
                 role_type: {
                     in: [UserRoles.Admin, UserRoles.Manager]
+                }
+            },
+            include: {
+                role: true
+            }
+        })
+    }
+
+    async getSalesManager() {
+        return this.prisma.user.findUnique({
+            where: {
+                role_type: {
+                    in: [UserRoles.Manager]
                 }
             },
             include: {

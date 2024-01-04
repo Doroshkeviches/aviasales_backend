@@ -13,6 +13,7 @@ import { SecurityService } from '../src';
 import { UserSessionDto } from '../src/dtos/UserSessionDto';
 import { ApiException } from '../../exceptions/api-exception';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
+import {ExtendedSocketType} from "@/src/types/extended-socket.type";
 
 export const CurrentUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
@@ -20,7 +21,6 @@ export const CurrentUser = createParamDecorator(
     return request.user as UserSessionDto;
   },
 );
-
 
 @Injectable()
 export class JwtAuthGuard
@@ -33,37 +33,66 @@ export class JwtAuthGuard
     super();
   }
   async canActivate(context: ExecutionContext) {
-    try {
 
-      const requiredPemissions = this.reflector.getAllAndOverride<UserPermissions[]>(
+    const requiredPermissions = this.reflector.getAllAndOverride<UserPermissions[]>(
         PERMISSION_KEY,
         [
           context.getHandler(),
           context.getClass(),
         ]
-      );
+    );
 
-      const request = context.switchToHttp().getRequest();
-      const authHeader = request.headers.authorization;
-      const bearer = authHeader.split(' ')[0];
-      const token = authHeader.split(' ')[1];
-      const decodedUser = UserSessionDto.fromPayload(this.jwtService.verify(token));
-      request.user = decodedUser
-      const user = await this.securityService.getUserById({ id: decodedUser.id })
-      if (!user) {
-        throw new ApiException(ErrorCodes.NotAuthorizedRequest);
-      }
-      const roleEntity = await this.securityService.getRoleById({ id: decodedUser.role_id })
-      if (!requiredPemissions) {
-        return true;
-      }
-      if (roleEntity.type === UserRoles.Client) { //TODO change to Admin
-        return true
-      }
-      return requiredPemissions.some((permission) => roleEntity.permissions?.includes(permission));
-    } catch (error) {
-      console.log(error)
+    const contextType = context.getType();
+    let authHeader, decodedUser;
+    switch (contextType) {
+      case "http":
+        const request = context.switchToHttp().getRequest();
+        authHeader = request.headers.authorization;
+        decodedUser = await this.validateTokenAndGetUser(authHeader);
+        request.user = decodedUser;
+        return this.validatePermissions(decodedUser, requiredPermissions);
+      case "ws":
+        const client = context.switchToWs().getClient<ExtendedSocketType>();
+        authHeader = client.handshake.headers.authorization;
+        decodedUser = await this.validateTokenAndGetUser(authHeader);
+        client.user = decodedUser;
+        return this.validatePermissions(decodedUser, requiredPermissions);
+      default:
+        return false;
+    }
+  }
+
+  private async validateTokenAndGetUser(authHeader: string): Promise<UserSessionDto> {
+    const token = authHeader.split(' ')[1];
+    const decodedUser = UserSessionDto.fromPayload(this.jwtService.verify(token));
+    const user = await this.securityService.getUserById({ id: decodedUser.id });
+
+    if (!user) {
       throw new ApiException(ErrorCodes.NotAuthorizedRequest);
     }
+
+    return decodedUser;
+  }
+
+  private async validatePermissions(user: UserSessionDto, requiredPermissions: UserPermissions[]): Promise<boolean> {
+    const roleEntity = await this.securityService.getRoleById({ id: user.role_id });
+
+    if (!requiredPermissions) {
+      return true;
+    }
+
+    if (roleEntity.type === UserRoles.Client) {
+      return true;
+    }
+
+    const hasPermission = requiredPermissions.some((permission) =>
+        roleEntity.permissions?.includes(permission),
+    );
+
+    if (!hasPermission) {
+      throw new ApiException(ErrorCodes.NotAuthorizedRequest);
+    }
+
+    return true;
   }
 }

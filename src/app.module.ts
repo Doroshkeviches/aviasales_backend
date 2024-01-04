@@ -10,6 +10,9 @@ import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { APP_FILTER } from '@nestjs/core';
 import { PrismaClientExceptionFilter } from './libs/exceptions/global-exception.filter';
 import { FlightsModule } from './app/flights/flights.module';
+import { ChatController } from './app/chat/chat.controller';
+import {ChatModule} from "@/src/app/chat/chat.module";
+import {RedisModule} from "@/src/app/redis/redis.module";
 
 @Module({
   imports: [
@@ -30,8 +33,10 @@ import { FlightsModule } from './app/flights/flights.module';
       ],
       useFactory: (config: ConfigService) => config.get('i18n'),
     }),
+    ChatModule,
+    RedisModule,
   ],
-  controllers: [],
+  controllers: [ChatController],
   providers: [
     {
       provide: APP_FILTER,
