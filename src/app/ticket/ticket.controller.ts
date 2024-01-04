@@ -78,7 +78,12 @@ export class TicketController {
     const form = UpdateTicketCredsForm.from(body);
     const errors = await UpdateTicketCredsForm.validate(form);
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
-    return await this.ticketService.updateTicketHolderCredsById(user, body);
+
+    const updatedTicket = await this.ticketService.updateTicketHolderCredsById(
+      user,
+      body
+    );
+    return TicketDto.toEntity(updatedTicket);
   }
 
   @HttpCode(200)
@@ -95,7 +100,9 @@ export class TicketController {
     const form = UpdateTicketStatusForm.from(body);
     const errors = await UpdateTicketStatusForm.validate(form);
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
-    return await this.ticketService.updateTicketStatusById(body);
+
+    const updatedTicket = await this.ticketService.updateTicketStatusById(body);
+    return TicketDto.toEntity(updatedTicket);
   }
 
   @HttpCode(200)
@@ -120,6 +127,7 @@ export class TicketController {
     if (!picked_flight) {
       throw new ApiException(ErrorCodes.NoAvaliableSeats);
     }
+    
     const ticket = await this.ticketService.createTicket(form, user);
     return TicketDto.toEntity(ticket);
   }

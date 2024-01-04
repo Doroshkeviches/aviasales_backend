@@ -93,7 +93,11 @@ export class CityController {
     const city = await this.cityService.getCityByTitle(form);
     if (city) throw new ApiException(ErrorCodes.ExistedCity);
 
-    return await this.cityService.updateCityTitleById(city_id, body);
+    const updatedCity = await this.cityService.updateCityTitleById(
+      city_id,
+      body
+    );
+    return CityDto.toEntity(updatedCity);
   }
 
   @HttpCode(200)
