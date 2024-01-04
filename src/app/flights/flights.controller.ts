@@ -16,13 +16,14 @@ import { ApiException } from '@/src/libs/exceptions/api-exception';
 import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
 import { JwtAuthGuard } from '@/src/libs/security/guards/security.guard';
 import { UserPermissions } from '@prisma/client';
+import { PathsDto } from './domain/paths.dto';
 
 @Controller('flights')
 export class FlightsController {
   constructor(private flightService: FlightsService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @RequirePermissions(UserPermissions.GetArrayOfPath)
+  // @UseGuards(JwtAuthGuard)
+  // @RequirePermissions(UserPermissions.GetArrayOfPath)
   @Get()
   async getArrayOfPath(
     @Query('from_city') from_city: string,
@@ -57,8 +58,8 @@ export class FlightsController {
       throw new ApiException(ErrorCodes.NoPath);
     }
     const sortedPathByPrice = this.flightService.sortArraysByTotalPrice(path);
-    const sortedPathByTime = this.flightService.sortArraysByTotalTime(path);
-    return sortedPathByPrice;
+    // const sortedPathByTime = this.flightService.sortArraysByTotalTime(path);
+    return PathsDto.toEntities(sortedPathByPrice);
   }
 
   @UseGuards(JwtAuthGuard)
