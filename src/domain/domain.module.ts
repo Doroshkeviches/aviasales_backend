@@ -5,7 +5,6 @@ import { RolesReposService } from './repos/roles-repos.service';
 import { DeviceRepoService } from './repos/device-repos.service';
 import { CityReposService } from './repos/city-repos.service';
 import { FlightsRepoService } from './repos/flights-repos.service';
-import { OrdersRepoService } from './repos/orders-repos.service';
 import { TicketReposService } from './repos/ticket-repos.service';
 
 @Module({
@@ -16,7 +15,6 @@ import { TicketReposService } from './repos/ticket-repos.service';
     DeviceRepoService,
     CityReposService,
     FlightsRepoService,
-    OrdersRepoService,
     TicketReposService,
   ],
   exports: [
@@ -25,7 +23,6 @@ import { TicketReposService } from './repos/ticket-repos.service';
     DeviceRepoService,
     CityReposService,
     FlightsRepoService,
-    OrdersRepoService,
     TicketReposService,
   ],
 })

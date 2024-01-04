@@ -12,6 +12,16 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '@/src/libs/prisma/src';
 
+const includingData = () => {
+  return {
+    include: {
+      plane: true,
+      from_city: true,
+      to_city: true,
+    },
+  } as const;
+};
+
 @Injectable()
 export class FlightsRepoService {
   constructor(private prisma: PrismaService) {}
@@ -40,6 +50,7 @@ export class FlightsRepoService {
       data: {
         status: data.status,
       },
+      ...includingData(),
     });
   }
 
@@ -49,6 +60,7 @@ export class FlightsRepoService {
       data: {
         price: data.price,
       },
+      ...includingData(),
     });
   }
   async decrementAvailableSeats(
@@ -63,6 +75,7 @@ export class FlightsRepoService {
       data: {
         available_seats: { decrement: seats.available_seats },
       },
+      ...includingData(),
     });
   }
   async getAllFlights(
@@ -91,17 +104,13 @@ export class FlightsRepoService {
           },
         ],
       },
-      include: {
-        plane: true,
-      },
+      ...includingData(),
     });
   }
   async getFlightById({ id }: Pick<Flight, 'id'>) {
     return this.prisma.flight.findUnique({
       where: { id },
-      include: {
-        plane: true,
-      },
+      ...includingData(),
     });
   }
   async deleteFlight(
@@ -122,9 +131,7 @@ export class FlightsRepoService {
           gte: staticSeats,
         },
       },
-      include: {
-        plane: true,
-      },
+      ...includingData(),
     });
   }
 }

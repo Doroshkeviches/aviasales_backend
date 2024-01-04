@@ -17,7 +17,6 @@ export class UsersRepoService {
                 id: true,
                 email: true,
                 role_type: true,
-                orders: true,
             },
 
             take: pageSize,
@@ -39,7 +38,6 @@ export class UsersRepoService {
                 id: true,
                 email: true,
                 role_type: true,
-                orders: true
             },
         })
         return user
