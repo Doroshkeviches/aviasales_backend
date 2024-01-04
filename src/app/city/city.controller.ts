@@ -30,8 +30,8 @@ export class CityController {
     description: 'Successfully get all cities',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  @UseGuards(JwtAuthGuard)
-  @RequirePermissions(UserPermissions.GetAllCities)
+  // @UseGuards(JwtAuthGuard)
+  // @RequirePermissions(UserPermissions.GetAllCities)
   @Get()
   async getAllCities() {
     const cities = await this.cityService.getAllCities();
