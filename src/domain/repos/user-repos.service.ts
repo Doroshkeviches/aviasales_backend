@@ -17,7 +17,7 @@ export class UsersRepoService {
                 id: true,
                 email: true,
                 role_type: true,
-                orders: true,
+                tickets: true,
             },
 
             take: pageSize,
@@ -39,7 +39,7 @@ export class UsersRepoService {
                 id: true,
                 email: true,
                 role_type: true,
-                orders: true
+                tickets: true
             },
         })
         return user
@@ -96,11 +96,9 @@ export class UsersRepoService {
     }
 
     async getSalesManager() {
-        return this.prisma.user.findUnique({
+        return this.prisma.user.findFirst({
             where: {
-                role_type: {
-                    in: [UserRoles.Manager]
-                }
+                role_type: UserRoles.Manager
             },
             include: {
                 role: true
