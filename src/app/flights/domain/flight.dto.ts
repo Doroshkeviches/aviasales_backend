@@ -75,8 +75,8 @@ export class FlightDto {
     const it = {
       from_city_id: entity.from_city_id,
       to_city_id: entity.to_city_id,
-      start_flight_date: entity.start_flight_date,
-      end_flight_date: entity.end_flight_date,
+      start_flight_date: entity.start_flight_date.valueOf(),
+      end_flight_date: entity.end_flight_date.valueOf(),
       status: entity.status,
       price: entity.price,
       available_seats: entity.available_seats,
