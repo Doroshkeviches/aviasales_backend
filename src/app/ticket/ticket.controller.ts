@@ -22,7 +22,6 @@ import {
 import { User } from '.prisma/client';
 import { TicketDto } from './domain/ticket.dto';
 import { CreateTicketForm } from './domain/create-ticket.form';
-import { FlightsService } from '../flights/flights.service';
 import { ApiException } from '@/src/libs/exceptions/api-exception';
 import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
 import { UserPermissions } from '@prisma/client';
@@ -40,7 +39,7 @@ export class TicketController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
-  @RequirePermissions(UserPermissions.GetTicketById)
+  @RequirePermissions(UserPermissions.GetAllTickets)
   @Get()
   async getAllTickets() {
     const tickets = await this.ticketService.getAllTickets();
