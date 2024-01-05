@@ -66,4 +66,18 @@ export class UserController {
     const user = await this.userService.getOneUserById({ id });
     return UserDto.toEntity(user);
   }
+
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully get user by search query',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @UseGuards(JwtAuthGuard)
+    @RequirePermissions(UserPermissions.GetUsersBySearchQuery)
+  @Get(':q')
+  async getUsersBySearchQuery(@Query('q') searchQuery: string) {
+    const users = await this.userService.getUsersBySearchQuery(searchQuery);
+    return UserDto.toEntities(users);
+  }
 }

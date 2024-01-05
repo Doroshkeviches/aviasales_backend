@@ -32,6 +32,26 @@ export class UsersRepoService {
     });
   }
 
+  async getUsersBySearchQuery(searchQuery: string) {
+    return await this.prisma.user.findMany({
+      where: {
+        OR: [
+          {
+            first_name: {
+              startsWith: searchQuery,
+            },
+          },
+          {
+            last_name: {
+              startsWith: searchQuery,
+            },
+          },
+        ],
+      },
+      ...includingData(),
+    });
+  }
+
   async getUserByEmail({ email }: Pick<User, 'email'>) {
     return await this.prisma.user.findUnique({
       where: { email },
@@ -84,6 +104,7 @@ export class UsersRepoService {
       },
     });
   }
+
   async getAdminByEmail({ email }: Pick<User, 'email'>) {
     return this.prisma.user.findUnique({
       where: {
@@ -97,6 +118,7 @@ export class UsersRepoService {
       },
     });
   }
+
   async updateUser(user: Partial<User>) {
     return this.prisma.user.update({
       where: { id: user.id },

@@ -16,4 +16,7 @@ export class UserService {
   async getOneUserById(id: Pick<User, 'id'>) {
     return this.userRepo.getOneUserById(id);
   }
+  async getUsersBySearchQuery(searchQuery: string) {
+    return this.userRepo.getUsersBySearchQuery(searchQuery);
+  }
 }

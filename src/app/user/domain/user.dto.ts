@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { UserRoles } from '@prisma/client';
 import { TicketDto } from '../../ticket/domain/ticket.dto';
 
 export class UserDto {
@@ -26,28 +25,11 @@ export class UserDto {
   last_name: string;
 
   @ApiProperty({
-    description: 'Correct role id',
-  })
-  @IsUUID()
-  @IsNotEmpty()
-  role_id: string;
-
-  @IsNotEmpty()
-  role_type: UserRoles;
-
-  @ApiProperty({
     description: 'Correct email',
   })
   @IsString()
   @IsNotEmpty()
   email: string;
-
-  @ApiProperty({
-    description: 'Correct password',
-  })
-  @IsString()
-  @IsNotEmpty()
-  password: string;
 
   @IsNotEmpty()
   tickets: TicketDto[];
@@ -57,10 +39,7 @@ export class UserDto {
       id: entity.id,
       first_name: entity.first_name,
       last_name: entity.last_name,
-      role_id: entity.role_id,
-      role_type: entity.role_type,
       email: entity.email,
-      password: entity.password,
       tickets: entity.tickets,
     };
     return it;

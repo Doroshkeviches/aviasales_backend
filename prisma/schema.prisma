@@ -31,13 +31,14 @@ enum TicketStatus {
 }
 
 enum UserPermissions {
-  All            @map("permissions.all")
-  Signout        @map("permissions.signout")
-  PasswordChange @map("permissions.password-change")
-  RefreshToken   @map("permissions.refresh-token")
-  GetAllUsers    @map("permissions.get-all-users")
-  GetUserById    @map("permissions.get-user-by-id")
-  UpdateUser     @map("permissions.update-user")
+  All                   @map("permissions.all")
+  Signout               @map("permissions.signout")
+  PasswordChange        @map("permissions.password-change")
+  RefreshToken          @map("permissions.refresh-token")
+  GetAllUsers           @map("permissions.get-all-users")
+  GetUserById           @map("permissions.get-user-by-id")
+  GetUsersBySearchQuery @map("permissions.get-users-by-search-query")
+  UpdateUser            @map("permissions.update-user")
 
   GetAllCities        @map("permissions.get-all-cities")
   GetCityById         @map("permissions.get-city-by-id")
