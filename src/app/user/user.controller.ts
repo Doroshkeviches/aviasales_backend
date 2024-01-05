@@ -74,8 +74,8 @@ export class UserController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
-    @RequirePermissions(UserPermissions.GetUsersBySearchQuery)
-  @Get(':q')
+  @RequirePermissions(UserPermissions.GetUsersBySearchQuery)
+  @Get('search')
   async getUsersBySearchQuery(@Query('q') searchQuery: string) {
     const users = await this.userService.getUsersBySearchQuery(searchQuery);
     return UserDto.toEntities(users);
