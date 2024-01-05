@@ -128,6 +128,7 @@ export class UsersRepoService {
         email: user.email,
         last_name: user.last_name,
       },
+      ...includingData(),
     });
   }
 }
