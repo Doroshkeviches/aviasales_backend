@@ -29,6 +29,7 @@ export class UsersRepoService {
     return this.prisma.user.findMany({
       take: pageSize,
       skip,
+      ...includingData(),
     });
   }
 
@@ -38,12 +39,12 @@ export class UsersRepoService {
         OR: [
           {
             first_name: {
-              startsWith: searchQuery,
+              contains: searchQuery,
             },
           },
           {
             last_name: {
-              startsWith: searchQuery,
+              contains: searchQuery,
             },
           },
         ],

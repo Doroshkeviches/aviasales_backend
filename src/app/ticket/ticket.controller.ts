@@ -28,9 +28,7 @@ import { UserPermissions } from '@prisma/client';
 
 @Controller('ticket')
 export class TicketController {
-  constructor(
-    private ticketService: TicketService,
-  ) {}
+  constructor(private ticketService: TicketService) {}
 
   @HttpCode(200)
   @ApiResponse({
@@ -43,7 +41,7 @@ export class TicketController {
   @Get()
   async getAllTickets() {
     const tickets = await this.ticketService.getAllTickets();
-    console.log(tickets)
+    if (!tickets) throw new ApiException(ErrorCodes.NoTickets);
     return TicketDto.toEntities(tickets);
   }
 
@@ -58,6 +56,7 @@ export class TicketController {
   @Get(':id')
   async getTicketById(@Param('id') id: string) {
     const ticket = await this.ticketService.getTicketById({ id });
+    if (!ticket) throw new ApiException(ErrorCodes.NoTicket);
     return TicketDto.toEntity(ticket);
   }
 
@@ -96,6 +95,8 @@ export class TicketController {
       user,
       body
     );
+    if (!updatedTicket)
+      throw new ApiException(ErrorCodes.UpdateTicketCredsError);
     return TicketDto.toEntity(updatedTicket);
   }
 
@@ -115,6 +116,8 @@ export class TicketController {
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
 
     const updatedTicket = await this.ticketService.updateTicketStatusById(body);
+    if (!updatedTicket)
+      throw new ApiException(ErrorCodes.UpdateTicketStatusError);
     return TicketDto.toEntity(updatedTicket);
   }
 
@@ -136,12 +139,13 @@ export class TicketController {
     const form = CreateTicketForm.from(body);
     const errors = await CreateTicketForm.validate(form);
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
-    const picked_flight = await this.ticketService.getRelevantFlightById(form); 
+    const picked_flight = await this.ticketService.getRelevantFlightById(form);
     if (!picked_flight) {
       throw new ApiException(ErrorCodes.NoAvaliableSeats);
     }
-    
+
     const ticket = await this.ticketService.createTicket(form, user);
+    if (!ticket) throw new ApiException(ErrorCodes.CreateTicketError);
     return TicketDto.toEntity(ticket);
   }
 }

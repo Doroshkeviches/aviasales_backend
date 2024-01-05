@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Get,
-  Param,
+  HttpCode,
   Post,
   Query,
   UseGuards,
@@ -17,13 +17,20 @@ import { RequirePermissions } from '@/src/libs/security/decorators/permission.de
 import { JwtAuthGuard } from '@/src/libs/security/guards/security.guard';
 import { UserPermissions } from '@prisma/client';
 import { PathsDto } from './domain/paths.dto';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('flights')
 export class FlightsController {
   constructor(private flightService: FlightsService) {}
 
-  // @UseGuards(JwtAuthGuard)
-  // @RequirePermissions(UserPermissions.GetArrayOfPath)
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully get array of paths',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetArrayOfPath)
   @Get()
   async getArrayOfPath(
     @Query('from_city') from_city: string,
@@ -59,9 +66,17 @@ export class FlightsController {
     }
     const sortedPathByPrice = this.flightService.sortArraysByTotalPrice(path);
     // const sortedPathByTime = this.flightService.sortArraysByTotalTime(path);
+    if (!sortedPathByPrice)
+      throw new ApiException(ErrorCodes.SortedPathsByPriceError);
     return PathsDto.toEntities(sortedPathByPrice);
   }
 
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully change flight status',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.ChangeFlightStatus)
   @Post('status')
@@ -72,6 +87,12 @@ export class FlightsController {
     return this.flightService.changeFlightStatus(form);
   }
 
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully change flight price',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.ChangeFlightPrice)
   @Post('price')

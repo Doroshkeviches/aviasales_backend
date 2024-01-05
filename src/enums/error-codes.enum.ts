@@ -4,17 +4,34 @@ export enum ErrorCodes {
   FieldShouldBeEnum = 'errors.field-invalid.should-be-enum',
   FieldShouldBeEmail = 'errors.field-invalid.should-be-email',
   FieldShouldBeArray = 'errors.field-invalid.should-be-array',
+
   InvalidForm = 'errors.invalid-form',
   NotAuthorizedRequest = 'errors.not-authorized.request',
   InvalidPassword = 'errors.invalid-password',
   ExpiredToken = 'errors.expired-token',
-  AlreadyRegistered = 'errors.alredy-registered',
-  CreateUserError = 'errors.create-user',
-  NotExists_User = 'errors.auth.not-exists.user',
   Error = 'errors.error',
+  AlreadyRegistered = 'errors.alredy-registered',
+  NotExists_User = 'errors.auth.not-exists.user',
+
+  NoUser = 'errors.no-user',
+  NoUsers = 'errors.no-users',
+  CreateUserError = 'errors.create-user',
+  UpdateUserError = 'errors.update-user',
+
   ExistedCity = 'errors.existed-city',
   NoCity = 'errors.no-city',
+  NoCities = 'errors.no-cities',
+  CreateCityError = 'errors.create-city',
+  UpdateCityError = 'errors.update-city',
+
+  NoTicket = 'errors.no-ticket',
+  NoTickets = 'errors.no-tickets',
+  CreateTicketError = 'errors.create-ticket',
+  UpdateTicketCredsError = 'errors.update-ticket-creds',
+  UpdateTicketStatusError = 'errors.update-ticket-status',
+
   NoFlights = 'errors.no-flights',
   NoPath = 'errors.no-path',
+  SortedPathsByPriceError = 'errors.no-sorted-paths-by-price',
   NoAvaliableSeats = 'errors.no-avaliable-seats',
 }

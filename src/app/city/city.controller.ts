@@ -30,11 +30,12 @@ export class CityController {
     description: 'Successfully get all cities',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  // @UseGuards(JwtAuthGuard)
-  // @RequirePermissions(UserPermissions.GetAllCities)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetAllCities)
   @Get()
   async getAllCities() {
     const cities = await this.cityService.getAllCities();
+    if (!cities) throw new ApiException(ErrorCodes.NoCities);
     return CityDto.toEntities(cities);
   }
 
@@ -49,6 +50,7 @@ export class CityController {
   @Get(':id')
   async getCityById(@Param('id') city_id: Pick<City, 'id'>) {
     const city = await this.cityService.getCityById(city_id);
+    if (!city) throw new ApiException(ErrorCodes.NoCity);
     return CityDto.toEntity(city);
   }
 
@@ -70,6 +72,7 @@ export class CityController {
     if (city) throw new ApiException(ErrorCodes.ExistedCity);
 
     const newCity = await this.cityService.createNewCity(body);
+    if (!newCity) throw new ApiException(ErrorCodes.CreateCityError);
     return CityDto.toEntity(newCity);
   }
 
@@ -97,6 +100,7 @@ export class CityController {
       city_id,
       body
     );
+    if (!updatedCity) throw new ApiException(ErrorCodes.UpdateCityError);
     return CityDto.toEntity(updatedCity);
   }
 

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { TicketDto } from '../../ticket/domain/ticket.dto';
+import { TicketDto } from './ticket.dto';
 
 export class UserDto {
   @ApiProperty({
