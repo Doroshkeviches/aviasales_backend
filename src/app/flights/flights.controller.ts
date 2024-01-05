@@ -66,8 +66,6 @@ export class FlightsController {
     }
     const sortedPathByPrice = this.flightService.sortArraysByTotalPrice(path);
     // const sortedPathByTime = this.flightService.sortArraysByTotalTime(path);
-    if (!sortedPathByPrice)
-      throw new ApiException(ErrorCodes.SortedPathsByPriceError);
     return PathsDto.toEntities(sortedPathByPrice);
   }
 
