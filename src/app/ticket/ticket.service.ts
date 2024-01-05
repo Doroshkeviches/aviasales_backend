@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { Ticket, User } from '@prisma/client';
 import { TicketReposService } from '@/src/domain/repos/ticket-repos.service';
+import { FlightsRepoService } from '@/src/domain/repos/flights-repos.service';
 
 @Injectable()
 export class TicketService {
-  constructor(private ticketRepo: TicketReposService) {}
+  constructor(private ticketRepo: TicketReposService,
+    private flightRepo: FlightsRepoService) { }
 
+  async getAllTickets() {
+    return await this.ticketRepo.getAllTickets();
+  }
   async getTicketById({ id }: Pick<Ticket, 'id'>) {
     return await this.ticketRepo.getTicketById({ id });
   }
@@ -38,5 +43,8 @@ export class TicketService {
     user: User
   ) {
     return await this.ticketRepo.createTicket(data, user);
+  }
+  async getRelevantFlightById(flight_id: Pick<Ticket, 'flight_id'>) {
+    return this.flightRepo.getRelevantFlightById(flight_id);
   }
 }

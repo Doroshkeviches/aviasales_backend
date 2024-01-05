@@ -31,8 +31,22 @@ import { UserPermissions } from '@prisma/client';
 export class TicketController {
   constructor(
     private ticketService: TicketService,
-    private flightService: FlightsService
   ) {}
+
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully get all tickets',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetTicketById)
+  @Get()
+  async getAllTickets() {
+    const tickets = await this.ticketService.getAllTickets();
+    console.log(tickets)
+    return TicketDto.toEntities(tickets);
+  }
 
   @HttpCode(200)
   @ApiResponse({
@@ -123,7 +137,7 @@ export class TicketController {
     const form = CreateTicketForm.from(body);
     const errors = await CreateTicketForm.validate(form);
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
-    const picked_flight = await this.flightService.getRelevantFlightById(form);
+    const picked_flight = await this.ticketService.getRelevantFlightById(form); 
     if (!picked_flight) {
       throw new ApiException(ErrorCodes.NoAvaliableSeats);
     }

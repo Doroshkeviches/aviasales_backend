@@ -17,7 +17,15 @@ const includingData = () => {
 };
 @Injectable()
 export class TicketReposService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
+
+
+  async getAllTickets() {
+    return await this.prisma.ticket.findMany({
+      ...includingData(),
+    });
+  }
+
 
   async getTicketById({ id }: Pick<Ticket, 'id'>) {
     return await this.prisma.ticket.findUnique({
