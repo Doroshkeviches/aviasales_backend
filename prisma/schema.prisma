@@ -31,31 +31,31 @@ enum TicketStatus {
 }
 
 enum UserPermissions {
-  All                           @map("permissions.all")
-  Signout                       @map("permissions.signout")
-  PasswordChange                @map("permissions.password-change")
-  RefreshToken                  @map("permissions.refresh-token")
-  GetAllUsers                   @map("permissions.get-all-users")
-  UpdateUser                    @map("permissions.update-user")
-  GetAllCities                  @map("permissions.get-all-cities")
-  GetCityById                   @map("permissions.get-city-by-id")
-  CreateNewCity                 @map("permissions.create-new-city")
-  UpdateCityTitleById           @map("permissions.update-city-title-by-id")
-  DeleteCityById                @map("permissions.delete-city-by-id")
-  GetArrayOfPath                @map("permissions.get-array-of-path")
-  ChangeFlightStatus            @map("permissions.change-flight-status")
-  ChangeFlightPrice             @map("permissions.change-flight-price")
-  CreateOrder                   @map("permissions.create-order")
-  UpdateOrderStatus             @map("permissions.update-order-status")
-  DeleteOrderById               @map("permissions.delete-order-by-id")
-  GetOrdersByUserId             @map("permissions.get-orders-by-user-id")
+  All                   @map("permissions.all")
+  Signout               @map("permissions.signout")
+  PasswordChange        @map("permissions.password-change")
+  RefreshToken          @map("permissions.refresh-token")
+  GetAllUsers           @map("permissions.get-all-users")
+  GetUserById           @map("permissions.get-user-by-id")
+  GetUsersBySearchQuery @map("permissions.get-users-by-search-query")
+  UpdateUser            @map("permissions.update-user")
+
+  GetAllCities        @map("permissions.get-all-cities")
+  GetCityById         @map("permissions.get-city-by-id")
+  CreateNewCity       @map("permissions.create-new-city")
+  UpdateCityTitleById @map("permissions.update-city-title-by-id")
+  DeleteCityById      @map("permissions.delete-city-by-id")
+
+  GetArrayOfPath     @map("permissions.get-array-of-path")
+  ChangeFlightStatus @map("permissions.change-flight-status")
+  ChangeFlightPrice  @map("permissions.change-flight-price")
+
+  GetAllTickets                 @map("permissions.get-all-tickets")
   GetTicketById                 @map("permissions.get-ticket-by-id")
-  GetTicketsByOrderId           @map("permissions.get-ticket-by-order-id")
-  GetTicketsByFlightId          @map("permissions.get-ticket-by-flight-id")
   DeleteTicketById              @map("permissions.delete-ticket-by-id")
   UpdateTicketStatus            @map("permissions.update-ticket-status")
   CreateNewTicket               @map("permissions.create-new-ticket")
-  UpdateTicketHolderCredentials @map("permissions.update ticket holder credentials")
+  UpdateTicketHolderCredentials @map("permissions.update-ticket-holder-credentials")
 }
 
 model User {
