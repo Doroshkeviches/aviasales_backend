@@ -10,6 +10,7 @@ import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { APP_FILTER } from '@nestjs/core';
 import { PrismaClientExceptionFilter } from './libs/exceptions/global-exception.filter';
 import { FlightsModule } from './app/flights/flights.module';
+import { UserModule } from './app/user/user.module';
 import { TicketModule } from './app/ticket/ticket.module';
 
 @Module({
@@ -17,6 +18,7 @@ import { TicketModule } from './app/ticket/ticket.module';
     AuthModule,
     CityModule,
     FlightsModule,
+    UserModule,
     TicketModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
