@@ -2,7 +2,6 @@ import { Body, Controller, Get, HttpCode, Post, Query, UseGuards } from '@nestjs
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '@/src/libs/security/guards/security.guard';
 import { ApiResponse, ApiBody } from '@nestjs/swagger';
-import { CreateOrderForm } from '../orders/domain/CreateOrderForm';
 import { UpdateUserForm } from './domain/UpdateUserForm';
 import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
