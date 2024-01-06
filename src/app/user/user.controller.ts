@@ -53,9 +53,9 @@ export class UserController {
 
     const updatedUser = await this.userService.updateUser(form);
     if (!updatedUser) throw new ApiException(ErrorCodes.UpdateUserError);
-    return updatedUser;
+    return UserDto.toEntity(updatedUser);
   }
- 
+
   @HttpCode(200)
   @ApiResponse({
     status: 200,
