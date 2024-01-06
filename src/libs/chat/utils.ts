@@ -1,12 +1,15 @@
-import {user_id} from "@/src/types/user-id.type";
+import {User} from "@prisma/client";
 
-export const getRoomId = (firstUserId: user_id, secondUserId: user_id) => {
-    if (!firstUserId || !secondUserId || firstUserId === secondUserId) {
+export const getRoomId = (firstUserId: Pick<User, 'id'>, secondUserId: Pick<User, 'id'>) => {
+    const firstId = firstUserId.id;
+    const secondId = secondUserId.id;
+
+    if (!firstId || !secondUserId || firstId === secondId) {
         return null;
     }
 
-    const minUserId = firstUserId > secondUserId ? secondUserId : firstUserId;
-    const maxUserId = firstUserId > secondUserId ? firstUserId : secondUserId;
+    const minUserId = firstId > secondId ? secondId : firstId;
+    const maxUserId = firstId > secondId ? firstId : secondId;
 
     return `${minUserId}:${maxUserId}`;
 }

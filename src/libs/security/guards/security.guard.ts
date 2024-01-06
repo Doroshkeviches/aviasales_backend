@@ -52,7 +52,7 @@ export class JwtAuthGuard
         request.user = decodedUser;
         return this.validatePermissions(decodedUser, requiredPermissions);
       case "ws":
-        const client = context.switchToWs().getClient<ExtendedSocketType>();
+        const client = context.switchToWs().getData();
         authHeader = client.handshake.headers.authorization;
         decodedUser = await this.validateTokenAndGetUser(authHeader);
         client.user = decodedUser;

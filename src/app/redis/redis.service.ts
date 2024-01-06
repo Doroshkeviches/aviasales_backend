@@ -1,8 +1,7 @@
 import {Inject, Injectable} from '@nestjs/common';
 import {RedisRepository} from "@/src/domain/repos/redis-repos.service";
-import {user_id} from "@/src/types/user-id.type";
-import {UserSessionDto} from "@/src/libs/security/src/dtos/UserSessionDto";
 import {Socket} from "socket.io";
+import {MessageDto} from "@/src/app/chat/domain/message.dto";
 
 @Injectable()
 export class RedisService {
@@ -14,23 +13,45 @@ export class RedisService {
     *   - associate socket ids with user ids
     *   - tbc...
     * */
-    async saveUser(id: string, socket_id: string) {
+    async saveUser(socket_id: string, id: string) {
         await this.redisRepository.saveUser(id, socket_id);
     }
 
-    async getSocketByUserId(id: string) {
-        return await this.redisRepository.getSocketByUserId(id);
+    async saveSocket(id: string, socket: Socket) {
+        await this.redisRepository.saveSocket(id, socket);
     }
 
-    async addUserToRoom(room_id: string, user_id: string) {
+    async getSocket(user_id: string) {
+        return await this.redisRepository.getSocket(user_id);
+    }
+
+    async saveMessage(data: MessageDto) {
+        await this.redisRepository.saveMessage(data);
+    }
+
+    async getUserIdBySocketId (id: string) {
+        return await this.redisRepository.getUserIdBySocketId(id);
+    }
+
+    async addUserToRoom(user_id: string, room_id: string) {
         return await this.redisRepository.addUserToRoom(room_id, user_id);
     }
 
-    async isExistingRoom(room_id: string) {
-        return this.redisRepository.isExistingRoom(room_id);
+    async isUserInRoom(user_id: string, room_id: string) {
+        return await this.redisRepository.isUserInRoom(user_id, room_id);
     }
 
-    async getRoomUsers(room_id: string) {
-        return await this.redisRepository.getRoomUsers(room_id);
+    async getUserRooms(user_id: string) {
+        return await this.redisRepository.getUserRooms(user_id);
     }
+
+    async removeUserFromRooms(user_id: string, rooms: string[]) {
+        return this.redisRepository.removeUserFromRooms(user_id, rooms);
+    }
+
+    async getMessages(room_id: string) {
+        return await this.redisRepository.getMessages(room_id);
+    }
+
+
 }

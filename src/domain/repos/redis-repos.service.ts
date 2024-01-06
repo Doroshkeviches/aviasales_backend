@@ -1,6 +1,7 @@
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Redis } from 'ioredis';
-import {UserSessionDto} from "@/src/libs/security/src/dtos/UserSessionDto";
+import {Socket} from "socket.io";
+import {MessageDto} from "@/src/app/chat/domain/message.dto";
 
 @Injectable()
 export class RedisRepository implements OnModuleDestroy {
@@ -10,38 +11,48 @@ export class RedisRepository implements OnModuleDestroy {
         this.redisClient.disconnect();
     }
 
-    async saveUser(id: string, socket_id: string) {
-        this.redisClient.set(id, socket_id);
+    async saveUser(socket_id: string, id: string) {
+        this.redisClient.set(socket_id, id);
     }
 
-    async getSocketByUserId(id: string) {
+    async saveSocket(id: string, socket: Socket) {
+        const socketJSON = JSON.stringify(socket);
+        await this.redisClient.set(id, socketJSON);
+    }
+
+    async getSocket(user_id: string) {
+        return this.redisClient.get(user_id);
+    }
+
+    async saveMessage(data: MessageDto) {
+        const messageJson = JSON.stringify(data);
+        await this.redisClient.zadd(`room:${data.room_id}`, data.date.valueOf(), messageJson);
+    }
+
+    async getUserIdBySocketId (id: string) {
         return this.redisClient.get(id);
     }
 
-    async addUserToRoom(room_id: string, user_id: string) {
-        return this.redisClient.sadd(`room:${room_id}:users`, user_id);
+    async addUserToRoom(user_id: string, room_id: string) {
+        return this.redisClient.sadd(`user:${user_id}:rooms`, room_id);
     }
 
-    async getRoomUsers(room_id: string) {
-        return this.redisClient.smembers(`room:${room_id}:users`);
+    async isUserInRoom(user_id: string, room_id: string) {
+        return this.redisClient.sismember(`user:${user_id}:rooms`, room_id);
     }
 
-    async isExistingRoom(room_id: string) {
-        return this.redisClient.exists(`room:${room_id}:users`);
-    }
-        async get(prefix: string, key: string): Promise<string | null> {
-        return this.redisClient.get(`${prefix}:${key}`);
+    async removeUserFromRooms(user_id: string, rooms: string[]) {
+        return this.redisClient.srem(`user:${user_id}:rooms`, rooms);
     }
 
-    async set(prefix: string, key: string, value: string): Promise<void> {
-        await this.redisClient.set(`${prefix}:${key}`, value);
+    async getUserRooms(user_id: string) {
+        return this.redisClient.smembers(`user:${user_id}:rooms`);
     }
 
-    async delete(prefix: string, key: string): Promise<void> {
-        await this.redisClient.del(`${prefix}:${key}`);
+    async isExistingRoom(user_id: string, room_id: string) {
+        return this.redisClient.sismember(`user:${user_id}:rooms`, room_id);
     }
 
-    async setWithExpiry(prefix: string, key: string, value: string, expiry: number): Promise<void> {
-        await this.redisClient.set(`${prefix}:${key}`, value, 'EX', expiry);
+    async getMessages(room_id: string) {
     }
 }

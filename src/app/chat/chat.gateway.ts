@@ -3,85 +3,124 @@ import {
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  OnGatewayInit, SubscribeMessage,
+  OnGatewayInit,
+  SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer
-} from '@nestjs/websockets';
-import {Server, Socket} from "socket.io";
-import {Logger, UseGuards} from "@nestjs/common";
-import {RedisService} from "@/src/app/redis/redis.service";
-import {UserSessionDto} from "@/src/libs/security/src/dtos/UserSessionDto";
-import {AuthService} from "@/src/app/auth/auth.service";
-import {getRoomId} from "@/src/libs/chat/utils";
-import {User, UserRoles} from "@prisma/client";
-import {JwtAuthGuard} from "@/src/libs/security/guards/security.guard";
+  WebSocketServer,
+} from "@nestjs/websockets";
+import { Server, Socket } from "socket.io";
+import { Logger, UseGuards } from "@nestjs/common";
+import { RedisService } from "@/src/app/redis/redis.service";
+import { UserSessionDto } from "@/src/libs/security/src/dtos/UserSessionDto";
+import { AuthService } from "@/src/app/auth/auth.service";
+import { getRoomId } from "@/src/libs/chat/utils";
+import { User, UserPermissions } from "@prisma/client";
+import { JwtAuthGuard } from "@/src/libs/security/guards/security.guard";
+import { RequirePermissions } from "@/src/libs/security/decorators/permission.decorator";
+import { MessageDto } from "@/src/app/chat/domain/message.dto";
 
-@UseGuards(JwtAuthGuard)
+// TODO: message exchange should be moved to pub/sub?
+
 @WebSocketGateway({
   cors: {
-    origin: '*'
-  }
+    origin: "*",
+  },
 })
-export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
-  constructor(private readonly redisService: RedisService,
-              private readonly authService: AuthService) {}
+export class ChatGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
+  constructor(
+    private readonly redisService: RedisService,
+    private readonly authService: AuthService,
+  ) {}
   private readonly logger: Logger = new Logger(ChatGateway.name);
 
   @WebSocketServer() server: Server;
 
-  async handleConnection(@ConnectedSocket() client: Socket, @MessageBody() data: {user: UserSessionDto}) {
-
-    // associate user id with socket id
-
+  @UseGuards(JwtAuthGuard)
+  async handleConnection(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { user: UserSessionDto },
+  ) {
     const userId = data.user.id;
-
-    // user may try to reconnect, so the record could already exist
-    const record = await this.redisService.getSocketByUserId(userId);
-    if (!record) {
-      await this.redisService.saveUser(userId, JSON.stringify(client));
-    }
-
-    // also makes sense to join user back to the room after disconnect
-    // but before that we need to check whether that room exists
-
+    await this.redisService.saveUser(client.id, userId); // socket_id -> user_id
+    await this.redisService.saveSocket(userId, client); // user_id -> socket
     this.logger.log(`User with id ${userId} connected`);
   }
 
-  // TODO: change type to uuid
-  @SubscribeMessage("room:join")
-  // is called once from client to connect user with sales
-  async handleRoomJoin(@ConnectedSocket() client: Socket, @MessageBody() data: {user: User}) {
-    // we need to check users role before joining the room
-    if (data.user.role_type !== UserRoles.Client) {
-      return;
+  /*
+  *
+  *
+  * */
+  @UseGuards(JwtAuthGuard)
+  @SubscribeMessage("message")
+  async handleMessage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: MessageDto,
+  ) {
+    const roomId = data.room_id;
+    const userIds = roomId.split(':');
+
+    const currentSocketId = client.id;
+    const currentUserId = await this.redisService.getUserIdBySocketId(currentSocketId);
+
+    const receiverUserId = userIds.find((id) => currentUserId !== id);
+    const isReceiverInRoom = this.redisService.isUserInRoom(receiverUserId, roomId);
+
+    if (!isReceiverInRoom) {
+      // join manager to room
+      const receiverSocketJson = await this.redisService.getSocket(receiverUserId);
+      const receiverSocket = JSON.parse(receiverSocketJson);
+      await this.redisService.addUserToRoom(roomId, receiverUserId);
+      this.server.in(receiverSocket.id).socketsJoin(roomId);
     }
 
-    const salesManager = await this.authService.getSalesManager();
-    const salesManagerSocketJson = await this.redisService.getSocketByUserId(salesManager.id);
-    const salesManagerSocket = JSON.parse(salesManagerSocketJson) as Socket;
+    this.server.to(roomId).emit(data.message);
+    await this.redisService.saveMessage(data);
+  }
 
-    const roomId = getRoomId(data.user.id, salesManager.id);
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.StartChat)
+  @SubscribeMessage("room:join")
+  async handleRoomJoin(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { user: User },
+  ) {
+    const salesManager = await this.authService.getSalesManager();
+    // const salesManagerSocketJson = await this.redisService.getSocketByUserId(salesManager.id);
+    // const salesManagerSocket = JSON.parse(salesManagerSocketJson) as Socket;
+
+    const roomId = getRoomId(data.user, salesManager);
 
     client.join(roomId);
     client.emit("room:join", roomId);
 
-    salesManagerSocket.join(roomId);
-    salesManagerSocket.emit("room:join", roomId);
+    // salesManagerSocket.join(roomId);
+    // salesManagerSocket.emit("room:join", roomId);
 
     await this.redisService.addUserToRoom(roomId, data.user.id);
-    await this.redisService.addUserToRoom(roomId, salesManager.id);
-    // check whether the room already exists
+    // await this.redisService.addUserToRoom(roomId, salesManager.id); TODO: move to recievemessage
   }
 
-  afterInit(server: Server) {
-    console.log(server);
-  }
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.AccessChat)
+  @SubscribeMessage("room:join")
+  afterInit(server: Server) {}
 
-  handleDisconnect(client: Socket) {
-    // const socketId = client.id;
-    // const userName = users[socketId];
-    // delete users[socketId];
-    //
-    // client.broadcast.emit("log", `${userName} disconnected`);
+  @UseGuards(JwtAuthGuard)
+  async handleDisconnect(client: Socket) {
+    /*TODO:
+       - remove all user rooms
+       - clear message history
+       - remove user_id -> socket string
+       - remove socket_id -> user_id string
+    */
+
+    const userId = await this.redisService.getUserIdBySocketId(client.id);
+    const rooms = await this.redisService.getUserRooms(userId);
+
+    this.logger.log("rooms: ", rooms);
+
+    await this.redisService.removeUserFromRooms(userId, rooms);
   }
 }
