@@ -131,6 +131,9 @@ export class AuthController {
         const errors = await ForgotPasswordForm.validate(form)
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
         const session = await this.authService.findSessionByEmailAndDeviceId(form);
+        if(!session) {
+            throw new ApiException(ErrorCodes.NotExists_User);
+        }
         const token = await this.authService.setResetToken(session);
         if (!token) {
             throw new ApiException(ErrorCodes.NotExists_User);
