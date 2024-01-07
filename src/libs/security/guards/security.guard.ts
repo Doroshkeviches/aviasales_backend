@@ -57,7 +57,7 @@ export class JwtAuthGuard
       if (!requiredPemissions) {
         return true;
       }
-      if (roleEntity.type === UserRoles.Client) { //TODO change to Admin
+      if (roleEntity.type === UserRoles.Admin) { 
         return true
       }
       return requiredPemissions.some((permission) => roleEntity.permissions?.includes(permission));
