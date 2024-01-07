@@ -39,54 +39,70 @@ export class FlightsService {
     graph,
     start: City,
     end: City,
-    { start_flight_date }: Pick<Flight, 'start_flight_date'>,
-    maximum_number_of_flights: number = 4
+    date1: Pick<Flight, 'start_flight_date'>,
+    isReturn: boolean,
+    date2: Pick<Flight, 'start_flight_date'>,
+    maximum_number_of_flights: number = 4,
   ) {
     // максимально 4 полета (3 пересадки)
-    const queue = [[{ [start.id]: { end_flight_date: start_flight_date } }]];
-    const path = [];
+    
     const max_transfer_time = 24 * 60 * 60 * 1000; //24 часа в мс
-    while (queue.length > 0) {
-      const currentPath = queue.shift();
-      if (currentPath.length > maximum_number_of_flights) {
-        // если полетов больше чем максимум => удаляем путь
-        continue;
-      }
-      const currentPathKeys = currentPath.reduce(
-        (container, obj) => [...container, ...Object.keys(obj)],
-        []
-      ); // массив из id посещенных городов
-      const current_node_id = Object.keys(currentPath.at(-1))[0]; // получаю айди последнего элемента в нынешнем пути
-      const currentNode = currentPath.at(-1)[current_node_id]; // получаю данные последнего полета по айди
+    const algorithm = (isReturn: boolean, max_transfer_time: number, start: City, end: City, date: Pick<Flight, 'start_flight_date'>) => {
+      const queue = [[{ [start.id]: { end_flight_date: date.start_flight_date } }]];
+      const path = [];
+      while (queue.length > 0) {
+        const currentPath = queue.shift();
+        if (currentPath.length > maximum_number_of_flights) {
+          // если полетов больше чем максимум => удаляем путь
+          continue;
+        }
+        const currentPathKeys = currentPath.reduce(
+          (container, obj) => [...container, ...Object.keys(obj)],
+          []
+        ); // массив из id посещенных городов
+        const current_node_id = Object.keys(currentPath.at(-1))[0]; // получаю айди последнего элемента в нынешнем пути
+        const currentNode = currentPath.at(-1)[current_node_id]; // получаю данные последнего полета по айди
 
-      if (current_node_id === end.id) {
-        //если попали в конечный город , то сохраняем путь
-        const transformedPath = this.transformPathToArrayOfFlights(currentPath);
-        path.push(transformedPath);
-      } else {
-        for (const neighbor in graph[current_node_id]) {
-          //перебор всех маршрутов (из точки А в В)
-          const flights = graph[current_node_id][neighbor]; //массив всех полетов из точки А в В
-          flights.map((flight) => {
-            // перебор всех полетов по маршруту(полеты из точки А в В)
-            const prev_fluing_time = currentNode.end_flight_date.getTime(); //время прибытия в аэропорт
-            const next_fluing_time = flight.start_flight_date.getTime(); //время вылета
-            const transfer_time = next_fluing_time - prev_fluing_time; //время пересадки
-            if (currentPathKeys.includes(neighbor)) {
-              //не залетаем два раза в один и тот же город
-              return;
-            }
-            if (transfer_time < 0 || transfer_time > max_transfer_time) {
-              // время пересадки должно быть положительным и не более 24ч
-              return;
-            }
-            queue.push([...currentPath, { [neighbor]: flight }]);
-          });
+        if (current_node_id === end.id) {
+          //если попали в конечный город , то сохраняем путь
+          const transformedPath = this.transformPathToArrayOfFlights(currentPath);
+          let repeatedPath = []
+          if (isReturn) {
+            const isRetuenPath = false
+            repeatedPath = algorithm(isRetuenPath, max_transfer_time, end, start, date2)
+            repeatedPath.map((rep_path) => {
+              path.push([...transformedPath, ...rep_path])
+              
+            })
+          } else {
+            path.push(transformedPath);
+          }
+        } else {
+          for (const neighbor in graph[current_node_id]) {
+            //перебор всех маршрутов (из точки А в В)
+            const flights = graph[current_node_id][neighbor]; //массив всех полетов из точки А в В
+            flights.map((flight) => {
+              // перебор всех полетов по маршруту(полеты из точки А в В)
+              const prev_fluing_time = currentNode.end_flight_date.getTime(); //время прибытия в аэропорт
+              const next_fluing_time = flight.start_flight_date.getTime(); //время вылета
+              const transfer_time = next_fluing_time - prev_fluing_time; //время пересадки
+              if (currentPathKeys.includes(neighbor)) {
+                //не залетаем два раза в один и тот же город
+                return;
+              }
+              if (transfer_time < 0 || transfer_time > max_transfer_time) {
+                // время пересадки должно быть положительным и не более 24ч
+                return;
+              }
+              queue.push([...currentPath, { [neighbor]: flight }]);
+            });
+          }
         }
       }
-    }
 
-    return path;
+      return path;
+    }
+    return algorithm(isReturn, max_transfer_time, start, end, date1)
   }
   async changeFlightStatus(data: Pick<Flight, 'id' | 'status'>) {
     return this.flightRepo.changeFlightStatus(data);

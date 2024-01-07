@@ -2,7 +2,7 @@ import { IsDate, IsInt } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { FlightDto } from './flight.dto';
-
+import { uuid } from 'uuidv4';
 export class PathsDto {
   @ApiProperty({
     description: 'Correct from city',
@@ -41,6 +41,7 @@ export class PathsDto {
 
   static toEntity(array?: FlightDto[]) {
     const it = {
+      id: uuid(),
       totalPrice: array.reduce((sum, item) => sum + item.price, 0),
       start_date: array.at(0).start_flight_date.valueOf(),
       end_date: array.at(-1).end_flight_date.valueOf(),
