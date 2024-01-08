@@ -46,16 +46,19 @@ export class TicketDto {
   @IsNotEmpty()
   status: TicketStatus;
 
+  @IsNotEmpty()
   flight: FlightDto;
+
   static toEntity(entity?: TicketDto) {
     const it = {
       id: entity.id,
       holder_first_name: entity.holder_first_name,
       holder_last_name: entity.holder_last_name,
       status: entity.status,
-      flight_id: entity.flight_id,
-      user_id: entity.user_id,
-      flight: entity.flight
+      from_city: entity.flight.from_city.title,
+      to_city: entity.flight.to_city.title,
+      price: entity.flight.price,
+      plane: entity.flight.plane.title,
     };
     return it;
   }

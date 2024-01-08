@@ -2,8 +2,8 @@ import { FlightStatus } from '@prisma/client';
 import { IsInt } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { PlaneDto } from '../../ticket/domain/plane.dto';
-import { CityDto } from '../../city/domain/city.dto';
+import { PlaneDto } from './plane.dto';
+import { CityDto } from './city.dto';
 
 export class FlightDto {
   @ApiProperty({
@@ -80,10 +80,9 @@ export class FlightDto {
       status: entity.status,
       price: entity.price,
       available_seats: entity.available_seats,
-      plane_id: entity.plane_id,
-      from_city: CityDto.toEntity(entity.from_city),
-      to_city: CityDto.toEntity(entity.to_city),
-      plane: PlaneDto.toEntity(entity.plane),
+      from_city: entity.from_city.title,
+      to_city: entity.to_city.title,
+      plane: entity.plane.title,
     };
     return it;
   }

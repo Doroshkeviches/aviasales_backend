@@ -1,26 +1,32 @@
-import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from './app/auth/auth.module';
-import { CityModule } from './app/city/city.module';
+import { Module, MiddlewareConsumer, RequestMethod } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { AuthModule } from "./app/auth/auth.module";
+import { CityModule } from "./app/city/city.module";
 
-import config_app from './config/app.config';
-import config_i18n from './config/i18n.config';
-import config_security from './config/security.config';
-import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
-import { APP_FILTER } from '@nestjs/core';
-import { PrismaClientExceptionFilter } from './libs/exceptions/global-exception.filter';
-import { FlightsModule } from './app/flights/flights.module';
-import { ChatController } from './app/chat/chat.controller';
-import {ChatModule} from "@/src/app/chat/chat.module";
-import {RedisModule} from "@/src/app/redis/redis.module";
+import config_app from "./config/app.config";
+import config_i18n from "./config/i18n.config";
+import config_security from "./config/security.config";
+import { AcceptLanguageResolver, I18nModule, QueryResolver } from "nestjs-i18n";
+import { APP_FILTER } from "@nestjs/core";
+import { PrismaClientExceptionFilter } from "./libs/exceptions/global-exception.filter";
+import { FlightsModule } from "./app/flights/flights.module";
+
+import { ChatController } from "./app/chat/chat.controller";
+import { ChatModule } from "@/src/app/chat/chat.module";
+import { RedisModule } from "@/src/app/redis/redis.module";
+
+import { UserModule } from "./app/user/user.module";
+import { TicketModule } from "./app/ticket/ticket.module";
 
 @Module({
   imports: [
     AuthModule,
     CityModule,
     FlightsModule,
+    UserModule,
+    TicketModule,
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: ".env",
       load: [config_app, config_i18n, config_security],
       isGlobal: true,
     }),
@@ -28,10 +34,10 @@ import {RedisModule} from "@/src/app/redis/redis.module";
       imports: [ConfigModule],
       inject: [ConfigService],
       resolvers: [
-        { use: QueryResolver, options: ['lang'] },
+        { use: QueryResolver, options: ["lang"] },
         AcceptLanguageResolver,
       ],
-      useFactory: (config: ConfigService) => config.get('i18n'),
+      useFactory: (config: ConfigService) => config.get("i18n"),
     }),
     ChatModule,
     RedisModule,

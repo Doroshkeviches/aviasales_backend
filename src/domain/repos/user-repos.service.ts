@@ -1,108 +1,145 @@
 import { Injectable } from "@nestjs/common";
 import { Role, User, UserRoles } from "@prisma/client";
-import * as bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from "@/src/libs/prisma/src";
 import { user_id } from "@/src/types/user-id.type";
 
-
+const includingData = () => {
+  return {
+    include: {
+      tickets: {
+        include: {
+          flight: {
+            include: {
+              plane: true,
+              from_city: true,
+              to_city: true,
+            },
+          },
+        },
+      },
+    },
+  } as const;
+};
 
 @Injectable()
 export class UsersRepoService {
-    constructor(private prisma: PrismaService) { }
-    async getAllUsers(page: number, pageSize: number) {
-        const skip = (page - 1) * pageSize;
-        return this.prisma.user.findMany({
-            select: {
-                id: true,
-                email: true,
-                role_type: true,
-                tickets: true,
+  constructor(private prisma: PrismaService) {}
+  async getAllUsers(page: number, pageSize: number = 10) {
+    const skip = (page - 1) * pageSize;
+    return this.prisma.user.findMany({
+      take: pageSize,
+      skip,
+      ...includingData(),
+    });
+  }
+
+  async getUsersBySearchQuery(searchQuery: string) {
+    return await this.prisma.user.findMany({
+      where: {
+        OR: [
+          {
+            first_name: {
+              contains: searchQuery,
             },
-
-            take: pageSize,
-            skip,
-        })
-    }
-
-    async getUserByEmail({ email }: Pick<User, "email">) {
-        return this.prisma.user.findUnique({
-            where: { email },
-        })
-    }
-
-
-    async getOneUserById({ id }: user_id) {
-        const user = await this.prisma.user.findUnique({
-            where: { id },
-            select: {
-                id: true,
-                email: true,
-                role_type: true,
-                tickets: true
+          },
+          {
+            last_name: {
+              contains: searchQuery,
             },
-        })
-        return user
-    }
+          },
+        ],
+      },
+      ...includingData(),
+    });
+  }
 
-    async createUser(dto: Pick<User, 'email' | 'first_name' | 'last_name'>, role: Role, { password }: Pick<User, 'password'>) {
-        const { email, first_name, last_name } = dto
-        const user = await this.prisma.user.create({
-            data: {
-                email,
-                password,
-                first_name,
-                last_name,
-                role_id: role.id,
-                role_type: role.type,
-            },
-            include: {
-                role: true,
-            }
+  async getUserByEmail({ email }: Pick<User, "email">) {
+    return await this.prisma.user.findUnique({
+      where: { email },
+      ...includingData(),
+    });
+  }
 
-        })
-        return user
-    }
+  async getOneUserById({ id }: Pick<User, "id">) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      ...includingData(),
+    });
+    return user;
+  }
 
+  async createUser(
+    dto: Pick<User, "email" | "first_name" | "last_name">,
+    role: Role,
+    { password }: Pick<User, "password">,
+  ) {
+    const { email, first_name, last_name } = dto;
+    const user = await this.prisma.user.create({
+      data: {
+        email,
+        password,
+        first_name,
+        last_name,
+        role_id: role.id,
+        role_type: role.type,
+      },
+      include: {
+        role: true,
+      },
+    });
+    return user;
+  }
 
-    async deleteUser({ id }: user_id) {
-        return this.prisma.user.delete({
-            where: { id }
-        })
-    }
+  async deleteUser({ id }: user_id) {
+    return this.prisma.user.delete({
+      where: { id },
+    });
+  }
 
-    async changePassword(user: User, data: Partial<User>) {
-        return this.prisma.user.update({
-            where: { id: user.id },
-            data: { password: data.password },
-            include: {
-                role: true,
-            },
-        });
-    }
+  async changePassword(user: User, data: Partial<User>) {
+    return this.prisma.user.update({
+      where: { id: user.id },
+      data: { password: data.password },
+      include: {
+        role: true,
+      },
+    });
+  }
 
-    async getAdminByEmail({ email }: Pick<User, 'email'>) {
-        return this.prisma.user.findUnique({
-            where: {
-                email,
-                role_type: {
-                    in: [UserRoles.Admin, UserRoles.Manager]
-                }
-            },
-            include: {
-                role: true
-            }
-        })
-    }
+  async getAdminByEmail({ email }: Pick<User, "email">) {
+    return this.prisma.user.findUnique({
+      where: {
+        email,
+        role_type: {
+          in: [UserRoles.Admin, UserRoles.Manager],
+        },
+      },
+      include: {
+        role: true,
+      },
+    });
+  }
 
-    async getSalesManager() {
-        return this.prisma.user.findFirst({
-            where: {
-                role_type: UserRoles.Manager
-            },
-            include: {
-                role: true
-            }
-        })
-    }
+  async getSalesManager() {
+    return this.prisma.user.findFirst({
+      where: {
+        role_type: UserRoles.Manager,
+      },
+      include: {
+        role: true,
+      },
+    });
+  }
+
+  async updateUser(user: Partial<User>) {
+    return this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        first_name: user.first_name,
+        email: user.email,
+        last_name: user.last_name,
+      },
+      ...includingData(),
+    });
+  }
 }

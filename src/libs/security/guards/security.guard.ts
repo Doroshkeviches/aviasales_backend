@@ -3,17 +3,16 @@ import {
   ExecutionContext,
   Injectable,
   createParamDecorator,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { JwtService } from '@nestjs/jwt';
-import { AuthGuard } from '@nestjs/passport';
-import { UserPermissions, UserRoles } from '@prisma/client';
-import { PERMISSION_KEY } from '../decorators/permission.decorator';
-import { SecurityService } from '../src';
-import { UserSessionDto } from '../src/dtos/UserSessionDto';
-import { ApiException } from '../../exceptions/api-exception';
-import { ErrorCodes } from '@/src/enums/error-codes.enum';
-import {ExtendedSocketType} from "@/src/types/extended-socket.type";
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { JwtService } from "@nestjs/jwt";
+import { AuthGuard } from "@nestjs/passport";
+import { UserPermissions, UserRoles } from "@prisma/client";
+import { PERMISSION_KEY } from "../decorators/permission.decorator";
+import { SecurityService } from "../src";
+import { UserSessionDto } from "../src/dtos/UserSessionDto";
+import { ApiException } from "../../exceptions/api-exception";
+import { ErrorCodes } from "@/src/enums/error-codes.enum";
 
 export const CurrentUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
@@ -23,24 +22,18 @@ export const CurrentUser = createParamDecorator(
 );
 
 @Injectable()
-export class JwtAuthGuard
-  extends AuthGuard('jwt')
-  implements CanActivate {
+export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
   constructor(
     private reflector: Reflector,
     private jwtService: JwtService,
-    private securityService: SecurityService) {
+    private securityService: SecurityService,
+  ) {
     super();
   }
   async canActivate(context: ExecutionContext) {
-
-    const requiredPermissions = this.reflector.getAllAndOverride<UserPermissions[]>(
-        PERMISSION_KEY,
-        [
-          context.getHandler(),
-          context.getClass(),
-        ]
-    );
+    const requiredPermissions = this.reflector.getAllAndOverride<
+      UserPermissions[]
+    >(PERMISSION_KEY, [context.getHandler(), context.getClass()]);
 
     const contextType = context.getType();
     let authHeader, decodedUser;
@@ -62,9 +55,13 @@ export class JwtAuthGuard
     }
   }
 
-  private async validateTokenAndGetUser(authHeader: string): Promise<UserSessionDto> {
-    const token = authHeader.split(' ')[1];
-    const decodedUser = UserSessionDto.fromPayload(this.jwtService.verify(token));
+  private async validateTokenAndGetUser(
+    authHeader: string,
+  ): Promise<UserSessionDto> {
+    const token = authHeader.split(" ")[1];
+    const decodedUser = UserSessionDto.fromPayload(
+      this.jwtService.verify(token),
+    );
     const user = await this.securityService.getUserById({ id: decodedUser.id });
 
     if (!user) {
@@ -74,8 +71,13 @@ export class JwtAuthGuard
     return decodedUser;
   }
 
-  private async validatePermissions(user: UserSessionDto, requiredPermissions: UserPermissions[]): Promise<boolean> {
-    const roleEntity = await this.securityService.getRoleById({ id: user.role_id });
+  private async validatePermissions(
+    user: UserSessionDto,
+    requiredPermissions: UserPermissions[],
+  ): Promise<boolean> {
+    const roleEntity = await this.securityService.getRoleById({
+      id: user.role_id,
+    });
 
     if (!requiredPermissions) {
       return true;
@@ -85,8 +87,8 @@ export class JwtAuthGuard
       return true;
     }
 
-    const hasPermission = requiredPermissions.some((permission) =>
-        roleEntity.permissions?.includes(permission),
+    const hasPermission = requiredPermissions.some(
+      (permission) => roleEntity.permissions?.includes(permission),
     );
 
     if (!hasPermission) {
