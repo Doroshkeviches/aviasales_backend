@@ -14,6 +14,7 @@ import { FlightsModule } from "./app/flights/flights.module";
 import { ChatController } from "./app/chat/chat.controller";
 import { ChatModule } from "@/src/app/chat/chat.module";
 import { RedisModule } from "@/src/app/redis/redis.module";
+import { SecurityModule } from "@/src/libs/security/src";
 
 import { UserModule } from "./app/user/user.module";
 import { TicketModule } from "./app/ticket/ticket.module";
@@ -25,6 +26,9 @@ import { TicketModule } from "./app/ticket/ticket.module";
     FlightsModule,
     UserModule,
     TicketModule,
+    SecurityModule,
+    ChatModule,
+    RedisModule,
     ConfigModule.forRoot({
       envFilePath: ".env",
       load: [config_app, config_i18n, config_security],
@@ -39,10 +43,8 @@ import { TicketModule } from "./app/ticket/ticket.module";
       ],
       useFactory: (config: ConfigService) => config.get("i18n"),
     }),
-    ChatModule,
-    RedisModule,
   ],
-  controllers: [ChatController],
+  controllers: [],
   providers: [
     {
       provide: APP_FILTER,

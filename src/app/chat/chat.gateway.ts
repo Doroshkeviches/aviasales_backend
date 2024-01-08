@@ -9,7 +9,7 @@ import {
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import { Logger, UseGuards } from "@nestjs/common";
+import {Injectable, Logger, UseGuards} from "@nestjs/common";
 import { RedisService } from "@/src/app/redis/redis.service";
 import { UserSessionDto } from "@/src/libs/security/src/dtos/UserSessionDto";
 import { AuthService } from "@/src/app/auth/auth.service";
@@ -40,9 +40,8 @@ export class ChatGateway
   @UseGuards(JwtAuthGuard)
   async handleConnection(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { user: UserSessionDto },
   ) {
-    const userId = data.user.id;
+    const userId = client.data.user.id;
     await this.redisService.saveUser(client.id, userId); // socket_id -> user_id
     await this.redisService.saveSocket(userId, client); // user_id -> socket
     this.logger.log(`User with id ${userId} connected`);
