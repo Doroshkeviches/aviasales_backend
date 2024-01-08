@@ -35,9 +35,13 @@ export class FlightsController {
   async getArrayOfPath(
     @Query('from_city') from_city: string,
     @Query('to_city') to_city: string,
-    @Query('date') date_string: string
+    @Query('date') date_string: string,
+    @Query('isReturn') isReturn: boolean,
+    @Query('returnDate') returnDate: string 
+
   ) {
     const start_flight_date = new Date(date_string);
+    const return_flight_date = new Date(returnDate)
     const from_city_entity = await this.flightService.getCityByTitle({
       title: from_city,
     });
@@ -59,14 +63,19 @@ export class FlightsController {
       graph,
       from_city_entity,
       to_city_entity,
-      { start_flight_date }
+      { start_flight_date },
+      isReturn,
+      { start_flight_date: return_flight_date },
     );
+   
     if (!path.length) {
       throw new ApiException(ErrorCodes.NoPath);
     }
+
     const sortedPathByPrice = this.flightService.sortArraysByTotalPrice(path);
     // const sortedPathByTime = this.flightService.sortArraysByTotalTime(path);
     return PathsDto.toEntities(sortedPathByPrice);
+    return sortedPathByPrice
   }
 
   @HttpCode(200)

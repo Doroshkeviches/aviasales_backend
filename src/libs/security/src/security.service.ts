@@ -17,8 +17,8 @@ export class SecurityService {
         private deviceRepos: DeviceRepoService,
         private config: ConfigService,
     ) { }
-    async generateTokens(user: Pick<User, 'id' | 'role_id' | 'email'>) {
-        const payload = { email: user.email, id: user.id, role_id: user.role_id };
+    async generateTokens(user: Pick<User, 'id' | 'role_id' | 'email' | 'role_type'>) {
+        const payload = { email: user.email, id: user.id, role_id: user.role_id, role_type: user.role_type };
         const access_token = this.jwtService.sign(payload, { secret: this.config.get('security').secret })
         const refresh_token = this.jwtService.sign(payload, { secret: this.config.get('security').secret })
         return ({ access_token, refresh_token })

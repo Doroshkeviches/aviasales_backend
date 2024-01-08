@@ -101,6 +101,7 @@ export class TicketReposService {
         flight_id: data.flight_id,
         status: TicketStatus.InCart,
       },
+      ...includingData()
     });
   }
 }

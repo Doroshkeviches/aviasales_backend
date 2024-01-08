@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 import { TicketStatus } from '@prisma/client';
+import { FlightDto } from './flight.dto';
 
 export class TicketDto {
   @ApiProperty({
@@ -45,6 +46,7 @@ export class TicketDto {
   @IsNotEmpty()
   status: TicketStatus;
 
+  flight: FlightDto;
   static toEntity(entity?: TicketDto) {
     const it = {
       id: entity.id,
@@ -53,6 +55,7 @@ export class TicketDto {
       status: entity.status,
       flight_id: entity.flight_id,
       user_id: entity.user_id,
+      flight: entity.flight
     };
     return it;
   }
