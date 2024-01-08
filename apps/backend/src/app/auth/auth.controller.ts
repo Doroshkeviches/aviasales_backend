@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SecurityService } from 'src/libs/security/src';
+import { SecurityService } from '@/src/libs/security/src';
 import { SignUpForm } from './domain/SignUpForm'
 import { SignInForm } from './domain/SignInForm';
 import { CurrentUser, JwtAuthGuard } from '@/src/libs/security/guards/security.guard';

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RolesReposService } from 'src/domain/repos/roles-repos.service';
-import { UsersRepoService } from 'src/domain/repos/user-repos.service';
+import { RolesReposService } from '@/src/domain/repos/roles-repos.service';
+import { UsersRepoService } from '@/src/domain/repos/user-repos.service';
 import { ConfigService } from '@nestjs/config';
 import { Device, Role, User } from '@prisma/client';
 import { user_id } from '@/src/types/user-id.type';
