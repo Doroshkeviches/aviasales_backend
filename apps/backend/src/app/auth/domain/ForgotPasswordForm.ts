@@ -1,6 +1,9 @@
-import { EmailErrorMessage, UuidErrorMessage } from '@/src/libs/exceptions/i18n-error';
-import { IsEmail, IsUUID } from 'class-validator';
-import { validate } from 'class-validator';
+import { IsEmail, IsUUID } from "class-validator";
+import { validate } from "class-validator";
+import {
+  EmailErrorMessage,
+  UuidErrorMessage,
+} from "@app/exceptions/i18n-error";
 
 export class ForgotPasswordForm {
   @IsUUID()

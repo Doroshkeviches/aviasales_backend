@@ -1,6 +1,6 @@
-import { EmailErrorMessage, StrongPasswordErrorMessage, UuidErrorMessage } from '@/src/libs/exceptions/i18n-error';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsStrongPassword, IsUUID, NotEquals, validate } from 'class-validator';
+import {EmailErrorMessage, StrongPasswordErrorMessage, UuidErrorMessage} from "@app/exceptions/i18n-error";
 
 export class ResetPasswordForm {
     @ApiProperty({

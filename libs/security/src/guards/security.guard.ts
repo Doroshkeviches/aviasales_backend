@@ -11,8 +11,8 @@ import { UserPermissions, UserRoles } from "@prisma/client";
 import { PERMISSION_KEY } from "../decorators/permission.decorator";
 import { SecurityService } from "@app/security";
 import { UserSessionDto } from "../dtos/UserSessionDto";
-import { ApiException } from "../../exceptions/api-exception";
 import { ErrorCodes } from "@/src/enums/error-codes.enum";
+import { ApiException } from "@app/exceptions/api-exception";
 
 export const CurrentUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
