@@ -113,7 +113,8 @@
       "^@app/domain(|/.*)$": "<rootDir>/libs/domain/src/$1",
       "^@app/prisma(|/.*)$": "<rootDir>/libs/prisma/src/$1",
       "^@app/libs/test(|/.*)$": "<rootDir>/libs/libs/test/src/$1",
-      "^@app/exceptions(|/.*)$": "<rootDir>/libs/exceptions/src/$1"
+      "^@app/exceptions(|/.*)$": "<rootDir>/libs/exceptions/src/$1",
+      "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1"
     }
   }
 }

@@ -2,15 +2,13 @@ import {Body, Controller, Get, HttpCode, UseGuards} from '@nestjs/common';
 import {User, UserPermissions} from "@prisma/client";
 import {ApiBody, ApiResponse} from "@nestjs/swagger";
 import {RedisService} from "./redis/redis.service";
-import {ChatGateway} from "./chat.gateway";
 import {RoomDto} from "./domain/room.dto";
 import {CurrentUser, JwtAuthGuard} from "@app/security/guards/security.guard";
 import {RequirePermissions} from "@app/security/decorators/permission.decorator";
 
 @Controller('chat')
 export class ChatController {
-  constructor(private readonly chatGateway: ChatGateway,
-              private readonly redisService: RedisService) {}
+  constructor(private readonly redisService: RedisService) {}
 
   @ApiResponse({
     status: 200,

@@ -48,6 +48,12 @@
       ],
       "@app/security/*": [
         "libs/security/src/*"
+      ],
+      "@app/config": [
+        "libs/config/src"
+      ],
+      "@app/config/*": [
+        "libs/config/src/*"
       ]
     }
   }
