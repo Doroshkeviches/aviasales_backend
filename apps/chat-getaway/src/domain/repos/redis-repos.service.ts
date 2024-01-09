@@ -1,7 +1,7 @@
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import {Socket} from "socket.io";
-import {MessageDto} from "@/src/app/chat/domain/message.dto";
+import {MessageDto} from "../message.dto";
 
 @Injectable()
 export class RedisRepository implements OnModuleDestroy {

@@ -9,15 +9,14 @@ import {
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import {Injectable, Logger, UseGuards} from "@nestjs/common";
-import { RedisService } from "@/src/../../../../chat-getaway/src/redis/redis.service";
-import { UserSessionDto } from "@/src/libs/security/src/dtos/UserSessionDto";
+import { Logger, UseGuards } from "@nestjs/common";
 import { AuthService } from "@/src/app/auth/auth.service";
-import { getRoomId } from "@/src/libs/chat/utils";
 import { User, UserPermissions } from "@prisma/client";
 import { JwtAuthGuard } from "@/src/libs/security/guards/security.guard";
 import { RequirePermissions } from "@/src/libs/security/decorators/permission.decorator";
-import { MessageDto } from "@/src/app/chat/domain/message.dto";
+import { RedisService } from "./redis/redis.service";
+import { MessageDto } from "./domain/message.dto";
+import { getRoomId } from "./libs/utils";
 
 // TODO: message exchange should be moved to pub/sub?
 
@@ -38,19 +37,18 @@ export class ChatGateway
   @WebSocketServer() server: Server;
 
   @UseGuards(JwtAuthGuard)
-  async handleConnection(
-    @ConnectedSocket() client: Socket,
-  ) {
+  async handleConnection(@ConnectedSocket() client: Socket) {
     const userId = client.data.user.id;
     await this.redisService.saveUser(client.id, userId); // socket_id -> user_id
     await this.redisService.saveSocket(userId, client); // user_id -> socket
     this.logger.log(`User with id ${userId} connected`);
+    return userId;
   }
 
   /*
-  *
-  *
-  * */
+   *
+   *
+   * */
   @UseGuards(JwtAuthGuard)
   @SubscribeMessage("message")
   async handleMessage(
@@ -58,17 +56,22 @@ export class ChatGateway
     @MessageBody() data: MessageDto,
   ) {
     const roomId = data.room_id;
-    const userIds = roomId.split(':');
+    const userIds = roomId.split(":");
 
     const currentSocketId = client.id;
-    const currentUserId = await this.redisService.getUserIdBySocketId(currentSocketId);
+    const currentUserId =
+      await this.redisService.getUserIdBySocketId(currentSocketId);
 
     const receiverUserId = userIds.find((id) => currentUserId !== id);
-    const isReceiverInRoom = this.redisService.isUserInRoom(receiverUserId, roomId);
+    const isReceiverInRoom = this.redisService.isUserInRoom(
+      receiverUserId,
+      roomId,
+    );
 
     if (!isReceiverInRoom) {
       // join manager to room
-      const receiverSocketJson = await this.redisService.getSocket(receiverUserId);
+      const receiverSocketJson =
+        await this.redisService.getSocket(receiverUserId);
       const receiverSocket = JSON.parse(receiverSocketJson);
       await this.redisService.addUserToRoom(roomId, receiverUserId);
       this.server.in(receiverSocket.id).socketsJoin(roomId);
@@ -76,6 +79,8 @@ export class ChatGateway
 
     this.server.to(roomId).emit(data.message);
     await this.redisService.saveMessage(data);
+
+    return roomId;
   }
 
   @UseGuards(JwtAuthGuard)

@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-import { ChatGetawayModule } from './chat-getaway.module';
+import { ChatGatewayModule } from './chat-gateway.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(ChatGetawayModule);
+  const app = await NestFactory.create(ChatGatewayModule);
   await app.listen(3000);
 }
 bootstrap();

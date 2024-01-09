@@ -6,8 +6,6 @@ import { DeviceRepoService } from './repos/device-repos.service';
 import { CityReposService } from './repos/city-repos.service';
 import { FlightsRepoService } from './repos/flights-repos.service';
 import { TicketReposService } from './repos/ticket-repos.service';
-import {RedisRepository} from "../../../chat-getaway/src/domain/repos/redis-repos.service";
-import {redisClientFactory} from "@/src/../../../chat-getaway/src/redis/redis-client.factory";
 
 @Module({
   imports: [PrismaModule],
@@ -18,8 +16,6 @@ import {redisClientFactory} from "@/src/../../../chat-getaway/src/redis/redis-cl
     CityReposService,
     FlightsRepoService,
     TicketReposService,
-    RedisRepository,
-      redisClientFactory,
   ],
   exports: [
     UsersRepoService,
@@ -28,8 +24,6 @@ import {redisClientFactory} from "@/src/../../../chat-getaway/src/redis/redis-cl
     CityReposService,
     FlightsRepoService,
     TicketReposService,
-      RedisRepository,
-      redisClientFactory
   ],
 })
 export class DomainModule {}

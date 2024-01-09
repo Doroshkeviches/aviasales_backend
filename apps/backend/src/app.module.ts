@@ -3,8 +3,6 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AuthModule } from "./app/auth/auth.module";
 import { CityModule } from "./app/city/city.module";
 import { FlightsModule } from "./app/flights/flights.module";
-import { ChatModule } from "@/src/app/chat/chat.module";
-import { RedisModule } from "@/src/../../chat-getaway/src/redis/redis.module";
 import { SecurityModule } from "@/src/libs/security/src";
 import { UserModule } from "./app/user/user.module";
 import { TicketModule } from "./app/ticket/ticket.module";
@@ -24,8 +22,6 @@ import { PrismaClientExceptionFilter } from "./libs/exceptions/global-exception.
     UserModule,
     TicketModule,
     SecurityModule,
-    ChatModule,
-    RedisModule,
     ConfigModule.forRoot({
       envFilePath: ".env",
       load: [config_app, config_i18n, config_security],
