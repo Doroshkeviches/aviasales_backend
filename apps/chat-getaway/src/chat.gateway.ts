@@ -24,6 +24,7 @@ import { getRoomId } from "./libs/utils";
   cors: {
     origin: "*",
   },
+  transports: ['websocket'],
 })
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
