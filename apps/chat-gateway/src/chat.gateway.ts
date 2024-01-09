@@ -32,12 +32,12 @@ export class ChatGateway {
   // @UseGuards(JwtAuthGuard)
 
   @SubscribeMessage('room')
-  joinRoom(socket: Socket, roomId: string) {
+  async joinRoom(socket: Socket, roomId: string) {
     console.log(roomId)
     socket.join(roomId)
     this.server.to(roomId).emit('a new challenger approaches');
-    const client1 = createClient()
-    client1.connect()
+    await this.redisService.subToMessage(roomId)
+    
   }
 
 
@@ -45,9 +45,8 @@ export class ChatGateway {
   @SubscribeMessage("message")
   async handleMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: string,
+    @MessageBody() data: any,
   ) {
-    const da = await this.redisService.subToMessage()
-    const dat1 = await this.redisService.onSendMessage(data)
+    const dat1 = await this.redisService.onSendMessage(data.roomId, data.message)
   }
 }

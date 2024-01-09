@@ -13,11 +13,11 @@ export class RedisService {
     *   - associate socket ids with user ids
     *   - tbc...
     * */
-    async onSendMessage( message: string) {
-        return this.redisRepository.onSendMessage(message)
+    async onSendMessage(roomId: string, message: string) {
+        return this.redisRepository.onSendMessage(roomId, message)
     }
-    async subToMessage() {
-        return this.redisRepository.subToMessage()
+    async subToMessage(roomId: string) {
+        return this.redisRepository.subToMessage(roomId)
     }
     async saveUser(socket_id: string, id: string) {
         await this.redisRepository.saveUser(id, socket_id);

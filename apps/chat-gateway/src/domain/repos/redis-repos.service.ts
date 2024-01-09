@@ -6,15 +6,14 @@ import { createClient } from 'redis'
 @Injectable()
 export class RedisRepository implements OnModuleDestroy {
     constructor(@Inject('RedisClient') private readonly redisClient: Redis) { }
-    onSendMessage(message: string) {
-        this.redisClient.publish('article', message)
+    onSendMessage(roomId: string, message: string) {
+        this.redisClient.publish(roomId, message)
     }
-    subToMessage() {
-        const dublicate = createClient()
-        dublicate.connect()
-        console.log(dublicate)
-        return dublicate.subscribe('article', (value) => {
-            console.log(value+ 'SEVAAAAA')
+    subToMessage(roomId: string) {
+        const subscribeClient = createClient()
+        subscribeClient.connect()
+        return subscribeClient.subscribe(roomId, (value) => {
+            console.log(value + 'SEVA')
         })
     }
     onModuleDestroy(): void {
