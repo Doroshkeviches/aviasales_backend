@@ -1,5 +1,4 @@
 import { UsersRepoService } from '@/src/domain/repos/user-repos.service';
-import { user_id } from '@/src/types/user-id.type';
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 

@@ -9,8 +9,8 @@ import { JwtService } from "@nestjs/jwt";
 import { AuthGuard } from "@nestjs/passport";
 import { UserPermissions, UserRoles } from "@prisma/client";
 import { PERMISSION_KEY } from "../decorators/permission.decorator";
-import { SecurityService } from "../src";
-import { UserSessionDto } from "../src/dtos/UserSessionDto";
+import { SecurityService } from "@app/security";
+import { UserSessionDto } from "../dtos/UserSessionDto";
 import { ApiException } from "../../exceptions/api-exception";
 import { ErrorCodes } from "@/src/enums/error-codes.enum";
 

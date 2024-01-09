@@ -12,11 +12,11 @@ import { Server, Socket } from "socket.io";
 import { Logger, UseGuards } from "@nestjs/common";
 import { AuthService } from "@/src/app/auth/auth.service";
 import { User, UserPermissions } from "@prisma/client";
-import { JwtAuthGuard } from "@/src/libs/security/guards/security.guard";
-import { RequirePermissions } from "@/src/libs/security/decorators/permission.decorator";
 import { RedisService } from "./redis/redis.service";
 import { MessageDto } from "./domain/message.dto";
 import { getRoomId } from "./libs/utils";
+import {JwtAuthGuard} from "@app/security/guards/security.guard";
+import {RequirePermissions} from "@app/security/decorators/permission.decorator";
 
 // TODO: message exchange should be moved to pub/sub?
 

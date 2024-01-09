@@ -1,11 +1,11 @@
 import {Body, Controller, Get, HttpCode, UseGuards} from '@nestjs/common';
-import {CurrentUser, JwtAuthGuard} from "@/src/libs/security/guards/security.guard";
 import {User, UserPermissions} from "@prisma/client";
-import {RequirePermissions} from "@/src/libs/security/decorators/permission.decorator";
 import {ApiBody, ApiResponse} from "@nestjs/swagger";
 import {RedisService} from "./redis/redis.service";
 import {ChatGateway} from "./chat.gateway";
 import {RoomDto} from "./domain/room.dto";
+import {CurrentUser, JwtAuthGuard} from "@app/security/guards/security.guard";
+import {RequirePermissions} from "@app/security/decorators/permission.decorator";
 
 @Controller('chat')
 export class ChatController {

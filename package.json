@@ -10,7 +10,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -111,7 +111,9 @@
     "moduleNameMapper": {
       "^@app/security(|/.*)$": "<rootDir>/libs/security/src/$1",
       "^@app/domain(|/.*)$": "<rootDir>/libs/domain/src/$1",
-      "^@app/prisma(|/.*)$": "<rootDir>/libs/prisma/src/$1"
+      "^@app/prisma(|/.*)$": "<rootDir>/libs/prisma/src/$1",
+      "^@app/libs/test(|/.*)$": "<rootDir>/libs/libs/test/src/$1",
+      "^@app/exceptions(|/.*)$": "<rootDir>/libs/exceptions/src/$1"
     }
   }
 }

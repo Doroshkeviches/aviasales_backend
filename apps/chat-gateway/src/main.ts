@@ -3,6 +3,6 @@ import { ChatGatewayModule } from './chat-gateway.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(ChatGatewayModule);
-  await app.listen(3000);
+  await app.listen(4444);
 }
 bootstrap();

@@ -9,15 +9,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { JwtAuthGuard } from '@/src/libs/security/guards/security.guard';
 import { ApiResponse } from '@nestjs/swagger';
 import { UpdateUserForm } from './domain/UpdateUserForm';
-import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
-import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
 import { UserPermissions } from '@prisma/client';
 import { UserDto } from './domain/user.dto';
-import { ApiException } from '@/src/libs/exceptions/api-exception';
+import {JwtAuthGuard} from "@app/security/guards/security.guard";
+import {RequirePermissions} from "@app/security/decorators/permission.decorator";
+import {ApiException} from "@app/exceptions/api-exception";
+import {ApiRequestException} from "@app/exceptions/api-request-exception";
 
 @Controller('user')
 export class UserController {

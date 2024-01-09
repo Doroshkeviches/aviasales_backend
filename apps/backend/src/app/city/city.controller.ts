@@ -14,11 +14,11 @@ import { CityService } from './city.service';
 import { City, UserPermissions } from '@prisma/client';
 import { CityForm } from './domain/city.form';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
-import { ApiException } from '@/src/libs/exceptions/api-exception';
-import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
 import { CityDto } from './domain/city.dto';
-import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
-import { JwtAuthGuard } from '@/src/libs/security/guards/security.guard';
+import {JwtAuthGuard} from "@app/security/guards/security.guard";
+import {RequirePermissions} from "@app/security/decorators/permission.decorator";
+import {ApiException} from "@app/exceptions/api-exception";
+import {ApiRequestException} from "@app/exceptions/api-request-exception";
 
 @Controller('city')
 export class CityController {
