@@ -4,7 +4,8 @@ import { RedisRepository } from "../domain/repos/redis-repos.service";
 import { redisClientFactory } from "./redis-client.factory";
 
 @Module({
+  imports: [],
   providers: [RedisService, RedisRepository, redisClientFactory],
   exports: [RedisService],
 })
-export class RedisModule {}
+export class RedisModule { }

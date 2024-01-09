@@ -1,12 +1,22 @@
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Redis } from 'ioredis';
-import {Socket} from "socket.io";
-import {MessageDto} from "../message.dto";
-
+import { Socket } from "socket.io";
+import { MessageDto } from "../message.dto";
+import { createClient } from 'redis'
 @Injectable()
 export class RedisRepository implements OnModuleDestroy {
-    constructor(@Inject('RedisClient') private readonly redisClient: Redis) {}
-
+    constructor(@Inject('RedisClient') private readonly redisClient: Redis) { }
+    onSendMessage(message: string) {
+        this.redisClient.publish('article', message)
+    }
+    subToMessage() {
+        const dublicate = createClient()
+        dublicate.connect()
+        console.log(dublicate)
+        return dublicate.subscribe('article', (value) => {
+            console.log(value+ 'SEVAAAAA')
+        })
+    }
     onModuleDestroy(): void {
         this.redisClient.disconnect();
     }
@@ -29,7 +39,7 @@ export class RedisRepository implements OnModuleDestroy {
         await this.redisClient.zadd(`room:${data.room_id}`, data.date.valueOf(), messageJson);
     }
 
-    async getUserIdBySocketId (id: string) {
+    async getUserIdBySocketId(id: string) {
         return this.redisClient.get(id);
     }
 

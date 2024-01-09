@@ -9,12 +9,14 @@ import config_security from "../../../libs/security/config/security.config";
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from "nestjs-i18n";
 import { APP_FILTER } from "@nestjs/core";
 import { PrismaClientExceptionFilter } from "@app/exceptions/global-exception.filter";
-import {RedisModule} from "./redis/redis.module";
+import { RedisModule } from "./redis/redis.module";
+import { ChatGateway } from "./chat.gateway";
+import { createClient } from 'redis'
 
 @Module({
   imports: [
+    RedisModule,
     SecurityModule,
-      RedisModule,
     ConfigModule.forRoot({
       envFilePath: ".env",
       load: [config_app, config_i18n, config_security],
@@ -32,11 +34,11 @@ import {RedisModule} from "./redis/redis.module";
   ],
   controllers: [ChatController],
   providers: [
-    ChatGatewayService,
     {
       provide: APP_FILTER,
       useClass: PrismaClientExceptionFilter,
     },
+    ChatGateway,
   ],
 })
-export class ChatGatewayModule {}
+export class ChatGatewayModule { }

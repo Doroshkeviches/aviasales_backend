@@ -1,11 +1,11 @@
-import {Inject, Injectable} from '@nestjs/common';
-import {RedisRepository} from "../domain/repos/redis-repos.service";
-import {Socket} from "socket.io";
-import {MessageDto} from "../domain/message.dto";
+import { Inject, Injectable } from '@nestjs/common';
+import { RedisRepository } from "../domain/repos/redis-repos.service";
+import { Socket } from "socket.io";
+import { MessageDto } from "../domain/message.dto";
 
 @Injectable()
 export class RedisService {
-    constructor(@Inject(RedisRepository) private readonly redisRepository: RedisRepository) {}
+    constructor(@Inject(RedisRepository) private readonly redisRepository: RedisRepository) { }
 
     /* TODO
     *   - create user name lookup by user id
@@ -13,6 +13,12 @@ export class RedisService {
     *   - associate socket ids with user ids
     *   - tbc...
     * */
+    async onSendMessage( message: string) {
+        return this.redisRepository.onSendMessage(message)
+    }
+    async subToMessage() {
+        return this.redisRepository.subToMessage()
+    }
     async saveUser(socket_id: string, id: string) {
         await this.redisRepository.saveUser(id, socket_id);
     }
@@ -29,7 +35,7 @@ export class RedisService {
         await this.redisRepository.saveMessage(data);
     }
 
-    async getUserIdBySocketId (id: string) {
+    async getUserIdBySocketId(id: string) {
         return await this.redisRepository.getUserIdBySocketId(id);
     }
 

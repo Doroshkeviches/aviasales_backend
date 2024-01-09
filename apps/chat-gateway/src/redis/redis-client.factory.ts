@@ -1,12 +1,12 @@
 import { FactoryProvider } from '@nestjs/common';
 import { Redis } from 'ioredis';
-
+import { createClient } from 'redis'
 export const redisClientFactory: FactoryProvider<Redis> = {
     provide: 'RedisClient',
     useFactory: () => {
         const redisInstance = new Redis({
-            host: process.env.REDIS_HOST,
-            port: +process.env.REDIS_PORT,
+            host: 'localhost',
+            port: 6379,
         });
 
         redisInstance.on('error', e => {
