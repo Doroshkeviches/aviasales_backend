@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Role, User, UserRoles } from '@prisma/client';
-import { PrismaService } from '@/src/libs/prisma/src';
+import { PrismaService } from 'apps/libs/prisma/src';
 import { user_id } from '@/src/types/user-id.type';
 
 const includingData = () => {

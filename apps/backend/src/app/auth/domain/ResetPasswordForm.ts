@@ -1,4 +1,4 @@
-import { EmailErrorMessage, StrongPasswordErrorMessage, UuidErrorMessage } from '@/src/libs/exceptions/i18n-error';
+import { EmailErrorMessage, StrongPasswordErrorMessage, UuidErrorMessage } from 'apps/libs/exceptions/i18n-error';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsStrongPassword, IsUUID, NotEquals, validate } from 'class-validator';
 

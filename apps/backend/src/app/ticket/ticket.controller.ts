@@ -14,16 +14,16 @@ import { TicketService } from './ticket.service';
 import { UpdateTicketCredsForm } from './domain/update-ticket-creds.form';
 import { UpdateTicketStatusForm } from './domain/update-ticket-status.form';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
-import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
+import { ApiRequestException } from 'apps/libs/exceptions/api-request-exception';
 import {
   CurrentUser,
   JwtAuthGuard,
-} from '@/src/libs/security/guards/security.guard';
+} from 'apps/libs/security/guards/security.guard';
 import { User } from '.prisma/client';
 import { TicketDto } from './domain/ticket.dto';
 import { CreateTicketForm } from './domain/create-ticket.form';
-import { ApiException } from '@/src/libs/exceptions/api-exception';
-import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
+import { ApiException } from 'apps/libs/exceptions/api-exception';
+import { RequirePermissions } from 'apps/libs/security/decorators/permission.decorator';
 import { UserPermissions } from '@prisma/client';
 
 @Controller('ticket')

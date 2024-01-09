@@ -1,11 +1,11 @@
 import { Body, Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SecurityService } from '@/src/libs/security/src';
+import { SecurityService } from 'apps/libs/security/src';
 import { SignUpForm } from './domain/SignUpForm'
 import { SignInForm } from './domain/SignInForm';
-import { CurrentUser, JwtAuthGuard } from '@/src/libs/security/guards/security.guard';
+import { CurrentUser, JwtAuthGuard } from 'apps/libs/security/guards/security.guard';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
-import { ApiException } from '@/src/libs/exceptions/api-exception';
+import { ApiException } from 'apps/libs/exceptions/api-exception';
 import { TokenDto } from './domain/TokenDto';
 import { decoded_user } from '@/src/types/decoded-user.type';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
@@ -14,8 +14,8 @@ import { SignoutForm } from './domain/SignoutForm';
 import { ForgotPasswordForm } from './domain/ForgotPasswordForm';
 import { ResetTokenDto } from './domain/ResetTokenDto';
 import { ResetPasswordForm } from './domain/ResetPasswordForm';
-import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
-import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
+import { RequirePermissions } from 'apps/libs/security/decorators/permission.decorator';
+import { ApiRequestException } from 'apps/libs/exceptions/api-request-exception';
 @Controller('auth')
 export class AuthController {
     constructor(

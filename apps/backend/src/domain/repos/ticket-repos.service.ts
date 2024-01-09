@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Ticket, User, TicketStatus } from '@prisma/client';
-import { PrismaService } from '@/src/libs/prisma/src';
+import { PrismaService } from 'apps/libs/prisma/src';
 
 const includingData = () => {
   return {

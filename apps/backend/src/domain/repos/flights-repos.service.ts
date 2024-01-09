@@ -10,7 +10,7 @@ import {
   UserRoles,
 } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
-import { PrismaService } from '@/src/libs/prisma/src';
+import { PrismaService } from 'apps/libs/prisma/src';
 
 const includingData = () => {
   return {

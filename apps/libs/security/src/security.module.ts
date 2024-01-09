@@ -11,7 +11,10 @@ import { PassportModule } from '@nestjs/passport';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => config.get('security'),
+      useFactory: (config: ConfigService) => {
+        console.log(config.get('security'))
+        return config.get('security')
+      },
       global: true
     }),
   ],

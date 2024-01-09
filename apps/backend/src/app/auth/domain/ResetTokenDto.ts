@@ -1,4 +1,4 @@
-import { UuidErrorMessage } from '@/src/libs/exceptions/i18n-error';
+import { UuidErrorMessage } from 'apps/libs/exceptions/i18n-error';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID, validate } from 'class-validator';
 

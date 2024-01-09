@@ -1,4 +1,4 @@
-import { EmailErrorMessage, UuidErrorMessage } from '@/src/libs/exceptions/i18n-error';
+import { EmailErrorMessage, UuidErrorMessage } from 'apps/libs/exceptions/i18n-error';
 import { IsEmail, IsUUID } from 'class-validator';
 import { validate } from 'class-validator';
 
