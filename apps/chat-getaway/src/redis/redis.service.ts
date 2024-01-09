@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@nestjs/common';
-import {RedisRepository} from "@/src/domain/repos/redis-repos.service";
+import {RedisRepository} from "../domain/repos/redis-repos.service";
 import {Socket} from "socket.io";
 import {MessageDto} from "@/src/app/chat/domain/message.dto";
 

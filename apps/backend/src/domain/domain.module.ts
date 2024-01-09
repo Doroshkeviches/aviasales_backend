@@ -6,8 +6,8 @@ import { DeviceRepoService } from './repos/device-repos.service';
 import { CityReposService } from './repos/city-repos.service';
 import { FlightsRepoService } from './repos/flights-repos.service';
 import { TicketReposService } from './repos/ticket-repos.service';
-import {RedisRepository} from "@/src/domain/repos/redis-repos.service";
-import {redisClientFactory} from "@/src/app/redis/redis-client.factory";
+import {RedisRepository} from "../../../chat-getaway/src/domain/repos/redis-repos.service";
+import {redisClientFactory} from "@/src/../../../chat-getaway/src/redis/redis-client.factory";
 
 @Module({
   imports: [PrismaModule],

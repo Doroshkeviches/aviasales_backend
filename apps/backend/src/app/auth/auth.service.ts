@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { RolesReposService } from 'src/domain/repos/roles-repos.service';
-import { UsersRepoService } from 'src/domain/repos/user-repos.service';
-import { SecurityService } from 'src/libs/security/src';
+import { RolesReposService } from '@/src/domain/repos/roles-repos.service';
+import { UsersRepoService } from '@/src/domain/repos/user-repos.service';
+import { SecurityService } from '@/src/libs/security/src';
 import * as bcrypt from 'bcryptjs';
 import { Device, User, UserRoles } from '@prisma/client';
 import { DeviceRepoService } from '@/src/domain/repos/device-repos.service';

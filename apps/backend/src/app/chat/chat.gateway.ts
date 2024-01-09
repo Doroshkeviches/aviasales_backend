@@ -10,7 +10,7 @@ import {
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import {Injectable, Logger, UseGuards} from "@nestjs/common";
-import { RedisService } from "@/src/app/redis/redis.service";
+import { RedisService } from "@/src/../../../../chat-getaway/src/redis/redis.service";
 import { UserSessionDto } from "@/src/libs/security/src/dtos/UserSessionDto";
 import { AuthService } from "@/src/app/auth/auth.service";
 import { getRoomId } from "@/src/libs/chat/utils";

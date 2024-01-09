@@ -5,7 +5,7 @@ import {ChatGateway} from "@/src/app/chat/chat.gateway";
 import {RequirePermissions} from "@/src/libs/security/decorators/permission.decorator";
 import {RoomDto} from "@/src/app/chat/domain/room.dto";
 import {ApiBody, ApiResponse} from "@nestjs/swagger";
-import {RedisService} from "@/src/app/redis/redis.service";
+import {RedisService} from "@/src/../../../../chat-getaway/src/redis/redis.service";
 
 @Controller('chat')
 export class ChatController {
