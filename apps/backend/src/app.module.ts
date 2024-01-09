@@ -6,9 +6,9 @@ import { FlightsModule } from "./app/flights/flights.module";
 import { UserModule } from "./app/user/user.module";
 import { TicketModule } from "./app/ticket/ticket.module";
 
-import config_app from "../src/config/app.config";
-import config_i18n from "../src/config/i18n.config";
-import config_security from "../src/config/security.config";
+import config_app from "../../../libs/security/config/app.config";
+import config_i18n from "../../../libs/security/config/i18n.config";
+import config_security from "../../../libs/security/config/security.config";
 
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from "nestjs-i18n";
 import { APP_FILTER } from "@nestjs/core";

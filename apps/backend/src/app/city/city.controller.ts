@@ -15,8 +15,8 @@ import { City, UserPermissions } from '@prisma/client';
 import { CityForm } from './domain/city.form';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { CityDto } from './domain/city.dto';
-import {JwtAuthGuard} from "@app/security/guards/security.guard";
-import {RequirePermissions} from "@app/security/decorators/permission.decorator";
+import {JwtAuthGuard} from "@app/security/../../../../../libs/security/guards/security.guard";
+import {RequirePermissions} from "@app/security/../../../../../libs/security/decorators/permission.decorator";
 import {ApiException} from "@app/exceptions/api-exception";
 import {ApiRequestException} from "@app/exceptions/api-request-exception";
 

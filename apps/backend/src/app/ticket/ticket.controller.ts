@@ -18,8 +18,8 @@ import { User } from '.prisma/client';
 import { TicketDto } from './domain/ticket.dto';
 import { CreateTicketForm } from './domain/create-ticket.form';
 import { UserPermissions } from '@prisma/client';
-import {CurrentUser, JwtAuthGuard} from "@app/security/guards/security.guard";
-import {RequirePermissions} from "@app/security/decorators/permission.decorator";
+import {CurrentUser, JwtAuthGuard} from "@app/security/../../../../../libs/security/guards/security.guard";
+import {RequirePermissions} from "@app/security/../../../../../libs/security/decorators/permission.decorator";
 import {ApiException} from "@app/exceptions/api-exception";
 import {ApiRequestException} from "@app/exceptions/api-request-exception";
 

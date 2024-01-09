@@ -10,7 +10,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { UserPermissions, UserRoles } from "@prisma/client";
 import { PERMISSION_KEY } from "../decorators/permission.decorator";
 import { SecurityService } from "@app/security";
-import { UserSessionDto } from "../dtos/UserSessionDto";
+import { UserSessionDto } from "@app/security/dtos/UserSessionDto";
 import { ErrorCodes } from "@/src/enums/error-codes.enum";
 import { ApiException } from "@app/exceptions/api-exception";
 

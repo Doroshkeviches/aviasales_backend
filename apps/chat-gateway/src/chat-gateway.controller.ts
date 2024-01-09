@@ -3,8 +3,8 @@ import {User, UserPermissions} from "@prisma/client";
 import {ApiBody, ApiResponse} from "@nestjs/swagger";
 import {RedisService} from "./redis/redis.service";
 import {RoomDto} from "./domain/room.dto";
-import {CurrentUser, JwtAuthGuard} from "@app/security/guards/security.guard";
-import {RequirePermissions} from "@app/security/decorators/permission.decorator";
+import {CurrentUser, JwtAuthGuard} from "@app/security/../../../libs/security/guards/security.guard";
+import {RequirePermissions} from "@app/security/../../../libs/security/decorators/permission.decorator";
 
 @Controller('chat')
 export class ChatController {

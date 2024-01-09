@@ -15,8 +15,8 @@ import { User, UserPermissions } from "@prisma/client";
 import { RedisService } from "./redis/redis.service";
 import { MessageDto } from "./domain/message.dto";
 import { getRoomId } from "./libs/utils";
-import {JwtAuthGuard} from "@app/security/guards/security.guard";
-import {RequirePermissions} from "@app/security/decorators/permission.decorator";
+import {JwtAuthGuard} from "@app/security/../../../libs/security/guards/security.guard";
+import {RequirePermissions} from "@app/security/../../../libs/security/decorators/permission.decorator";
 
 // TODO: message exchange should be moved to pub/sub?
 
