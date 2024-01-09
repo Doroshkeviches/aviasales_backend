@@ -25,6 +25,7 @@ import { MessageDto } from "@/src/app/chat/domain/message.dto";
   cors: {
     origin: "*",
   },
+  transports: ['websocket'],
 })
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -45,6 +46,7 @@ export class ChatGateway
     await this.redisService.saveUser(client.id, userId); // socket_id -> user_id
     await this.redisService.saveSocket(userId, client); // user_id -> socket
     this.logger.log(`User with id ${userId} connected`);
+    return;
   }
 
   /*
