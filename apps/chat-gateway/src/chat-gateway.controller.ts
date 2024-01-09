@@ -20,6 +20,7 @@ export class ChatController {
   @RequirePermissions(UserPermissions.AccessChat)
   @Get()
   async getMessages(@CurrentUser() user: User, @Body() room: RoomDto) {
+    console.log('getting messages...')
     // call methods from controller to get messages
     // return await this.chatGateway.getMessages(id) <-- TODO: check auth here
   }

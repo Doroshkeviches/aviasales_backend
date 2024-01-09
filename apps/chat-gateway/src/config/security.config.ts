@@ -23,7 +23,7 @@ export default registerAs('security', (): JwtModuleOptions => {
   const secret = readFileSync(
     resolve(
       process.cwd(),
-      `apps/backend/src/config/certs/${envVars.NODE_ENV}-private.pem`,
+      `apps/chat-gateway/src/config/certs/${envVars.NODE_ENV}-private.pem`,
     ),
   );
 

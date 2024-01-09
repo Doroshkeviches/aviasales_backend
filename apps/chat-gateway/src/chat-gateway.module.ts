@@ -5,9 +5,9 @@ import { RedisModule } from "./redis/redis.module";
 import { SecurityModule } from "@app/security";
 import { DomainModule } from "@/src/domain";
 import { ConfigModule } from "@nestjs/config";
-import config_app from "@/src/config/app.config";
-import config_i18n from "@/src/config/i18n.config";
-import config_security from "@/src/config/security.config";
+import config_app from "../src/config/app.config";
+import config_i18n from "../src/config/i18n.config";
+import config_security from "../src/config/security.config";
 
 @Module({
   imports: [
