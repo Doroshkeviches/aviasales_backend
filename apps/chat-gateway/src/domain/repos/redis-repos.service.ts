@@ -1,6 +1,6 @@
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Redis } from 'ioredis';
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { MessageDto } from "../message.dto";
 import { createClient } from 'redis'
 @Injectable()
@@ -9,11 +9,12 @@ export class RedisRepository implements OnModuleDestroy {
     onSendMessage(roomId: string, message: string) {
         this.redisClient.publish(roomId, message)
     }
-    subToMessage(roomId: string) {
+    subToMessage(roomId: string, server: Server) {
         const subscribeClient = createClient()
         subscribeClient.connect()
         return subscribeClient.subscribe(roomId, (value) => {
             console.log(value + 'SEVA')
+            server.to(roomId).emit('aaaaaaaaaa');
         })
     }
     onModuleDestroy(): void {

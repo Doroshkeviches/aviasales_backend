@@ -31,22 +31,32 @@ export class ChatGateway {
   @WebSocketServer() server: Server;
   // @UseGuards(JwtAuthGuard)
 
-  @SubscribeMessage('room')
+  @SubscribeMessage('join')
   async joinRoom(socket: Socket, roomId: string) {
-    console.log(roomId)
+    //connect to roomID
     socket.join(roomId)
-    this.server.to(roomId).emit('a new challenger approaches');
-    await this.redisService.subToMessage(roomId)
-    
+    // get all rooms
+    // console.log(socket.rooms, 'rooms') 
+    socket.on(roomId, (value) => {
+      console.log('socketON' + value)
+
+    })
+    // this.server.to(roomId).emit('a new challenger approaches');
+    await this.redisService.subToMessage(roomId, this.server)
+
+
+    socket.on('disconnect', (data) => { // подписка на дисконнект
+      this.redisService.onDisconnect()
+      console.log(`disconnect ${data}`)
+    })
   }
 
-
-
-  @SubscribeMessage("message")
+  @SubscribeMessage("message") // отправляем сюда объект data с в котором roomId + message
   async handleMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
+    @MessageBody() data: string,
   ) {
-    const dat1 = await this.redisService.onSendMessage(data.roomId, data.message)
+    console.log(data)
+    // const dat1 = await this.redisService.onSendMessage(data.roomId, data.message)
   }
 }

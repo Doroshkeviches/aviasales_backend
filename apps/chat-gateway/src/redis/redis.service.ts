@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { RedisRepository } from "../domain/repos/redis-repos.service";
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { MessageDto } from "../domain/message.dto";
 
 @Injectable()
@@ -13,11 +13,15 @@ export class RedisService {
     *   - associate socket ids with user ids
     *   - tbc...
     * */
+
+    async onDisconnect() {
+        return this.redisRepository.onModuleDestroy()
+    }
     async onSendMessage(roomId: string, message: string) {
         return this.redisRepository.onSendMessage(roomId, message)
     }
-    async subToMessage(roomId: string) {
-        return this.redisRepository.subToMessage(roomId)
+    async subToMessage(roomId: string, server: Server) {
+        return this.redisRepository.subToMessage(roomId,server)
     }
     async saveUser(socket_id: string, id: string) {
         await this.redisRepository.saveUser(id, socket_id);
