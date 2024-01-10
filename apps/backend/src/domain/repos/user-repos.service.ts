@@ -120,17 +120,6 @@ export class UsersRepoService {
     });
   }
 
-  async getSalesManager() {
-    return this.prisma.user.findFirst({
-      where: {
-        role_type: UserRoles.Manager,
-      },
-      include: {
-        role: true,
-      },
-    });
-  }
-
   async updateUser(user: Partial<User>) {
     return this.prisma.user.update({
       where: { id: user.id },

@@ -2,7 +2,7 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
-  createParamDecorator,
+  createParamDecorator, UnauthorizedException,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
@@ -40,15 +40,25 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
     switch (contextType) {
       case "http":
         const request = context.switchToHttp().getRequest();
-        authHeader = request.headers.authorization;
+        authHeader = request.headers?.authorization;
+
+        if (!authHeader) {
+          throw new UnauthorizedException('Not authorized');
+        }
+
         decodedUser = await this.validateTokenAndGetUser(authHeader);
         request.user = decodedUser;
         return this.validatePermissions(decodedUser, requiredPermissions);
       case "ws":
-        const client = context.switchToWs().getData();
-        authHeader = client.handshake.headers.authorization;
+        const client = context.switchToWs().getClient();
+        authHeader = client.handshake.headers?.authorization;
+
+        if (!authHeader) {
+          throw new UnauthorizedException('Not authorized');
+        }
+
         decodedUser = await this.validateTokenAndGetUser(authHeader);
-        client.user = decodedUser;
+        client.data.user = decodedUser;
         return this.validatePermissions(decodedUser, requiredPermissions);
       default:
         return false;

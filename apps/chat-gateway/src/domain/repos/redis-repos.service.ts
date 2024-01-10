@@ -3,20 +3,40 @@ import { Redis } from 'ioredis';
 import { Server, Socket } from "socket.io";
 import { MessageDto } from "../message.dto";
 import { createClient } from 'redis'
+import {User} from "@prisma/client";
 @Injectable()
 export class RedisRepository implements OnModuleDestroy {
     constructor(@Inject('RedisClient') private readonly redisClient: Redis) { }
+
     onSendMessage(roomId: string, message: string) {
-        this.redisClient.publish(roomId, message)
+        console.log("publish");
+        this.redisClient.publish(roomId, message);
     }
+
+    onIncomingRequest(user: Pick<User, 'id' | 'first_name' | 'last_name'>) {
+        this.redisClient.publish('requests', JSON.stringify(user));
+    }
+
+    async subToRequestChannel(server: Server) {
+        const subscribeClient = createClient();
+        await subscribeClient.connect();
+
+        await subscribeClient.subscribe('requests', (value) => {
+            console.log('req')
+            server.sockets.in('requests').emit('request', value)
+        });
+    }
+
     async subToMessage(roomId: string, server: Server) {
         const subscribeClient = createClient()
-        await subscribeClient.connect()
+        await subscribeClient.connect();
+
         return subscribeClient.subscribe(roomId, (value) => {
-            console.log(value + 'SEVA')
-            server.to(roomId).emit('message', value + '  emit inside sub');
+            console.log('roomid'+ roomId)
+            server.to(roomId).emit("message", value);
         })
     }
+
     onModuleDestroy(): void {
         this.redisClient.disconnect();
     }
@@ -41,6 +61,14 @@ export class RedisRepository implements OnModuleDestroy {
 
     async getUserIdBySocketId(id: string) {
         return this.redisClient.get(id);
+    }
+
+    async addIncomingRequest(userId: string) {
+        return this.redisClient.rpush('queue', userId);
+    }
+
+    async getIncomingRequests() {
+        return this.redisClient.lrange('queue', 0, -1);
     }
 
     async addUserToRoom(user_id: string, room_id: string) {

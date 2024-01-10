@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { RedisRepository } from "../domain/repos/redis-repos.service";
 import { Server, Socket } from "socket.io";
 import { MessageDto } from "../domain/message.dto";
+import {User} from "@prisma/client";
 
 @Injectable()
 export class RedisService {
@@ -17,12 +18,31 @@ export class RedisService {
     async onDisconnect() {
         return this.redisRepository.onModuleDestroy()
     }
+
     async onSendMessage(roomId: string, message: string) {
         return this.redisRepository.onSendMessage(roomId, message)
     }
+
+    async onRequest(user: Pick<User, 'id' | 'first_name' | 'last_name'>) {
+        return this.redisRepository.onIncomingRequest(user);
+    }
+
     async subToMessage(roomId: string, server: Server) {
         return await this.redisRepository.subToMessage(roomId,server)
     }
+
+    async subToRequestChannel(server: Server) {
+        return await this.redisRepository.subToRequestChannel(server);
+    }
+
+    async addIncomingRequest(userId: string) {
+        return await this.redisRepository.addIncomingRequest(userId);
+    }
+
+    async getIncomingRequests() {
+        return await this.redisRepository.getIncomingRequests();
+    }
+
     async saveUser(socket_id: string, id: string) {
         await this.redisRepository.saveUser(id, socket_id);
     }

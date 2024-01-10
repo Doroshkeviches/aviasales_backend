@@ -21,8 +21,8 @@ import { ResetPasswordForm } from "./domain/ResetPasswordForm";
 import { ApiRequestException } from "@app/exceptions/api-request-exception";
 import { SecurityService } from "@app/security";
 import { ApiException } from "@app/exceptions/api-exception";
-import { CurrentUser, JwtAuthGuard } from "@app/security/../../../../../libs/security/guards/security.guard";
-import { RequirePermissions } from "@app/security/../../../../../libs/security/decorators/permission.decorator";
+import {CurrentUser, JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
+import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
 
 @Controller("auth")
 export class AuthController {

@@ -14,10 +14,10 @@ import { ChangeFlightPrice } from './domain/ChangeFlightPriceForm';
 import { UserPermissions } from '@prisma/client';
 import { PathsDto } from './domain/paths.dto';
 import { ApiResponse } from '@nestjs/swagger';
-import {JwtAuthGuard} from "@app/security/../../../../../libs/security/guards/security.guard";
-import {RequirePermissions} from "@app/security/../../../../../libs/security/decorators/permission.decorator";
 import {ApiException} from "@app/exceptions/api-exception";
 import {ApiRequestException} from "@app/exceptions/api-request-exception";
+import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
+import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
 
 @Controller('flights')
 export class FlightsController {

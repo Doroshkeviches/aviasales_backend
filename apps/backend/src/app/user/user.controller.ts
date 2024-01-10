@@ -14,10 +14,10 @@ import { UpdateUserForm } from './domain/UpdateUserForm';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { UserPermissions } from '@prisma/client';
 import { UserDto } from './domain/user.dto';
-import {JwtAuthGuard} from "@app/security/../../../../../libs/security/guards/security.guard";
-import {RequirePermissions} from "@app/security/../../../../../libs/security/decorators/permission.decorator";
 import {ApiException} from "@app/exceptions/api-exception";
 import {ApiRequestException} from "@app/exceptions/api-request-exception";
+import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
+import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
 
 @Controller('user')
 export class UserController {

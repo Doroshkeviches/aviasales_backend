@@ -33,10 +33,6 @@ export class AuthService {
         return this.usersRepo.getAdminByEmail(email)
 
     }
-    // assuming that we have 1 sales manager
-    async getSalesManager() {
-        return await this.usersRepo.getSalesManager();
-    }
 
     async comparePassword(user: User, password: Pick<User, 'password'>) {
         const isCompare = await bcrypt.compare(password.password, user.password)

@@ -10,51 +10,72 @@ import {
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { Logger, UseGuards } from "@nestjs/common";
-import { AuthService } from "@/src/app/auth/auth.service";
-import { User, UserPermissions } from "@prisma/client";
+import {User, UserPermissions, UserRoles} from "@prisma/client";
 import { RedisService } from "./redis/redis.service";
 import { MessageDto } from "./domain/message.dto";
-import { getRoomId } from "./libs/utils";
-import { JwtAuthGuard } from "@app/security/../../../libs/security/guards/security.guard";
-import { RequirePermissions } from "@app/security/../../../libs/security/decorators/permission.decorator";
-import { createClient } from 'redis'
+import {JwtAuthGuard} from "../../../libs/security/guards/security.guard";
+import {SecurityService} from "@app/security";
+import {UserSessionDto} from "@app/security/dtos/UserSessionDto";
+import {RequestDto} from "./domain/request.dto";
 // TODO: message exchange should be moved to pub/sub?
 
 @WebSocketGateway()
-export class ChatGateway {
+export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
   constructor(
     private readonly redisService: RedisService,
-    // private readonly authService: AuthService,
+    private readonly securityService: SecurityService,
   ) { }
-  private readonly logger: Logger = new Logger(ChatGateway.name);
-
   @WebSocketServer() server: Server;
-  // @UseGuards(JwtAuthGuard)
 
-  @SubscribeMessage('join')
-  async joinRoom(@ConnectedSocket() client: Socket, @MessageBody() roomId: string,) {
-    //connect to roomID
-    client.join(roomId)
-
-    this.server.to(roomId).emit('message', `successfully joined room ${roomId}`);
-
-
-    await this.redisService.subToMessage(roomId, this.server)
-
-
-    client.on('disconnect', (data) => { // подписка на дисконнект
-      this.redisService.onDisconnect()
-      console.log(`disconnect ${data}`)
-    })
+  async handleConnection(@ConnectedSocket() client: Socket) {
+    console.log(`Client ${client.id} connected`);
   }
 
-  @SubscribeMessage("message") // отправляем сюда объект data с в котором roomId + message
+  @UseGuards(JwtAuthGuard)
+  // require permissions <- for manager only
+  @SubscribeMessage("join-requests-channel")
+  async joinRequestsChannel (@ConnectedSocket() client: Socket) {
+    client.join('requests');
+    this.server.to(client.id).emit('message', `successfully joined room requests`); // remove this later
+    await this.redisService.subToRequestChannel(this.server);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @SubscribeMessage("accept-request")
+  async acceptRequest(@ConnectedSocket() client: Socket, @MessageBody() userId: string) {
+    client.join(userId);
+    this.server.to(userId).emit('message', `manager joined chat`); // remove this later
+    await this.redisService.subToMessage(userId, this.server);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @SubscribeMessage("join-chat")
+  // for user
+  async joinRoom(@ConnectedSocket() client: Socket, @MessageBody() roomId: string) {
+    client.join(roomId)
+    console.log(`Client ${client.id} joined room ${roomId}`);
+    this.server.to(roomId).emit('message', `successfully joined room ${roomId}`); // remove this later
+
+    console.log(client.data);
+    const userDto = UserSessionDto.fromPayload(client.data.user);
+    const user = await this.securityService.getUserById({id: userDto.id});
+    const requestDto = RequestDto.toEntity(user);
+
+    await this.redisService.onRequest(requestDto);
+
+    await this.redisService.subToMessage(roomId, this.server);
+  }
+
+  @SubscribeMessage("message")
   async handleMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { roomId: string, message: string },
+    @MessageBody() data: MessageDto,
   ) {
-    
+    await this.redisService.onSendMessage(data.room_id, data.message)
+  }
 
-    const dat1 = await this.redisService.onSendMessage(data.roomId, data.message)
+  async handleDisconnect(client: Socket) {
+    console.log(`Client ${client.id} disconnected`);
+    await this.redisService.onDisconnect();
   }
 }
