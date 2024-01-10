@@ -14,7 +14,7 @@ export class RedisRepository implements OnModuleDestroy {
         await subscribeClient.connect()
         return subscribeClient.subscribe(roomId, (value) => {
             console.log(value + 'SEVA')
-            server.to(roomId).emit('aaaaaaaaaa');
+            server.to(roomId).emit('message', value + '  emit inside sub');
         })
     }
     onModuleDestroy(): void {

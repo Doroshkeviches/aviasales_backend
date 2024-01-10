@@ -35,9 +35,10 @@ export class ChatGateway {
   async joinRoom(@ConnectedSocket() client: Socket, @MessageBody() roomId: string,) {
     //connect to roomID
     client.join(roomId)
-    console.log(client.rooms);
 
     this.server.to(roomId).emit('message', `successfully joined room ${roomId}`);
+
+
     await this.redisService.subToMessage(roomId, this.server)
 
 
@@ -50,9 +51,10 @@ export class ChatGateway {
   @SubscribeMessage("message") // отправляем сюда объект data с в котором roomId + message
   async handleMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: string,
+    @MessageBody() data: { roomId: string, message: string },
   ) {
-    console.log(data)
-    // const dat1 = await this.redisService.onSendMessage(data.roomId, data.message)
+    
+
+    const dat1 = await this.redisService.onSendMessage(data.roomId, data.message)
   }
 }
