@@ -28,8 +28,8 @@ export class UserController {
     description: 'Successfully get all users',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  @UseGuards(JwtAuthGuard)
-  @RequirePermissions(UserPermissions.GetAllUsers)
+  // @UseGuards(JwtAuthGuard)
+  // @RequirePermissions(UserPermissions.GetAllUsers)
   @Get()
   async getAllUsers(@Query('page') page: number) {
     const users = await this.userService.getAllUsers(page);
