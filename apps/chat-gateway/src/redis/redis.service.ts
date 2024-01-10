@@ -21,7 +21,7 @@ export class RedisService {
         return this.redisRepository.onSendMessage(roomId, message)
     }
     async subToMessage(roomId: string, server: Server) {
-        return this.redisRepository.subToMessage(roomId,server)
+        return await this.redisRepository.subToMessage(roomId,server)
     }
     async saveUser(socket_id: string, id: string) {
         await this.redisRepository.saveUser(id, socket_id);

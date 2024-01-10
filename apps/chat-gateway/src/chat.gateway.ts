@@ -32,20 +32,16 @@ export class ChatGateway {
   // @UseGuards(JwtAuthGuard)
 
   @SubscribeMessage('join')
-  async joinRoom(socket: Socket, roomId: string) {
+  async joinRoom(@ConnectedSocket() client: Socket, @MessageBody() roomId: string,) {
     //connect to roomID
-    socket.join(roomId)
-    // get all rooms
-    // console.log(socket.rooms, 'rooms') 
-    socket.on(roomId, (value) => {
-      console.log('socketON' + value)
+    client.join(roomId)
+    console.log(client.rooms);
 
-    })
-    // this.server.to(roomId).emit('a new challenger approaches');
+    this.server.to(roomId).emit('message', `successfully joined room ${roomId}`);
     await this.redisService.subToMessage(roomId, this.server)
 
 
-    socket.on('disconnect', (data) => { // подписка на дисконнект
+    client.on('disconnect', (data) => { // подписка на дисконнект
       this.redisService.onDisconnect()
       console.log(`disconnect ${data}`)
     })
