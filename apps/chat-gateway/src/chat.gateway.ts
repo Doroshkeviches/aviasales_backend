@@ -10,13 +10,13 @@ import {
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { Logger, UseGuards } from "@nestjs/common";
-import {User, UserPermissions, UserRoles} from "@prisma/client";
+import { User, UserPermissions, UserRoles } from "@prisma/client";
 import { RedisService } from "./redis/redis.service";
 import { MessageDto } from "./domain/message.dto";
-import {JwtAuthGuard} from "../../../libs/security/guards/security.guard";
-import {SecurityService} from "@app/security";
-import {UserSessionDto} from "@app/security/dtos/UserSessionDto";
-import {RequestDto} from "./domain/request.dto";
+import { JwtAuthGuard } from "../../../libs/security/guards/security.guard";
+import { SecurityService } from "@app/security";
+import { UserSessionDto } from "@app/security/dtos/UserSessionDto";
+import { RequestDto } from "./domain/request.dto";
 // TODO: message exchange should be moved to pub/sub?
 
 @WebSocketGateway()
@@ -34,7 +34,7 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
   @UseGuards(JwtAuthGuard)
   // require permissions <- for manager only
   @SubscribeMessage("join-requests-channel")
-  async joinRequestsChannel (@ConnectedSocket() client: Socket) {
+  async joinRequestsChannel(@ConnectedSocket() client: Socket) {
     client.join('requests');
     this.server.to(client.id).emit('message', `successfully joined room requests`); // remove this later
     await this.redisService.subToRequestChannel(this.server);
@@ -44,26 +44,28 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
   @SubscribeMessage("accept-request")
   async acceptRequest(@ConnectedSocket() client: Socket, @MessageBody() userId: string) {
     client.join(userId);
-    this.server.to(userId).emit('message', `manager joined chat`); // remove this later
-    await this.redisService.subToMessage(userId, this.server);
+    client.to(userId).emit('message', `manager joined chat`); // remove this later
+    await this.redisService.subToMessage(userId, this.server,client);
   }
-
-  @UseGuards(JwtAuthGuard)
+  
+  // @UseGuards(JwtAuthGuard)
   @SubscribeMessage("join-chat")
   // for user
   async joinRoom(@ConnectedSocket() client: Socket, @MessageBody() roomId: string) {
-    client.join(roomId)
-    console.log(`Client ${client.id} joined room ${roomId}`);
-    this.server.to(roomId).emit('message', `successfully joined room ${roomId}`); // remove this later
 
-    console.log(client.data);
-    const userDto = UserSessionDto.fromPayload(client.data.user);
-    const user = await this.securityService.getUserById({id: userDto.id});
-    const requestDto = RequestDto.toEntity(user);
+    client.join(roomId);
+    client.to(roomId).emit('message', `manager joined chat`); // remove this later
 
-    await this.redisService.onRequest(requestDto);
+    // this.server.to(roomId).emit('message', `successfully joined room ${roomId}`); // remove this later
 
-    await this.redisService.subToMessage(roomId, this.server);
+    // console.log(client.data);
+    // const userDto = UserSessionDto.fromPayload(client.data.user);
+    // const user = await this.securityService.getUserById({id: userDto.id});
+    // const requestDto = RequestDto.toEntity(user);
+
+    // await this.redisService.onRequest(requestDto);
+
+    await this.redisService.subToMessage(roomId, this.server,client);
   }
 
   @SubscribeMessage("message")
