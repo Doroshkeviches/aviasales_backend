@@ -40,7 +40,7 @@ export class ResetPasswordForm {
     @IsUUID(undefined, {
         message: UuidErrorMessage,
     })
-    refresh_token!: string;
+    reset_token!: string;
 
     static from(form?: ResetPasswordForm) {
         const it = new ResetPasswordForm();
@@ -48,7 +48,7 @@ export class ResetPasswordForm {
         it.device_id = form?.device_id;
         it.password = form?.password;
         it.password_confirm = form?.password_confirm;
-        it.refresh_token = form?.refresh_token;
+        it.reset_token = form?.reset_token;
         return it;
     }
 
