@@ -75,16 +75,16 @@ model User {
 }
 
 model Device {
-  id            String   @id @default(uuid()) @db.Uuid
-  created_at    DateTime @default(now()) @db.Timestamptz()
-  updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz()
-  user_id       String   @default(uuid()) @db.Uuid
-  device_id     String   @default(uuid()) @db.Uuid
-  refresh_token String?
-  user          User?    @relation(fields: [user_id], references: [id])
+  id          String   @id @default(uuid()) @db.Uuid
+  created_at  DateTime @default(now()) @db.Timestamptz()
+  updated_at  DateTime @default(now()) @updatedAt @db.Timestamptz()
+  user_id     String   @default(uuid()) @db.Uuid
+  device_id   String   @default(uuid()) @db.Uuid
+  reset_token String?
+  user        User?    @relation(fields: [user_id], references: [id])
 
   @@unique([user_id, device_id])
-  @@unique([device_id, refresh_token])
+  @@unique([device_id, reset_token])
   @@map("devices")
 }
 
