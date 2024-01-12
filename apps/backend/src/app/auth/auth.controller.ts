@@ -161,8 +161,9 @@ export class AuthController {
     const errors = await ResetPasswordForm.validate(form);
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
     const entity = await this.authService.findSessionByResetToken(form);
+    if (!entity) throw new ApiException(ErrorCodes.Error)
     const user = await this.authService.changePassword(entity.user, form);
-    await this.authService.deleteRefreshToken(user, form);
+    await this.authService.deleteResetToken(user, form);
     const tokens = await this.authService.authenticate(user, form);
     return TokenDto.toEntity(tokens);
   }

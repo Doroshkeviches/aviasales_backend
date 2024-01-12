@@ -6,7 +6,6 @@ import {PrismaService} from "@app/prisma";
 export class DeviceRepoService {
     constructor(private prisma: PrismaService) { }
     async updateSession(user: User, { device_id }: Pick<Device, 'device_id'>) {
-        console.log(user, device_id, 'id')
         return this.prisma.device.upsert({
             where: {
                 user_id_device_id: {
@@ -41,12 +40,12 @@ export class DeviceRepoService {
         });
     }
 
-    async findByResetToken(data: Pick<User, 'email'> & Pick<Device, 'device_id' | 'refresh_token'>) {
+    async findByResetToken(data: Pick<User, 'email'> & Pick<Device, 'device_id' | 'reset_token'>) {
         return await this.prisma.device.findUnique({
             where: {
-                device_id_refresh_token: {
+                device_id_reset_token: {
                     device_id: data.device_id,
-                    refresh_token: data.refresh_token,
+                    reset_token: data.reset_token,
                 },
                 user: {
                     email: data.email,
@@ -57,7 +56,7 @@ export class DeviceRepoService {
     }
 
     async updateResetToken(
-        data: Pick<Device, 'user_id'> & Pick<Device, 'device_id' | 'refresh_token'>
+        data: Pick<Device, 'user_id'> & Pick<Device, 'device_id' | 'reset_token'>
     ) {
         return this.prisma.device.upsert({
             where: {
@@ -67,19 +66,19 @@ export class DeviceRepoService {
                 },
             },
             create: {
-                refresh_token: data.refresh_token,
+                reset_token: data.reset_token,
                 user_id: data.user_id,
                 device_id: data.device_id
             },
             update: {
-                refresh_token: data.refresh_token,
+                reset_token: data.reset_token,
                 user_id: data.user_id,
                 device_id: data.device_id
             },
         });
     }
 
-    async deleteRefreshToken(user: Partial<User>, { device_id }: Pick<Device, 'device_id'>) {
+    async deleteResetToken(user: Partial<User>, { device_id }: Pick<Device, 'device_id'>) {
         return this.prisma.device.update({
             where: {
                 user_id_device_id: {
@@ -88,7 +87,7 @@ export class DeviceRepoService {
                 },
             },
             data: {
-                refresh_token: null,
+                reset_token: null,
             },
         });
     }

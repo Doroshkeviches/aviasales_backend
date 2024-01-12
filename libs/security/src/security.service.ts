@@ -31,10 +31,6 @@ export class SecurityService {
         return tokens
     }
 
-    async decodeUserFromToken(token: Pick<Device, 'refresh_token'>) {
-        const user = this.jwtService.verify(token.refresh_token)
-        return user
-    }
 
     async getUserById(id: user_id) {
         return this.usersRepos.getOneUserById(id)

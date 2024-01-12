@@ -20,11 +20,9 @@ export class AuthService {
 
     async updateTokens(user: User, { device_id }: Pick<Device, 'device_id'>) {
         const tokens = await this.securityService.generateTokens(user)
-        await this.deviceRepo.updateResetToken({ user_id: user.id, device_id, refresh_token: tokens.refresh_token })
         return tokens;
     }
     async getUserByEmail(email: Pick<User, 'email'>) {
-
         const user = await this.usersRepo.getUserByEmail(email);
         return user
     }
@@ -51,10 +49,10 @@ export class AuthService {
             {
                 user_id: session.user.id,
                 device_id: session.device_id,
-                refresh_token: token
+                reset_token: token
             },
         );
-        return entity ? token : undefined;
+        return token
     }
 
 
@@ -76,7 +74,7 @@ export class AuthService {
         return tokens;
     }
 
-    async findSessionByResetToken(data: Pick<User, 'email'> & Pick<Device, 'device_id' | 'refresh_token'>
+    async findSessionByResetToken(data: Pick<User, 'email'> & Pick<Device, 'device_id' | 'reset_token'>
     ) {
         return await this.deviceRepo.findByResetToken(data);
     }
@@ -86,7 +84,7 @@ export class AuthService {
         return await this.usersRepo.changePassword(user, { password });
     }
 
-    async deleteRefreshToken(user: Partial<User>, device_id: Pick<Device, 'device_id'>) {
-        return await this.deviceRepo.deleteRefreshToken(user, device_id);
+    async deleteResetToken(user: Partial<User>, device_id: Pick<Device, 'device_id'>) {
+        return await this.deviceRepo.deleteResetToken(user, device_id);
     }
 }
