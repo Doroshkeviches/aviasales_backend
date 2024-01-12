@@ -56,6 +56,9 @@ enum UserPermissions {
   UpdateTicketStatus            @map("permissions.update-ticket-status")
   CreateNewTicket               @map("permissions.create-new-ticket")
   UpdateTicketHolderCredentials @map("permissions.update-ticket-holder-credentials")
+
+  AccessChat @map("permissions.access-chat")
+  StartChat  @map("permissions.start-chat")
 }
 
 model User {

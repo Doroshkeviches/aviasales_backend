@@ -25,7 +25,41 @@
     "paths": {
       "@/src/*": [
         "apps/backend/src/*"
+      ],
+      "@app/libs/test": [
+        "libs/libs/test/src"
+      ],
+      "@app/libs/test/*": [
+        "libs/libs/test/src/*"
+      ],
+      "@app/prisma": [
+        "libs/prisma/src"
+      ],
+      "@app/prisma/*": [
+        "libs/prisma/src/*"
+      ],
+      "@app/exceptions": [
+        "libs/exceptions/src"
+      ],
+      "@app/exceptions/*": [
+        "libs/exceptions/src/*"
+      ],
+      "@app/security": [
+        "libs/security/src"
+      ],
+      "@app/security/*": [
+        "libs/security/src/*"
+      ],
+      "@app/config": [
+        "libs/config/src",
+        "libs/config/src",
+        "libs/config/src"
+      ],
+      "@app/config/*": [
+        "libs/config/src/*",
+        "libs/config/src/*",
+        "libs/config/src/*"
       ]
-    },
-  },
+    }
+  }
 }

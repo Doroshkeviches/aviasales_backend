@@ -8,13 +8,22 @@
     "tsConfigPath": "apps/backend/tsconfig.app.json"
   },
   "projects": {
-    "security": {
-      "type": "library",
-      "root": "libs/security",
-      "entryFile": "index",
-      "sourceRoot": "libs/security/src",
+    "backend": {
+      "type": "application",
+      "root": "apps/backend",
+      "entryFile": "main",
+      "sourceRoot": "apps/backend/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/security/tsconfig.lib.json"
+        "tsConfigPath": "apps/backend/tsconfig.app.json"
+      }
+    },
+    "chat-gateway": {
+      "type": "application",
+      "root": "apps/chat-gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/chat-gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/chat-gateway/tsconfig.app.json"
       }
     },
     "prisma": {
@@ -26,22 +35,22 @@
         "tsConfigPath": "libs/prisma/tsconfig.lib.json"
       }
     },
-    "backend": {
-      "type": "application",
-      "root": "apps/backend",
-      "entryFile": "main",
-      "sourceRoot": "apps/backend/src",
+    "exceptions": {
+      "type": "library",
+      "root": "libs/exceptions",
+      "entryFile": "index",
+      "sourceRoot": "libs/exceptions/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/backend/tsconfig.app.json"
+        "tsConfigPath": "libs/exceptions/tsconfig.lib.json"
       }
     },
-    "chat-getaway": {
-      "type": "application",
-      "root": "apps/chat-getaway",
-      "entryFile": "main",
-      "sourceRoot": "apps/chat-getaway/src",
+    "security": {
+      "type": "library",
+      "root": "libs/security",
+      "entryFile": "index",
+      "sourceRoot": "libs/security/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/chat-getaway/tsconfig.app.json"
+        "tsConfigPath": "libs/security/tsconfig.lib.json"
       }
     }
   },

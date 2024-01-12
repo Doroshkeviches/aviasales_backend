@@ -5,7 +5,7 @@ import * as cors from 'cors';
 import * as compression from 'compression';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import { PrismaClientExceptionFilter } from './libs/exceptions/global-exception.filter';
+import {PrismaClientExceptionFilter} from "@app/exceptions/global-exception.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

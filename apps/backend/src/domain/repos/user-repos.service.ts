@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { Role, User, UserRoles } from '@prisma/client';
-import { PrismaService } from '@/src/libs/prisma/src';
-import { user_id } from '@/src/types/user-id.type';
+import { Injectable } from "@nestjs/common";
+import { Role, User, UserRoles } from "@prisma/client";
+import { user_id } from "@/src/types/user-id.type";
+import {PrismaService} from "@app/prisma";
 
 const includingData = () => {
   return {
@@ -53,14 +53,14 @@ export class UsersRepoService {
     });
   }
 
-  async getUserByEmail({ email }: Pick<User, 'email'>) {
+  async getUserByEmail({ email }: Pick<User, "email">) {
     return await this.prisma.user.findUnique({
       where: { email },
       ...includingData(),
     });
   }
 
-  async getOneUserById({ id }: Pick<User, 'id'>) {
+  async getOneUserById({ id }: Pick<User, "id">) {
     const user = await this.prisma.user.findUnique({
       where: { id },
       ...includingData(),
@@ -69,9 +69,9 @@ export class UsersRepoService {
   }
 
   async createUser(
-    dto: Pick<User, 'email' | 'first_name' | 'last_name'>,
+    dto: Pick<User, "email" | "first_name" | "last_name">,
     role: Role,
-    { password }: Pick<User, 'password'>
+    { password }: Pick<User, "password">,
   ) {
     const { email, first_name, last_name } = dto;
     const user = await this.prisma.user.create({
@@ -106,7 +106,7 @@ export class UsersRepoService {
     });
   }
 
-  async getAdminByEmail({ email }: Pick<User, 'email'>) {
+  async getAdminByEmail({ email }: Pick<User, "email">) {
     return this.prisma.user.findUnique({
       where: {
         email,

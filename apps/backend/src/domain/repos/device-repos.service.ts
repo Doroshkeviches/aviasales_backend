@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Device, Role, User, UserRoles } from '@prisma/client';
-import { PrismaService } from '@/src/libs/prisma/src';
+import {PrismaService} from "@app/prisma";
 
 @Injectable()
 export class DeviceRepoService {

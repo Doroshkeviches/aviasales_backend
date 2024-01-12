@@ -10,14 +10,14 @@ import {
 import { FlightsService } from './flights.service';
 import { ChangeFlightStatus } from './domain/ChangeFlightStatusForm';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
-import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
 import { ChangeFlightPrice } from './domain/ChangeFlightPriceForm';
-import { ApiException } from '@/src/libs/exceptions/api-exception';
-import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
-import { JwtAuthGuard } from '@/src/libs/security/guards/security.guard';
 import { UserPermissions } from '@prisma/client';
 import { PathsDto } from './domain/paths.dto';
 import { ApiResponse } from '@nestjs/swagger';
+import {ApiException} from "@app/exceptions/api-exception";
+import {ApiRequestException} from "@app/exceptions/api-request-exception";
+import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
+import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
 
 @Controller('flights')
 export class FlightsController {
