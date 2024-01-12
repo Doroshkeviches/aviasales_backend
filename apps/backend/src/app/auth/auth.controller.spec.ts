@@ -76,7 +76,8 @@ describe('AuthController', () => {
   }
   const mockAuthService = {
     getUserByEmail: jest.fn((email: string) => {
-      if (email === 'wrong@email.com') {
+      console.log(email)
+      if (email == 'wrong@email.com') {
         return null
       }
       return user
@@ -109,7 +110,7 @@ describe('AuthController', () => {
       return user
     }),
 
-    
+
     // updateUser: jest.fn((data: { id: string }) => {
     //   if (data.id == '7bfe13fd-2d0c-467c-82a4-c31fb34d6411') {
     //     throw new ApiException(ErrorCodes.UpdateUserError);
@@ -121,15 +122,15 @@ describe('AuthController', () => {
   }
 
   const mockSecurityService = {
-    // refresh: jest.fn((data) => {
-    //   if(!data) {
-    //     return null
-    //   }
-    //   return {
-    //     access_token: 'token',
-    //     refresh_token: 'token'
-    //   }
-    // }),
+    refresh: jest.fn((data) => {
+      if (!data) {
+        return null
+      }
+      return {
+        access_token: 'token',
+        refresh_token: 'token'
+      }
+    }),
   }
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -233,6 +234,7 @@ describe('AuthController', () => {
         },
       };
       jest.spyOn(service, 'getUserByEmail').mockResolvedValueOnce(null);
+      jest.spyOn(securityService, 'refresh').mockResolvedValueOnce({ ...tokens });
       jest.spyOn(I18nContext, 'current').mockReturnValue(i18n);
       await expect(controller.signIn(invalidUserEmail)).rejects.toThrow(ApiException);
     });
@@ -347,7 +349,6 @@ describe('AuthController', () => {
           return key;
         },
       };
-      jest.spyOn(service, 'getUserByEmail').mockResolvedValueOnce(user);
       jest.spyOn(I18nContext, 'current').mockReturnValue(i18n);
       await expect(controller.forgotPassword(invalidSession)).rejects.toThrow(ApiException);
     });
@@ -381,13 +382,13 @@ describe('AuthController', () => {
 
   describe('refresh', () => {
     it('should throw ApiException no-user', async () => {
-      const invalidUserEmail = { ...decoded_user, email: 'wrong@email.com'};
+      const invalidUserEmail = { ...decoded_user, email: 'wrong123@email.com' };
       let i18n: any = {
         t: (key: string) => {
           return key;
         },
       };
-      jest.spyOn(service, 'getUserByEmail').mockResolvedValueOnce(user);
+      jest.spyOn(service, 'getUserByEmail').mockResolvedValueOnce(null);
       jest.spyOn(I18nContext, 'current').mockReturnValue(i18n);
       await expect(controller.refresh(invalidUserEmail)).rejects.toThrow(ApiException);
     });
