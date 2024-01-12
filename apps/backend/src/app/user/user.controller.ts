@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiResponse } from '@nestjs/swagger';
-import { UpdateUserForm } from './domain/UpdateUserForm';
+import { UpdateUserForm } from './domain/UpdateUser.form';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { UserPermissions } from '@prisma/client';
 import { UserDto } from './domain/user.dto';
@@ -29,7 +29,7 @@ export class UserController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
-  // @RequirePermissions(UserPermissions.GetAllUsers)
+  @RequirePermissions(UserPermissions.GetAllUsers)
   @Get()
   async getAllUsers(@Query('page') page: number) {
     const users = await this.userService.getAllUsers(page);

@@ -7,17 +7,17 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { SignUpForm } from "./domain/SignUpForm";
-import { SignInForm } from "./domain/SignInForm";
+import { SignUpForm } from "./domain/SignUp.form";
+import { SignInForm } from "./domain/SignIn.form";
 import { ErrorCodes } from "@/src/enums/error-codes.enum";
-import { TokenDto } from "./domain/TokenDto";
+import { TokenDto } from "./domain/Token.dto";
 import { decoded_user } from "@/src/types/decoded-user.type";
 import { ApiBody, ApiResponse } from "@nestjs/swagger";
 import { User, UserPermissions } from "@prisma/client";
-import { SignoutForm } from "./domain/SignoutForm";
-import { ForgotPasswordForm } from "./domain/ForgotPasswordForm";
-import { ResetTokenDto } from "./domain/ResetTokenDto";
-import { ResetPasswordForm } from "./domain/ResetPasswordForm";
+import { SignoutForm } from "./domain/Signout.form";
+import { ForgotPasswordForm } from "./domain/ForgotPassword.form";
+import { ResetTokenDto } from "./domain/ResetToken.dto";
+import { ResetPasswordForm } from "./domain/ResetPassword.form";
 import { ApiRequestException } from "@app/exceptions/api-request-exception";
 import { SecurityService } from "@app/security";
 import { ApiException } from "@app/exceptions/api-exception";

@@ -22,7 +22,7 @@ const includingData = () => {
 };
 
 @Injectable()
-export class UsersRepoService {
+export class UsersReposService {
   constructor(private prisma: PrismaService) { }
   async getAllUsers(page: number, pageSize: number = 10) {
     const skip = (page - 1) * pageSize;

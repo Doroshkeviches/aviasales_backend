@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RolesReposService } from 'apps/backend/src/domain/repos/roles-repos.service';
-import { UsersRepoService } from 'apps/backend/src/domain/repos/user-repos.service';
+import { UsersReposService } from 'apps/backend/src/domain/repos/user-repos.service';
 import { ConfigService } from '@nestjs/config';
 import { Device, Role, User } from '@prisma/client';
 import { user_id } from 'apps/backend/src/types/user-id.type';
-import { DeviceRepoService } from 'apps/backend/src/domain/repos/device-repos.service';
+import { DeviceReposService } from 'apps/backend/src/domain/repos/device-repos.service';
 import * as bcrypt from 'bcryptjs';
 
 
 @Injectable()
 export class SecurityService {
     constructor(private jwtService: JwtService,
-        private usersRepos: UsersRepoService,
+        private usersRepos: UsersReposService,
         private rolesRepos: RolesReposService,
-        private deviceRepo: DeviceRepoService,
-        private deviceRepos: DeviceRepoService,
+        private deviceRepo: DeviceReposService,
+        private deviceRepos: DeviceReposService,
         private config: ConfigService,
     ) { }
     async generateTokens(user: Pick<User, 'id' | 'role_id' | 'email' | 'role_type'>, device_id: Pick<Device, 'device_id'>) {

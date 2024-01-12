@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { RolesReposService } from '@/src/domain/repos/roles-repos.service';
-import { UsersRepoService } from '@/src/domain/repos/user-repos.service';
+import { UsersReposService } from '@/src/domain/repos/user-repos.service';
 import * as bcrypt from 'bcryptjs';
 import { Device, User, UserRoles } from '@prisma/client';
-import { DeviceRepoService } from '@/src/domain/repos/device-repos.service';
+import { DeviceReposService } from '@/src/domain/repos/device-repos.service';
 import { v4 } from 'uuid';
 import {SecurityService} from "@app/security";
 
@@ -12,8 +12,8 @@ import {SecurityService} from "@app/security";
 @Injectable()
 export class AuthService {
     constructor(
-        private usersRepo: UsersRepoService,
-        private deviceRepo: DeviceRepoService,
+        private usersRepo: UsersReposService,
+        private deviceRepo: DeviceReposService,
         private rolesRepo: RolesReposService,
         private securityService: SecurityService,
     ) { }

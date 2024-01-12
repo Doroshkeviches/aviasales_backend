@@ -1,10 +1,10 @@
-import { UsersRepoService } from '@/src/domain/repos/user-repos.service';
+import { UsersReposService } from '@/src/domain/repos/user-repos.service';
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
-  constructor(private userRepo: UsersRepoService) {}
+  constructor(private userRepo: UsersReposService) {}
 
   async getAllUsers(page: number) {
     return await this.userRepo.getAllUsers(page);

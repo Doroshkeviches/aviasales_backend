@@ -4,12 +4,8 @@ import {
   Flight,
   FlightStatus,
   Plane,
-  Role,
   Ticket,
-  UserPermissions,
-  UserRoles,
 } from '@prisma/client';
-import { v4 as uuidv4 } from 'uuid';
 import {PrismaService} from "@app/prisma";
 
 const includingData = () => {
@@ -23,7 +19,7 @@ const includingData = () => {
 };
 
 @Injectable()
-export class FlightsRepoService {
+export class FlightsReposService {
   constructor(private prisma: PrismaService) {}
   async createFlight(
     from_city: City,

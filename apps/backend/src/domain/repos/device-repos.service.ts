@@ -3,7 +3,7 @@ import { Device, Role, User, UserRoles } from '@prisma/client';
 import { PrismaService } from "@app/prisma";
 
 @Injectable()
-export class DeviceRepoService {
+export class DeviceReposService {
     constructor(private prisma: PrismaService) { }
     async updateSession(user: User, { device_id }: Pick<Device, 'device_id'>) {
         return this.prisma.device.upsert({
