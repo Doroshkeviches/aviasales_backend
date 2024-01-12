@@ -90,10 +90,7 @@ export class AuthController {
         if (candidate) {
             throw new ApiException(ErrorCodes.AlreadyRegistered)
         }
-
         const user = await this.authService.signUp(form)
-        if (!user) throw new ApiException(ErrorCodes.CreateUserError)
-
         const tokens = await this.authService.updateTokens(user, form)
         return TokenDto.toEntity(tokens)
     }
@@ -131,13 +128,10 @@ export class AuthController {
         const errors = await ForgotPasswordForm.validate(form)
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
         const session = await this.authService.findSessionByEmailAndDeviceId(form);
-        if(!session) {
+        if (!session) {
             throw new ApiException(ErrorCodes.NotExists_User);
         }
         const token = await this.authService.setResetToken(session);
-        if (!token) {
-            throw new ApiException(ErrorCodes.NotExists_User);
-        }
         return ResetTokenDto.toEntity({ token });
     }
 
@@ -157,6 +151,7 @@ export class AuthController {
         const errors = await ResetPasswordForm.validate(form)
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
         const entity = await this.authService.findSessionByResetToken(form);
+        if (!entity) throw new ApiException(ErrorCodes.Error)
         const user = await this.authService.changePassword(entity.user, form);
         await this.authService.deleteResetToken(user, form);
         const tokens = await this.authService.authenticate(user, form);

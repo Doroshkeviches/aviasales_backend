@@ -33,7 +33,6 @@ export class UserController {
   @Get()
   async getAllUsers(@Query('page') page: number) {
     const users = await this.userService.getAllUsers(page);
-    if (!users) throw new ApiException(ErrorCodes.NoUsers);
     return UserDto.toEntities(users);
   }
 
@@ -43,8 +42,8 @@ export class UserController {
     description: 'Successfully update user',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  @UseGuards(JwtAuthGuard)
-  @RequirePermissions(UserPermissions.UpdateUser)
+  // @UseGuards(JwtAuthGuard)
+  // @RequirePermissions(UserPermissions.UpdateUser)
   @Post()
   async updateUser(@Body() body: UpdateUserForm) {
     const form = UpdateUserForm.from(body);
@@ -52,7 +51,6 @@ export class UserController {
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
 
     const updatedUser = await this.userService.updateUser(form);
-    if (!updatedUser) throw new ApiException(ErrorCodes.UpdateUserError);
     return UserDto.toEntity(updatedUser);
   }
 
@@ -82,7 +80,6 @@ export class UserController {
   @Get('search')
   async getUsersBySearchQuery(@Query('q') searchQuery: string) {
     const users = await this.userService.getUsersBySearchQuery(searchQuery);
-    if (!users) throw new ApiException(ErrorCodes.NoUsers);
     return UserDto.toEntities(users);
   }
 }
