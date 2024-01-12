@@ -19,7 +19,8 @@
     "noFallthroughCasesInSwitch": false,
     "types": [
       "node",
-      "@prisma/client"
+      "@prisma/client",
+      "jest"
     ],
     "paths": {
       "@/src/*": [

@@ -1,5 +1,4 @@
 import { UsersRepoService } from '@/src/domain/repos/user-repos.service';
-import { user_id } from '@/src/types/user-id.type';
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 
@@ -8,7 +7,7 @@ export class UserService {
   constructor(private userRepo: UsersRepoService) {}
 
   async getAllUsers(page: number) {
-    return this.userRepo.getAllUsers(page);
+    return await this.userRepo.getAllUsers(page);
   }
   async updateUser(data: Partial<User>) {
     return this.userRepo.updateUser(data);

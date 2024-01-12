@@ -23,7 +23,6 @@ export class AuthService {
         return tokens;
     }
     async getUserByEmail(email: Pick<User, 'email'>) {
-
         const user = await this.usersRepo.getUserByEmail(email);
         return user
     }
@@ -50,7 +49,7 @@ export class AuthService {
                 reset_token: token
             },
         );
-        return entity ? token : undefined;
+        return token
     }
 
 
