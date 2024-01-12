@@ -17,9 +17,9 @@ import { JwtAuthGuard } from "../../../libs/security/guards/security.guard";
 import { SecurityService } from "@app/security";
 import { UserSessionDto } from "@app/security/dtos/UserSessionDto";
 import { RequestDto } from "./domain/request.dto";
-// TODO: message exchange should be moved to pub/sub?
+import {uuid} from "uuidv4";
 
-@WebSocketGateway()
+@WebSocketGateway({ cors: '*:*' })
 export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
   constructor(
     private readonly redisService: RedisService,
@@ -31,16 +31,17 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     console.log(`Client ${client.id} connected`);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   // require permissions <- for manager only
   @SubscribeMessage("join-requests-channel")
   async joinRequestsChannel(@ConnectedSocket() client: Socket) {
     client.join('requests');
+    console.log("joined request channel");
     this.server.to(client.id).emit('message', `successfully joined room requests`); // remove this later
     await this.redisService.subToRequestChannel(this.server);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @SubscribeMessage("accept-request")
   async acceptRequest(@ConnectedSocket() client: Socket, @MessageBody() userId: string) {
     client.join(userId);
@@ -62,8 +63,13 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     // const userDto = UserSessionDto.fromPayload(client.data.user);
     // const user = await this.securityService.getUserById({id: userDto.id});
     // const requestDto = RequestDto.toEntity(user);
+    const requestDto = RequestDto.toEntity({
+      id: uuid(),
+      first_name: 'AAAA',
+      last_name: 'BBBB'
+    });
 
-    // await this.redisService.onRequest(requestDto);
+    await this.redisService.onRequest(requestDto);
 
     await this.redisService.subToMessage(roomId, this.server,client);
   }
