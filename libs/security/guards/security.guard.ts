@@ -72,8 +72,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
     const decodedUser = UserSessionDto.fromPayload(
       this.jwtService.verify(token),
     );
-    const user = await this.securityService.getUserById({ id: decodedUser.id });
-
+    const user = await this.securityService.findSessionByUserIdAndDeviceId(decodedUser);
     if (!user) {
       throw new ApiException(ErrorCodes.NotAuthorizedRequest);
     }
@@ -93,7 +92,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
       return true;
     }
 
-    if (roleEntity.type === UserRoles.Client) {
+    if (roleEntity.type === UserRoles.Admin) {
       return true;
     }
 

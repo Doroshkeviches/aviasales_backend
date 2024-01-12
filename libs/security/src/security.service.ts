@@ -14,18 +14,19 @@ export class SecurityService {
     constructor(private jwtService: JwtService,
         private usersRepos: UsersRepoService,
         private rolesRepos: RolesReposService,
+        private deviceRepo: DeviceRepoService,
         private deviceRepos: DeviceRepoService,
         private config: ConfigService,
     ) { }
-    async generateTokens(user: Pick<User, 'id' | 'role_id' | 'email' | 'role_type'>) {
-        const payload = { email: user.email, id: user.id, role_id: user.role_id, role_type: user.role_type };
+    async generateTokens(user: Pick<User, 'id' | 'role_id' | 'email' | 'role_type'>, device_id: Pick<Device, 'device_id'>) {
+        const payload = { email: user.email, id: user.id, role_id: user.role_id, role_type: user.role_type, device_id: device_id.device_id };
         const access_token = this.jwtService.sign(payload, { secret: this.config.get('security').secret })
         const refresh_token = this.jwtService.sign(payload, { secret: this.config.get('security').secret })
         return ({ access_token, refresh_token })
     }
 
     async refresh(user: User, device_id: Pick<Device, 'device_id'>) {
-        const tokens = await this.generateTokens(user)
+        const tokens = await this.generateTokens(user, device_id)
         await this.deviceRepos.updateSession(user, device_id)
 
         return tokens
@@ -34,6 +35,9 @@ export class SecurityService {
 
     async getUserById(id: user_id) {
         return this.usersRepos.getOneUserById(id)
+    }
+    async findSessionByUserIdAndDeviceId(data: Pick<User, 'id'> & Pick<Device, 'device_id'>) {
+        return await this.deviceRepo.findSessionByUserIdAndDeviceId(data);
     }
     async getRoleById(id: Pick<Role, 'id'>) {
         return this.rolesRepos.getRoleById(id)

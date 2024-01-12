@@ -83,7 +83,6 @@ export class FlightsRepoService {
   ) {
     const next_day_date = new Date(data.start_flight_date);
     next_day_date.setDate(next_day_date.getDate() + 1);
-    console.log(data.start_flight_date);
     return this.prisma.flight.findMany({
       where: {
         OR: [

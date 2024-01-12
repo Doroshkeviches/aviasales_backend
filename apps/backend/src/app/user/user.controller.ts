@@ -28,7 +28,7 @@ export class UserController {
     description: 'Successfully get all users',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   // @RequirePermissions(UserPermissions.GetAllUsers)
   @Get()
   async getAllUsers(@Query('page') page: number) {
@@ -42,8 +42,8 @@ export class UserController {
     description: 'Successfully update user',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  // @UseGuards(JwtAuthGuard)
-  // @RequirePermissions(UserPermissions.UpdateUser)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.UpdateUser)
   @Post()
   async updateUser(@Body() body: UpdateUserForm) {
     const form = UpdateUserForm.from(body);

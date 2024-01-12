@@ -73,6 +73,7 @@ model User {
   tickets    Ticket[]
   devices    Device[]
 
+  @@index([email])
   @@index([id])
   @@map("users")
 }

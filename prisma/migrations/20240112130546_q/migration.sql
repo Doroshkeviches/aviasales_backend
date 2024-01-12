@@ -8,7 +8,7 @@ CREATE TYPE "FlightStatus" AS ENUM ('planned', 'flying', 'fulfilled', 'canceled'
 CREATE TYPE "TicketStatus" AS ENUM ('fulfilled', 'in cart', 'canceled');
 
 -- CreateEnum
-CREATE TYPE "UserPermissions" AS ENUM ('permissions.all', 'permissions.signout', 'permissions.password-change', 'permissions.refresh-token', 'permissions.get-all-cities', 'permissions.get-city-by-id', 'permissions.create-new-city', 'permissions.update-city-title-by-id', 'permissions.delete-city-by-id', 'permissions.get-array-of-path', 'permissions.change-flight-status', 'permissions.change-flight-price', 'permissions.create-order', 'permissions.update-order-status', 'permissions.delete-order-by-id', 'permissions.get-orders-by-user-id', 'permissions.get-ticket-by-id', 'permissions.get-ticket-by-order-id', 'permissions.get-ticket-by-flight-id', 'permissions.delete-ticket-by-id', 'permissions.access-chat', 'permissions.start-chat');
+CREATE TYPE "UserPermissions" AS ENUM ('permissions.all', 'permissions.signout', 'permissions.password-change', 'permissions.refresh-token', 'permissions.get-all-users', 'permissions.get-user-by-id', 'permissions.get-users-by-search-query', 'permissions.update-user', 'permissions.get-all-cities', 'permissions.get-city-by-id', 'permissions.create-new-city', 'permissions.update-city-title-by-id', 'permissions.delete-city-by-id', 'permissions.get-array-of-path', 'permissions.change-flight-status', 'permissions.change-flight-price', 'permissions.get-all-tickets', 'permissions.get-ticket-by-id', 'permissions.delete-ticket-by-id', 'permissions.update-ticket-status', 'permissions.create-new-ticket', 'permissions.update-ticket-holder-credentials', 'permissions.access-chat', 'permissions.start-chat');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -30,7 +30,7 @@ CREATE TABLE "devices" (
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "user_id" UUID NOT NULL,
     "device_id" UUID NOT NULL,
-    "refresh_token" TEXT,
+    "reset_token" TEXT,
 
     CONSTRAINT "devices_pkey" PRIMARY KEY ("id")
 );
@@ -98,7 +98,7 @@ CREATE INDEX "users_id_idx" ON "users"("id");
 CREATE UNIQUE INDEX "devices_user_id_device_id_key" ON "devices"("user_id", "device_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "devices_device_id_refresh_token_key" ON "devices"("device_id", "refresh_token");
+CREATE UNIQUE INDEX "devices_device_id_reset_token_key" ON "devices"("device_id", "reset_token");
 
 -- CreateIndex
 CREATE INDEX "tickets_id_idx" ON "tickets"("id");

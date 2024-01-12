@@ -18,8 +18,8 @@ export class AuthService {
         private securityService: SecurityService,
     ) { }
 
-    async updateTokens(user: User, { device_id }: Pick<Device, 'device_id'>) {
-        const tokens = await this.securityService.generateTokens(user)
+    async updateTokens(user: User, device_id: Pick<Device, 'device_id'>) {
+        const tokens = await this.securityService.generateTokens(user,device_id)
         return tokens;
     }
     async getUserByEmail(email: Pick<User, 'email'>) {
@@ -68,8 +68,14 @@ export class AuthService {
         return await this.deviceRepo.deleteRecord(user, device_id)
     }
 
+    async signoutSessions(user: User, device_id: Pick<Device, 'device_id'>) {
+        return await this.deviceRepo.signoutSessions(user, device_id)
+    }
+    async signoutOneSession(user: User, device_id: Pick<Device, 'device_id'>) {
+        return await this.deviceRepo.signoutOneSession(user, device_id)
+    }
     async authenticate(user: User, device_id: Pick<Device, 'device_id'>) {
-        const tokens = await this.securityService.generateTokens(user)
+        const tokens = await this.securityService.generateTokens(user,device_id)
         await this.deviceRepo.updateSession(user, device_id);
         return tokens;
     }
