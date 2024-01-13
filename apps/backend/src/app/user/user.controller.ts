@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiResponse } from '@nestjs/swagger';
-import { UpdateUserForm } from './domain/UpdateUserForm';
+import { UpdateUserForm } from './domain/UpdateUser.form';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { UserPermissions } from '@prisma/client';
 import { UserDto } from './domain/user.dto';
@@ -28,8 +28,8 @@ export class UserController {
     description: 'Successfully get all users',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  // @UseGuards(JwtAuthGuard)
-  // @RequirePermissions(UserPermissions.GetAllUsers)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetAllUsers)
   @Get()
   async getAllUsers(@Query('page') page: number) {
     const users = await this.userService.getAllUsers(page);
@@ -42,8 +42,8 @@ export class UserController {
     description: 'Successfully update user',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  // @UseGuards(JwtAuthGuard)
-  // @RequirePermissions(UserPermissions.UpdateUser)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.UpdateUser)
   @Post()
   async updateUser(@Body() body: UpdateUserForm) {
     const form = UpdateUserForm.from(body);

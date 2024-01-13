@@ -8,9 +8,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { FlightsService } from './flights.service';
-import { ChangeFlightStatus } from './domain/ChangeFlightStatusForm';
+import { ChangeFlightStatus } from './domain/ChangeFlightStatus.form';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
-import { ChangeFlightPrice } from './domain/ChangeFlightPriceForm';
+import { ChangeFlightPrice } from './domain/ChangeFlightPrice.form';
 import { UserPermissions } from '@prisma/client';
 import { PathsDto } from './domain/paths.dto';
 import { ApiResponse } from '@nestjs/swagger';

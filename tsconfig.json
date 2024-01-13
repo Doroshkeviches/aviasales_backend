@@ -52,13 +52,9 @@
       ],
       "@app/config": [
         "libs/config/src",
-        "libs/config/src",
-        "libs/config/src"
       ],
       "@app/config/*": [
         "libs/config/src/*",
-        "libs/config/src/*",
-        "libs/config/src/*"
       ]
     }
   }

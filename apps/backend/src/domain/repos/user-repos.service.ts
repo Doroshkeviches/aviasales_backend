@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { Role, User, UserRoles } from "@prisma/client";
+import { Device, Role, User, UserRoles } from "@prisma/client";
 import { user_id } from "@/src/types/user-id.type";
-import {PrismaService} from "@app/prisma";
+import { PrismaService } from "@app/prisma";
 
 const includingData = () => {
   return {
@@ -22,8 +22,8 @@ const includingData = () => {
 };
 
 @Injectable()
-export class UsersRepoService {
-  constructor(private prisma: PrismaService) {}
+export class UsersReposService {
+  constructor(private prisma: PrismaService) { }
   async getAllUsers(page: number, pageSize: number = 10) {
     const skip = (page - 1) * pageSize;
     return this.prisma.user.findMany({
@@ -60,6 +60,7 @@ export class UsersRepoService {
     });
   }
 
+
   async getOneUserById({ id }: Pick<User, "id">) {
     const user = await this.prisma.user.findUnique({
       where: { id },
@@ -67,6 +68,8 @@ export class UsersRepoService {
     });
     return user;
   }
+
+
 
   async createUser(
     dto: Pick<User, "email" | "first_name" | "last_name">,

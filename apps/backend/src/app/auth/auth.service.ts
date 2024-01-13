@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { RolesReposService } from '@/src/domain/repos/roles-repos.service';
-import { UsersRepoService } from '@/src/domain/repos/user-repos.service';
+import { UsersReposService } from '@/src/domain/repos/user-repos.service';
 import * as bcrypt from 'bcryptjs';
 import { Device, User, UserRoles } from '@prisma/client';
-import { DeviceRepoService } from '@/src/domain/repos/device-repos.service';
+import { DeviceReposService } from '@/src/domain/repos/device-repos.service';
 import { v4 } from 'uuid';
 import {SecurityService} from "@app/security";
 
@@ -12,14 +12,14 @@ import {SecurityService} from "@app/security";
 @Injectable()
 export class AuthService {
     constructor(
-        private usersRepo: UsersRepoService,
-        private deviceRepo: DeviceRepoService,
+        private usersRepo: UsersReposService,
+        private deviceRepo: DeviceReposService,
         private rolesRepo: RolesReposService,
         private securityService: SecurityService,
     ) { }
 
-    async updateTokens(user: User, { device_id }: Pick<Device, 'device_id'>) {
-        const tokens = await this.securityService.generateTokens(user)
+    async updateTokens(user: User, device_id: Pick<Device, 'device_id'>) {
+        const tokens = await this.securityService.generateTokens(user,device_id)
         return tokens;
     }
     async getUserByEmail(email: Pick<User, 'email'>) {
@@ -68,8 +68,14 @@ export class AuthService {
         return await this.deviceRepo.deleteRecord(user, device_id)
     }
 
+    async signoutSessions(user: User, device_id: Pick<Device, 'device_id'>) {
+        return await this.deviceRepo.signoutSessions(user, device_id)
+    }
+    async signoutOneSession(user: User, device_id: Pick<Device, 'device_id'>) {
+        return await this.deviceRepo.signoutOneSession(user, device_id)
+    }
     async authenticate(user: User, device_id: Pick<Device, 'device_id'>) {
-        const tokens = await this.securityService.generateTokens(user)
+        const tokens = await this.securityService.generateTokens(user,device_id)
         await this.deviceRepo.updateSession(user, device_id);
         return tokens;
     }

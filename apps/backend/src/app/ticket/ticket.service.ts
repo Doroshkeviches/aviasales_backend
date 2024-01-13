@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Ticket, User } from '@prisma/client';
 import { TicketReposService } from '@/src/domain/repos/ticket-repos.service';
-import { FlightsRepoService } from '@/src/domain/repos/flights-repos.service';
+import { FlightsReposService } from '@/src/domain/repos/flights-repos.service';
 
 @Injectable()
 export class TicketService {
   constructor(private ticketRepo: TicketReposService,
-    private flightRepo: FlightsRepoService) { }
+    private flightRepo: FlightsReposService) { }
 
   async getAllTickets() {
     return await this.ticketRepo.getAllTickets();

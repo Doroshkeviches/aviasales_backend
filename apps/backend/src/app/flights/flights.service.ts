@@ -1,12 +1,12 @@
 import { CityReposService } from '@/src/domain/repos/city-repos.service';
-import { FlightsRepoService } from '@/src/domain/repos/flights-repos.service';
+import { FlightsReposService } from '@/src/domain/repos/flights-repos.service';
 import { Injectable } from '@nestjs/common';
 import { City, Flight, Ticket } from '@prisma/client';
 
 @Injectable()
 export class FlightsService {
   constructor(
-    private flightRepo: FlightsRepoService,
+    private flightRepo: FlightsReposService,
     private cityRepo: CityReposService
   ) {}
   async convertToGraph(arr: Flight[]) {

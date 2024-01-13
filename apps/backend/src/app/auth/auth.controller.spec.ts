@@ -1,23 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { jest, expect } from '@jest/globals';
-import { JwtAuthGuard } from '@/src/libs/security/guards/security.guard';
+import { JwtAuthGuard } from 'libs/security/guards/security.guard';
 import { I18nContext, I18nService } from 'nestjs-i18n';
-import { ApiException } from '@/src/libs/exceptions/api-exception';
-import { ErrorCodes } from '@/src/enums/error-codes.enum';
-import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
+import { ApiException } from '@app/exceptions/api-exception';
+import { ApiRequestException } from '@app/exceptions/api-request-exception';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { TokenDto } from './domain/TokenDto';
-import { SecurityModule, SecurityService } from '@/src/libs/security/src';
-import { DomainModule } from '@/src/domain';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RequirePermissions } from '@/src/libs/security/decorators/permission.decorator';
+import { TokenDto } from './domain/Token.dto';
+import { SecurityService } from 'libs/security/src';
+import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { SignInForm } from './domain/SignInForm';
-import { UserDto } from '../user/domain/user.dto';
-import { User, UserRoles } from '@prisma/client';
-import { SignoutForm } from './domain/SignoutForm';
-import { decoded_user } from '@/src/types/decoded-user.type';
+import { SignInForm } from './domain/SignIn.form';
+import { UserRoles } from '@prisma/client';
 
 describe('AuthController', () => {
   let controller: AuthController;
