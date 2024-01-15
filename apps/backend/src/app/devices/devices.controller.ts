@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { DevicesService } from './devices.service';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { ApiException } from '@app/exceptions/api-exception';
@@ -61,10 +61,9 @@ export class DevicesController {
     @ApiResponse({ status: 400, description: "Bad request" })
     @UseGuards(JwtAuthGuard)
     // @RequirePermissions(UserPermissions.RefreshToken)
-    @Get(":id")
-    async getDevicesByUserId(@Param('id') id: string) {
-        const devices = await this.devicesService.getDevicesByUserId({ id })
-        console.log(devices)
+    @Get()
+    async getUserDevices(@CurrentUser() user: User) {
+        const devices = await this.devicesService.getUserDevices(user)
         return devices
     }
 }

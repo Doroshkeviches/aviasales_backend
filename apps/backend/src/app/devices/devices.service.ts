@@ -11,7 +11,7 @@ export class DevicesService {
     async signoutSessions(user: User, device_id: Pick<Device, 'device_id'>) {
         return await this.devicesRepos.signoutSessions(user, device_id)
     }
-    async getDevicesByUserId(id: Pick<User, 'id'>) {
-        return await this.devicesRepos.getDevicesByUserId(id)
+    async getUserDevices(user: User) {
+        return await this.devicesRepos.getUserDevices(user)
     }
 }
