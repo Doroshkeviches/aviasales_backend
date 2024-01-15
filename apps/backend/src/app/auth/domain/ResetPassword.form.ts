@@ -3,13 +3,13 @@ import { IsEmail, IsStrongPassword, IsUUID, NotEquals, validate } from 'class-va
 import {EmailErrorMessage, StrongPasswordErrorMessage, UuidErrorMessage} from "@app/exceptions/i18n-error";
 
 export class ResetPasswordForm {
-    @ApiProperty({
-        description: 'email',
-    })
-    @IsEmail(undefined, {
-        message: EmailErrorMessage,
-    })
-    email!: string;
+    // @ApiProperty({
+    //     description: 'email',
+    // })
+    // @IsEmail(undefined, {
+    //     message: EmailErrorMessage,
+    // })
+    // email!: string;
 
     @ApiProperty({
         description: 'device id',
@@ -44,7 +44,7 @@ export class ResetPasswordForm {
 
     static from(form?: ResetPasswordForm) {
         const it = new ResetPasswordForm();
-        it.email = form?.email;
+        // it.email = form?.email;
         it.device_id = form?.device_id;
         it.password = form?.password;
         it.password_confirm = form?.password_confirm;

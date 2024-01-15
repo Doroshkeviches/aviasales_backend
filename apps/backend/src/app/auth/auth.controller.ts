@@ -134,10 +134,12 @@ export class AuthController {
     @ApiResponse({ status: 400, description: "Bad request" })
     @Post("forgot-password")
     async forgotPassword(@Body() body: ForgotPasswordForm) {
+        console.log(body)
         const form = ForgotPasswordForm.from(body);
         const errors = await ForgotPasswordForm.validate(form);
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
         const session = await this.authService.findSessionByEmailAndDeviceId(form);
+        console.log(session)
         if (!session) {
             throw new ApiException(ErrorCodes.NotExists_User);
         }
@@ -157,6 +159,7 @@ export class AuthController {
     @ApiResponse({ status: 400, description: "Bad request" })
     @Post("reset-password")
     async resetPassword(@Body() body: ResetPasswordForm) {
+        console.log(body)
         const form = ResetPasswordForm.from(body);
         const errors = await ResetPasswordForm.validate(form);
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);

@@ -80,7 +80,7 @@ export class AuthService {
         return tokens;
     }
 
-    async findSessionByResetToken(data: Pick<User, 'email'> & Pick<Device, 'device_id' | 'reset_token'>
+    async findSessionByResetToken(data: Pick<Device, 'device_id' | 'reset_token'>
     ) {
         return await this.deviceRepo.findByResetToken(data);
     }
