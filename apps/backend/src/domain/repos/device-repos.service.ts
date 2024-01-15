@@ -50,7 +50,7 @@ export class DeviceReposService {
 
     async deleteRecord(user: User, { device_id }: Pick<Device, 'device_id'>) {
         return this.prisma.device.delete({
-            where: { user_id_device_id: { user_id: user.id, device_id, } },
+            where: { user_id_device_id: { user_id: user.id, device_id } },
         });
     }
 
