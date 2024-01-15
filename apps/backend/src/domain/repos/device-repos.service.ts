@@ -50,11 +50,11 @@ export class DeviceReposService {
     });
   }
 
-  async deleteRecord(user: User, { device_id }: Pick<Device, 'device_id'>) {
-    return this.prisma.device.delete({
-      where: { user_id_device_id: { user_id: user.id, device_id } },
-    });
-  }
+    async deleteRecord(user: User, { device_id }: Pick<Device, 'device_id'>) {
+        return this.prisma.device.delete({
+            where: { user_id_device_id: { user_id: user.id, device_id } },
+        });
+    }
 
   async findByResetToken(
     data: Pick<Device, 'device_id' | 'reset_token'>
@@ -96,56 +96,47 @@ export class DeviceReposService {
     });
   }
 
-  async deleteResetToken(
-    user: Partial<User>,
-    { device_id }: Pick<Device, 'device_id'>
-  ) {
-    return this.prisma.device.update({
-      where: {
-        user_id_device_id: {
-          user_id: user.id,
-          device_id,
-        },
-      },
-      data: {
-        reset_token: null,
-      },
-    });
-  }
-  async getRoleById({ id }: Pick<Role, 'id'>) {
-    return this.prisma.role.findUnique({ where: { id } });
-  }
-  async signoutSessions(
-    user: Partial<User>,
-    { device_id }: Pick<Device, 'device_id'>
-  ) {
-    return this.prisma.device.deleteMany({
-      where: {
-        user_id: user.id,
-        device_id: {
-          not: device_id,
-        },
-      },
-    });
-  }
-  async signoutOneSession(
-    user: Partial<User>,
-    { device_id }: Pick<Device, 'device_id'>
-  ) {
-    return this.prisma.device.delete({
-      where: {
-        user_id_device_id: {
-          user_id: user.id,
-          device_id,
-        },
-      },
-    });
-  }
-  async getDevicesByUserId({ id }: Pick<User, 'id'>) {
-    return this.prisma.device.findMany({
-      where: {
-        user_id: id,
-      },
-    });
-  }
+    async deleteResetToken(user: Partial<User>, { device_id }: Pick<Device, 'device_id'>) {
+        return this.prisma.device.update({
+            where: {
+                user_id_device_id: {
+                    user_id: user.id,
+                    device_id,
+                },
+            },
+            data: {
+                reset_token: null,
+            },
+        });
+    }
+    async getRoleById({ id }: Pick<Role, 'id'>) {
+        return this.prisma.role.findUnique({ where: { id } })
+    }
+    async signoutSessions(user: Partial<User>, { device_id }: Pick<Device, 'device_id'>) {
+        return this.prisma.device.deleteMany({
+            where: {
+                user_id: user.id,
+                device_id: {
+                    not: device_id
+                }
+            },
+        });
+    }
+    async signoutOneSession(user: Partial<User>, { device_id }: Pick<Device, 'device_id'>) {
+        return this.prisma.device.delete({
+            where: {
+                user_id_device_id: {
+                    user_id: user.id,
+                    device_id
+                }
+            },
+        });
+    }
+    async getUserDevices({ id }: Pick<User, 'id'>) {
+        return this.prisma.device.findMany({
+            where: {
+                user_id: id
+            }
+        })
+    }
 }
