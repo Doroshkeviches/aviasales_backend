@@ -60,11 +60,12 @@ export class UserController {
     description: 'Successfully get single user',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  @UseGuards(JwtAuthGuard)
-  @RequirePermissions(UserPermissions.GetUserById)
+  // @UseGuards(JwtAuthGuard)
+  // @RequirePermissions(UserPermissions.GetUserById)
   @Get('current/:id')
   async getOneUserById(@Param('id') id: string) {
     const user = await this.userService.getOneUserById({ id });
+    console.log(user)
     if (!user) throw new ApiException(ErrorCodes.NoUser);
     return UserDto.toEntity(user);
   }

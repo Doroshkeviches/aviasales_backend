@@ -6,6 +6,7 @@ import { PrismaService } from "@app/prisma";
 const includingData = () => {
   return {
     include: {
+      devices: true,
       tickets: {
         include: {
           flight: {
