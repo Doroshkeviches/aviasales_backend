@@ -188,47 +188,7 @@ export class AuthController {
     }
 
 
-    @HttpCode(200)
-    @ApiResponse({
-        status: 200,
-        description: "signout-sessions",
-        type: SignoutForm,
-    })
-    @ApiResponse({ status: 400, description: "Bad request" })
-    @UseGuards(JwtAuthGuard)
-    // @RequirePermissions(UserPermissions.RefreshToken)
-    @Post("signout-sessions")
-    async signOutSessions(@CurrentUser() user: User, @Body() body: SignoutForm) {
-        const form = SignoutForm.from(body)
-        const errors = await SignoutForm.validate(form)
-        if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
-        const user_entity = await this.authService.getUserByEmail(user);
-        if (!user_entity) {
-            throw new ApiException(ErrorCodes.NotExists_User);
-        }
-        const res = await this.authService.signoutSessions(user, body)
-        return res
-    }
+    
 
-    @HttpCode(200)
-    @ApiResponse({
-        status: 200,
-        description: "signout-selected-session",
-        type: SignoutForm,
-    })
-    @ApiResponse({ status: 400, description: "Bad request" })
-    @UseGuards(JwtAuthGuard)
-    // @RequirePermissions(UserPermissions.RefreshToken)
-    @Post("signout-selected-session")
-    async signOutOneSession(@CurrentUser() user: User, @Body() body: SignoutForm) {
-        const form = SignoutForm.from(body)
-        const errors = await SignoutForm.validate(form)
-        if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
-        const user_entity = await this.authService.getUserByEmail(user);
-        if (!user_entity) {
-            throw new ApiException(ErrorCodes.NotExists_User);
-        }
-        const res = await this.authService.signoutOneSession(user, body)
-        return res
-    }
+   
 }

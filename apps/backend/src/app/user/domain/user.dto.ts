@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 import { TicketDto } from './ticket.dto';
-import { DeviceDto } from './device.dto';
 
 export class UserDto {
   @ApiProperty({
@@ -35,8 +34,6 @@ export class UserDto {
   @IsNotEmpty()
   tickets: TicketDto[];
 
-  @IsNotEmpty()
-  devices: DeviceDto[]
 
   static toEntity(entity?: UserDto) {
     const it = {
@@ -45,7 +42,6 @@ export class UserDto {
       last_name: entity.last_name,
       email: entity.email,
       tickets: entity.tickets,
-      devices: entity.devices
     };
     return it;
   }

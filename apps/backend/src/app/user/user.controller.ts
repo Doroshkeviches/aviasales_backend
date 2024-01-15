@@ -65,7 +65,6 @@ export class UserController {
   @Get('current/:id')
   async getOneUserById(@Param('id') id: string) {
     const user = await this.userService.getOneUserById({ id });
-    console.log(user)
     if (!user) throw new ApiException(ErrorCodes.NoUser);
     return UserDto.toEntity(user);
   }
