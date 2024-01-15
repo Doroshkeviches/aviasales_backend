@@ -28,6 +28,7 @@ enum TicketStatus {
   Fulfilled @map("fulfilled")
   InCart    @map("in cart")
   Canceled  @map("canceled")
+  Ordered  @map("ordered")
 }
 
 enum UserPermissions {

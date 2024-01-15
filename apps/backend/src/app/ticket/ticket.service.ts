@@ -15,10 +15,13 @@ export class TicketService {
     return await this.ticketRepo.getTicketById({ id });
   }
 
-  async getTicketsByUserId({ user_id }: Pick<Ticket, 'user_id'>) {
-    return await this.ticketRepo.getTicketsByUserId({ user_id });
+  async getTicketsByUserId(data: Pick<User, 'id'>) {
+    return await this.ticketRepo.getTicketsByUserId(data);
   }
 
+  async updateTicketsStatus(ticket: Ticket[]) {
+    return await this.ticketRepo.updateTicketsStatus(ticket);
+  }
   async getTicketsByFlightId({ flight_id }: Pick<Ticket, 'flight_id'>) {
     return await this.ticketRepo.getTicketsByFlightId({ flight_id });
   }
