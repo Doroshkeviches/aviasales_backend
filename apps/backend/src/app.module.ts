@@ -14,6 +14,7 @@ import { AcceptLanguageResolver, I18nModule, QueryResolver } from "nestjs-i18n";
 import { APP_FILTER } from "@nestjs/core";
 import {SecurityModule} from "@app/security";
 import {PrismaClientExceptionFilter} from "@app/exceptions/global-exception.filter";
+import { DevicesModule } from "./app/devices/devices.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import {PrismaClientExceptionFilter} from "@app/exceptions/global-exception.filt
     UserModule,
     TicketModule,
     SecurityModule,
+    DevicesModule,
     ConfigModule.forRoot({
       envFilePath: ".env",
       load: [config_app, config_i18n, config_security],

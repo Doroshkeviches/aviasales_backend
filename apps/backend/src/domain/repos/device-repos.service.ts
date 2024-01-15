@@ -128,4 +128,11 @@ export class DeviceReposService {
             },
         });
     }
+    async getDevicesByUserId({ id }: Pick<User, 'id'>) {
+        return this.prisma.device.findMany({
+            where: {
+                user_id: id
+            }
+        })
+    }
 }
