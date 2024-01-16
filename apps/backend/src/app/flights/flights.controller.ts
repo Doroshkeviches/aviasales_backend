@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { FlightsService } from './flights.service';
 import { ChangeFlightStatus } from './domain/ChangeFlightStatusForm';
-import { ErrorCodes } from '@/src/enums/error-codes.enum';
+import { ErrorCodes } from '@/src/../../../../../libs/exceptions/enums/error-codes.enum';
 import { ChangeFlightPrice } from './domain/ChangeFlightPriceForm';
 import { UserPermissions } from '@prisma/client';
 import { PathsDto } from './domain/paths.dto';

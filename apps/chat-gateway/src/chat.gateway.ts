@@ -17,7 +17,7 @@ import { JwtAuthGuard } from "../../../libs/security/guards/security.guard";
 import { SecurityService } from "@app/security";
 import { UserSessionDto } from "@app/security/dtos/UserSessionDto";
 import { RequestDto } from "./domain/request.dto";
-import {uuid} from "uuidv4";
+import {RequirePermissions} from "../../../libs/security/decorators/permission.decorator";
 
 @WebSocketGateway({ cors: '*:*' })
 export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
@@ -31,8 +31,9 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     console.log(`Client ${client.id} connected`);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   // require permissions <- for manager only
+  @RequirePermissions(UserPermissions.StartChat)
   @SubscribeMessage("join-requests-channel")
   async joinRequestsChannel(@ConnectedSocket() client: Socket) {
     client.join('requests');
@@ -49,29 +50,31 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     await this.redisService.subToMessage(userId, this.server,client);
   }
   
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @SubscribeMessage("join-chat")
   // for user
-  async joinRoom(@ConnectedSocket() client: Socket, @MessageBody() roomId: string) {
+  async joinRoom(@ConnectedSocket() client: Socket) {
 
-    client.join(roomId);
-    client.to(roomId).emit('message', `manager joined chat`); // remove this later
+    console.log("server client", client.data);
+    const userDto = UserSessionDto.fromPayload(client.data.user);
+    console.log("server userdto", userDto);
+    const user = await this.securityService.getUserById({id: userDto.id});
+    console.log("server user", user);
+
+    client.join(user.id);
+    // client.to(roomId).emit('message', `manager joined chat`); // remove this later
 
     // this.server.to(roomId).emit('message', `successfully joined room ${roomId}`); // remove this later
-
-    // console.log(client.data);
-    // const userDto = UserSessionDto.fromPayload(client.data.user);
-    // const user = await this.securityService.getUserById({id: userDto.id});
-    // const requestDto = RequestDto.toEntity(user);
-    const requestDto = RequestDto.toEntity({
-      id: uuid(),
-      first_name: 'AAAA',
-      last_name: 'BBBB'
-    });
+    const requestDto = RequestDto.toEntity(user);
+    // const requestDto = RequestDto.toEntity({
+    //   id: uuid(),
+    //   first_name: 'AAAA',
+    //   last_name: 'BBBB'
+    // });
 
     await this.redisService.onRequest(requestDto);
 
-    await this.redisService.subToMessage(roomId, this.server,client);
+    await this.redisService.subToMessage(user.id, this.server, client);
   }
 
   @SubscribeMessage("message")

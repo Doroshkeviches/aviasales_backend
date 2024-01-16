@@ -11,8 +11,8 @@ import { UserPermissions, UserRoles } from "@prisma/client";
 import { PERMISSION_KEY } from "../decorators/permission.decorator";
 import { SecurityService } from "@app/security";
 import { UserSessionDto } from "@app/security/dtos/UserSessionDto";
-import { ErrorCodes } from "@/src/enums/error-codes.enum";
 import { ApiException } from "@app/exceptions/api-exception";
+import {ErrorCodes} from "../../exceptions/enums/error-codes.enum";
 
 export const CurrentUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
@@ -52,7 +52,6 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
       case "ws":
         const client = context.switchToWs().getClient();
         authHeader = client.handshake.headers?.authorization;
-
         if (!authHeader) {
           throw new UnauthorizedException('Not authorized');
         }

@@ -1,6 +1,4 @@
 import { Module } from "@nestjs/common";
-import { ChatController } from "./chat-gateway.controller";
-import { ChatGatewayService } from "./chat-gateway.service";
 import { SecurityModule } from "@app/security";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import config_app from "../../../libs/security/config/app.config";
@@ -11,7 +9,6 @@ import { APP_FILTER } from "@nestjs/core";
 import { PrismaClientExceptionFilter } from "@app/exceptions/global-exception.filter";
 import { RedisModule } from "./redis/redis.module";
 import { ChatGateway } from "./chat.gateway";
-import { createClient } from 'redis'
 
 @Module({
   imports: [
@@ -32,7 +29,7 @@ import { createClient } from 'redis'
       useFactory: (config: ConfigService) => config.get("i18n"),
     }),
   ],
-  controllers: [ChatController],
+  controllers: [],
   providers: [
     {
       provide: APP_FILTER,

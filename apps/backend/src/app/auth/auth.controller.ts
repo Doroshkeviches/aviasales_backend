@@ -9,7 +9,6 @@ import {
 import { AuthService } from "./auth.service";
 import { SignUpForm } from "./domain/SignUpForm";
 import { SignInForm } from "./domain/SignInForm";
-import { ErrorCodes } from "@/src/enums/error-codes.enum";
 import { TokenDto } from "./domain/TokenDto";
 import { decoded_user } from "@/src/types/decoded-user.type";
 import { ApiBody, ApiResponse } from "@nestjs/swagger";
@@ -23,6 +22,7 @@ import { SecurityService } from "@app/security";
 import { ApiException } from "@app/exceptions/api-exception";
 import {CurrentUser, JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
 import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
+import {ErrorCodes} from "../../../../../libs/exceptions/enums/error-codes.enum";
 
 @Controller("auth")
 export class AuthController {

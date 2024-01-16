@@ -13,7 +13,7 @@ import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { TicketService } from './ticket.service';
 import { UpdateTicketCredsForm } from './domain/update-ticket-creds.form';
 import { UpdateTicketStatusForm } from './domain/update-ticket-status.form';
-import { ErrorCodes } from '@/src/enums/error-codes.enum';
+import { ErrorCodes } from '@/src/../../../../../libs/exceptions/enums/error-codes.enum';
 import { User } from '.prisma/client';
 import { TicketDto } from './domain/ticket.dto';
 import { CreateTicketForm } from './domain/create-ticket.form';

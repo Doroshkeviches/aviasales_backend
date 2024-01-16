@@ -11,7 +11,7 @@ import {
 import { UserService } from './user.service';
 import { ApiResponse } from '@nestjs/swagger';
 import { UpdateUserForm } from './domain/UpdateUserForm';
-import { ErrorCodes } from '@/src/enums/error-codes.enum';
+import { ErrorCodes } from '@/src/../../../../../libs/exceptions/enums/error-codes.enum';
 import { UserPermissions } from '@prisma/client';
 import { UserDto } from './domain/user.dto';
 import {ApiException} from "@app/exceptions/api-exception";
@@ -28,7 +28,7 @@ export class UserController {
     description: 'Successfully get all users',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   // @RequirePermissions(UserPermissions.GetAllUsers)
   @Get()
   async getAllUsers(@Query('page') page: number) {
