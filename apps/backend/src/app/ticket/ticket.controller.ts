@@ -18,14 +18,17 @@ import { User } from '.prisma/client';
 import { TicketDto } from './domain/ticket.dto';
 import { CreateTicketForm } from './domain/create-ticket.form';
 import { UserPermissions } from '@prisma/client';
-import { ApiException } from "@app/exceptions/api-exception";
-import { ApiRequestException } from "@app/exceptions/api-request-exception";
-import { CurrentUser, JwtAuthGuard } from "../../../../../libs/security/guards/security.guard";
-import { RequirePermissions } from "../../../../../libs/security/decorators/permission.decorator";
+import { ApiException } from '@app/exceptions/api-exception';
+import { ApiRequestException } from '@app/exceptions/api-request-exception';
+import {
+  CurrentUser,
+  JwtAuthGuard,
+} from '../../../../../libs/security/guards/security.guard';
+import { RequirePermissions } from '../../../../../libs/security/decorators/permission.decorator';
 
 @Controller('ticket')
 export class TicketController {
-  constructor(private ticketService: TicketService) { }
+  constructor(private ticketService: TicketService) {}
 
   @HttpCode(200)
   @ApiResponse({
@@ -55,6 +58,21 @@ export class TicketController {
     const ticket = await this.ticketService.getTicketById({ id });
     if (!ticket) throw new ApiException(ErrorCodes.NoTicket);
     return TicketDto.toEntity(ticket);
+  }
+
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully get active tickets',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetActiveTicketsByUserId)
+  @Get('tickets/:id')
+  async getActiveTicketsByUserId(@Param('id') id: string) {
+    const tickets = await this.ticketService.getActiveTicketsByUserId({ id });
+    if (!tickets) throw new ApiException(ErrorCodes.NoTicket);
+    return TicketDto.toEntities(tickets);
   }
 
   @HttpCode(200)
@@ -136,15 +154,20 @@ export class TicketController {
     const form = CreateTicketForm.from(body);
     const errors = await CreateTicketForm.validate(form);
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
-    const picked_flight = await this.ticketService.getRelevantFlightsById(form.flights);
+    const picked_flight = await this.ticketService.getRelevantFlightsById(
+      form.flights
+    );
     if (!picked_flight) {
       throw new ApiException(ErrorCodes.NoAvaliableSeats);
     }
-    const ticket = await this.ticketService.createTicket(form, form.flights, user);
+    const ticket = await this.ticketService.createTicket(
+      form,
+      form.flights,
+      user
+    );
     if (!ticket) throw new ApiException(ErrorCodes.CreateTicketError);
     return TicketDto.toEntities(ticket);
   }
-
 
   @HttpCode(200)
   @ApiResponse({
@@ -155,15 +178,15 @@ export class TicketController {
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.CreateNewTicket)
   @Post('ordered')
-  async updateTicketsToOrdered(
-    @CurrentUser() user: User,
-  ) {
-    const userTickets = await this.ticketService.getTicketsInCartByUserId(user)
-    const decrementedFlights = await this.ticketService.decrementAvailableSeats(userTickets)
+  async updateTicketsToOrdered(@CurrentUser() user: User) {
+    const userTickets = await this.ticketService.getTicketsInCartByUserId(user);
+    const decrementedFlights =
+      await this.ticketService.decrementAvailableSeats(userTickets);
     if (!decrementedFlights) {
       throw new ApiException(ErrorCodes.Error);
     }
-    const updatedTickets = await this.ticketService.updateTicketsStatus(userTickets)
+    const updatedTickets =
+      await this.ticketService.updateTicketsStatus(userTickets);
     if (!updatedTickets) {
       throw new ApiException(ErrorCodes.Error);
     }

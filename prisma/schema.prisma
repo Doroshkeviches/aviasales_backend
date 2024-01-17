@@ -28,7 +28,7 @@ enum TicketStatus {
   Fulfilled @map("fulfilled")
   InCart    @map("in cart")
   Canceled  @map("canceled")
-  Ordered  @map("ordered")
+  Ordered   @map("ordered")
 }
 
 enum UserPermissions {
@@ -53,6 +53,7 @@ enum UserPermissions {
 
   GetAllTickets                 @map("permissions.get-all-tickets")
   GetTicketById                 @map("permissions.get-ticket-by-id")
+  GetActiveTicketsByUserId      @map("permissions.get-active-tickets-by-user-id")
   DeleteTicketById              @map("permissions.delete-ticket-by-id")
   UpdateTicketStatus            @map("permissions.update-ticket-status")
   CreateNewTicket               @map("permissions.create-new-ticket")
