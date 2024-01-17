@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Ticket, User, TicketStatus } from '@prisma/client';
-import {PrismaService} from "@app/prisma";
+import { PrismaService } from "@app/prisma";
 
 const includingData = () => {
   return {
@@ -34,13 +34,25 @@ export class TicketReposService {
     });
   }
 
-  async getTicketsByUserId({ user_id }: Pick<Ticket, 'user_id'>) {
+  async getTicketsByUserId({ id }: Pick<User, 'id'>) {
     return await this.prisma.ticket.findMany({
-      where: { user_id, status: { not: TicketStatus.InCart } },
+      where: { user_id: id, status: { not: TicketStatus.InCart } },
       ...includingData(),
     });
   }
 
+  async updateTicketsStatus(tickets: Ticket[]) {
+    this.prisma.ticket.updateMany({
+      where: {
+        id: {
+          in: tickets.map(ticket => ticket.id)
+        }
+      },
+      data: {
+        status: TicketStatus.Ordered
+      }
+    })
+  }
   async getTicketsInCartByUserId({ user_id }: Pick<Ticket, 'user_id'>) {
     return await this.prisma.ticket.findMany({
       where: { user_id, status: TicketStatus.InCart },

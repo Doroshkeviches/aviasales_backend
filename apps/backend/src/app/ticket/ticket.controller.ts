@@ -145,4 +145,28 @@ export class TicketController {
     if (!ticket) throw new ApiException(ErrorCodes.CreateTicketError);
     return TicketDto.toEntity(ticket);
   }
+
+
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully created a new ticket',
+    type: CreateTicketForm,
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiBody({ type: CreateTicketForm })
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.CreateNewTicket)
+  @Post()
+  async updateTicketsToOrdered(
+    @CurrentUser() user: User,
+  ) {
+    const ticketsInCart = await this.ticketService.getTicketsByUserId(user);
+    if (!ticketsInCart) {
+      throw new ApiException(ErrorCodes.NoTickets);
+    }
+const tickets = await this.ticketService.
+    
+    return TicketDto.toEntities(tickets);
+  }
 }
