@@ -189,4 +189,20 @@ export class TicketController {
     }
     return TicketDto.toEntities(userTickets);
   }
+
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'get tickets by user id',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.CreateNewTicket)
+  @Get('cart')
+  async getTicketsInCartByUserId(
+    @CurrentUser() user: User,
+  ) {
+    const tickets = await this.ticketService.getTicketsInCartByUserId(user)
+    return TicketDto.toEntities(tickets);
+  }
 }

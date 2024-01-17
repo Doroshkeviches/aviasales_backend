@@ -25,6 +25,7 @@ export class DevicesController {
         const form = SignoutForm.from(body)
         const errors = await SignoutForm.validate(form)
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
+        console.log(form)
         const res = await this.devicesService.signoutOneSession(user, body)
         console.log('res')
         console.log(res)
