@@ -50,7 +50,7 @@ export class TicketController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.GetTicketById)
-  @Get(':id')
+  @Get('current/:id')
   async getTicketById(@Param('id') id: string) {
     const ticket = await this.ticketService.getTicketById({ id });
     if (!ticket) throw new ApiException(ErrorCodes.NoTicket);
@@ -158,6 +158,7 @@ export class TicketController {
   async updateTicketsToOrdered(
     @CurrentUser() user: User,
   ) {
+    console.log(user)
     const userTickets = await this.ticketService.getTicketsInCartByUserId(user)
     const decrementedFlights = await this.ticketService.decrementAvailableSeats(userTickets)
     if (!decrementedFlights) {
@@ -168,5 +169,37 @@ export class TicketController {
       throw new ApiException(ErrorCodes.Error);
     }
     return TicketDto.toEntities(userTickets);
+  }
+
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'get tickets by user id',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.CreateNewTicket)
+  @Get('ordered')
+  async getTicketsByUserId(
+    @CurrentUser() user: User,
+  ) {
+    const tickets = await this.ticketService.getTicketsByUserId(user)
+    return TicketDto.toEntities(tickets);
+  }
+
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'get tickets by user id',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.CreateNewTicket)
+  @Get('cart')
+  async getTicketsInCartByUserId(
+    @CurrentUser() user: User,
+  ) {
+    const tickets = await this.ticketService.getTicketsInCartByUserId(user)
+    return TicketDto.toEntities(tickets);
   }
 }
