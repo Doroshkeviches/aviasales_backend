@@ -20,11 +20,8 @@ import { CreateTicketForm } from './domain/create-ticket.form';
 import { UserPermissions } from '@prisma/client';
 import { ApiException } from '@app/exceptions/api-exception';
 import { ApiRequestException } from '@app/exceptions/api-request-exception';
-import {
-  CurrentUser,
-  JwtAuthGuard,
-} from '../../../../../libs/security/guards/security.guard';
-import { RequirePermissions } from '../../../../../libs/security/decorators/permission.decorator';
+import { RequirePermissions } from 'libs/security/decorators/permission.decorator';
+import { CurrentUser, JwtAuthGuard } from 'libs/security/guards/security.guard';
 
 @Controller('ticket')
 export class TicketController {
