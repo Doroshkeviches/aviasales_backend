@@ -135,13 +135,14 @@ export class FlightsService {
       .map((entry) => entry.subArray);
   }
   sortArraysByTotalTime(arrays) {
+    
     return arrays
       .map((subArray) => {
         const totalTime =
           subArray.at(-1).end_flight_date - subArray[0].start_flight_date;
         return { subArray, totalTime };
       })
-      .sort((a, b) => a.totalPrice - b.totalPrice)
+      .sort((a, b) => a.totalTime - b.totalTime)
       .map((entry) => entry.subArray);
   }
 }

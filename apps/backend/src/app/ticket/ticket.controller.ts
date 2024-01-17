@@ -129,7 +129,7 @@ export class TicketController {
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.CreateNewTicket)
   @Post()
-  async createTicket(
+  async createOffer(
     @CurrentUser() user: User,
     @Body() body: CreateTicketForm
   ) {

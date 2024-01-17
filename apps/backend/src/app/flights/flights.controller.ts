@@ -14,14 +14,15 @@ import { ChangeFlightPrice } from './domain/ChangeFlightPrice.form';
 import { UserPermissions } from '@prisma/client';
 import { PathsDto } from './domain/paths.dto';
 import { ApiResponse } from '@nestjs/swagger';
-import {ApiException} from "@app/exceptions/api-exception";
-import {ApiRequestException} from "@app/exceptions/api-request-exception";
-import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
-import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
+import { ApiException } from "@app/exceptions/api-exception";
+import { ApiRequestException } from "@app/exceptions/api-request-exception";
+import { JwtAuthGuard } from "../../../../../libs/security/guards/security.guard";
+import { RequirePermissions } from "../../../../../libs/security/decorators/permission.decorator";
+import { SortedBy } from './enum/sortedBy.enum';
 
 @Controller('flights')
 export class FlightsController {
-  constructor(private flightService: FlightsService) {}
+  constructor(private flightService: FlightsService) { }
 
   @HttpCode(200)
   @ApiResponse({
@@ -37,8 +38,8 @@ export class FlightsController {
     @Query('to_city') to_city: string,
     @Query('date') date_string: string,
     @Query('isReturn') isReturn: boolean,
-    @Query('returnDate') returnDate: string 
-
+    @Query('returnDate') returnDate: string,
+    @Query('sortedBy') sortedBy: string,
   ) {
     const start_flight_date = new Date(date_string);
     const return_flight_date = new Date(returnDate)
@@ -67,15 +68,16 @@ export class FlightsController {
       isReturn,
       { start_flight_date: return_flight_date },
     );
-   
+
     if (!path.length) {
       throw new ApiException(ErrorCodes.NoPath);
     }
-
+    if (sortedBy === SortedBy.time) {
+      const sortedPathByTime = this.flightService.sortArraysByTotalTime(path);
+      return PathsDto.toEntities(sortedPathByTime);
+    }
     const sortedPathByPrice = this.flightService.sortArraysByTotalPrice(path);
-    // const sortedPathByTime = this.flightService.sortArraysByTotalTime(path);
     return PathsDto.toEntities(sortedPathByPrice);
-    return sortedPathByPrice
   }
 
   @HttpCode(200)
