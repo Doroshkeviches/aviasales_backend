@@ -6,8 +6,8 @@ import {
   Plane,
   Ticket,
 } from '@prisma/client';
-import {PrismaService} from "@app/prisma";
-
+import { PrismaService } from "@app/prisma";
+const seats_in_one_ticket = 1
 const includingData = () => {
   return {
     include: {
@@ -20,7 +20,7 @@ const includingData = () => {
 
 @Injectable()
 export class FlightsReposService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   async createFlight(
     from_city: City,
     to_city: City,
@@ -60,19 +60,28 @@ export class FlightsReposService {
     });
   }
   async decrementAvailableSeats(
-    { id }: Pick<Flight, 'id'>,
-    seats: Pick<Flight, 'available_seats'>
+    tickets: Ticket[]
   ) {
-    return this.prisma.flight.update({
-      where: {
-        id,
-        available_seats: { gte: seats.available_seats },
-      },
-      data: {
-        available_seats: { decrement: seats.available_seats },
-      },
-      ...includingData(),
-    });
+    return await this.prisma.$transaction(async (tx) => {
+      try {
+        return await Promise.all(tickets.map(async (ticket) => {
+          return tx.flight.update({
+            where: {
+              id: ticket.flight_id,
+              available_seats: { gte: seats_in_one_ticket },
+            },
+            data: {
+              available_seats: { decrement: seats_in_one_ticket },
+            },
+            ...includingData(),
+          });
+        }))
+      } catch (error) {
+        return
+      }
+    })
+
+
   }
   async getAllFlights(
     data: Pick<Flight, 'start_flight_date' | 'from_city_id'>
@@ -117,11 +126,13 @@ export class FlightsReposService {
     });
   }
 
-  async getRelevantFlightById({ flight_id }: Pick<Ticket, 'flight_id'>) {
+  async getRelevantFlightsById(flights: string[]) {
     const staticSeats = 1;
-    return this.prisma.flight.findUnique({
+    return this.prisma.flight.findMany({
       where: {
-        id: flight_id,
+        id: {
+          in: flights
+        },
         available_seats: {
           gte: staticSeats,
         },
@@ -129,4 +140,5 @@ export class FlightsReposService {
       ...includingData(),
     });
   }
+
 }

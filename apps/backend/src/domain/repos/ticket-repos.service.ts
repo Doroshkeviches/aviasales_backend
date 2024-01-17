@@ -41,8 +41,9 @@ export class TicketReposService {
     });
   }
 
+
   async updateTicketsStatus(tickets: Ticket[]) {
-    this.prisma.ticket.updateMany({
+   return this.prisma.ticket.updateMany({
       where: {
         id: {
           in: tickets.map(ticket => ticket.id)
@@ -53,10 +54,10 @@ export class TicketReposService {
       }
     })
   }
-  async getTicketsInCartByUserId({ user_id }: Pick<Ticket, 'user_id'>) {
+  async getTicketsInCartByUserId({ id }: Pick<User, 'id'>) {
     return await this.prisma.ticket.findMany({
-      where: { user_id, status: TicketStatus.InCart },
-      ...includingData(),
+      where: { user_id: id, status: TicketStatus.InCart },
+      ...includingData()
     });
   }
 
@@ -102,18 +103,28 @@ export class TicketReposService {
   }
 
   async createTicket(
-    data: Pick<Ticket, 'flight_id' | 'holder_first_name' | 'holder_last_name'>,
+    data: Pick<Ticket, 'holder_first_name' | 'holder_last_name'>,
+    flights: string[],
     user: User
   ) {
-    return await this.prisma.ticket.create({
-      data: {
-        user_id: user.id,
-        holder_first_name: data.holder_first_name,
-        holder_last_name: data.holder_last_name,
-        flight_id: data.flight_id,
-        status: TicketStatus.InCart,
-      },
-      ...includingData()
-    });
+    return await this.prisma.$transaction(async (tx) => {
+      try {
+        return await Promise.all(flights.map(async (flight_id) => {
+          return await this.prisma.ticket.create({
+            data: {
+              user_id: user.id,
+              holder_first_name: data.holder_first_name,
+              holder_last_name: data.holder_last_name,
+              flight_id: flight_id,
+              status: TicketStatus.InCart,
+            },
+            ...includingData()
+          });
+        }))
+      } catch (error) {
+
+      }
+    })
+
   }
 }

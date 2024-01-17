@@ -18,7 +18,9 @@ export class TicketService {
   async getTicketsByUserId(data: Pick<User, 'id'>) {
     return await this.ticketRepo.getTicketsByUserId(data);
   }
-
+  async getTicketsInCartByUserId(user: User) {
+    return await this.ticketRepo.getTicketsInCartByUserId(user)
+  }
   async updateTicketsStatus(ticket: Ticket[]) {
     return await this.ticketRepo.updateTicketsStatus(ticket);
   }
@@ -42,12 +44,17 @@ export class TicketService {
   }
 
   async createTicket(
-    data: Pick<Ticket, 'flight_id' | 'holder_first_name' | 'holder_last_name'>,
+    data: Pick<Ticket, 'holder_first_name' | 'holder_last_name'>,
+    flights: string[],
     user: User
   ) {
-    return await this.ticketRepo.createTicket(data, user);
+    return await this.ticketRepo.createTicket(data, flights, user);
   }
-  async getRelevantFlightById(flight_id: Pick<Ticket, 'flight_id'>) {
-    return this.flightRepo.getRelevantFlightById(flight_id);
+  async getRelevantFlightsById(flights: string[]) {
+    return this.flightRepo.getRelevantFlightsById(flights);
   }
+  async decrementAvailableSeats(tickets: Ticket[]) {
+    return await this.flightRepo.decrementAvailableSeats(tickets)
+  }
+  
 }

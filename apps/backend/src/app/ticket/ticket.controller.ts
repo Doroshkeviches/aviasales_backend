@@ -18,14 +18,14 @@ import { User } from '.prisma/client';
 import { TicketDto } from './domain/ticket.dto';
 import { CreateTicketForm } from './domain/create-ticket.form';
 import { UserPermissions } from '@prisma/client';
-import {ApiException} from "@app/exceptions/api-exception";
-import {ApiRequestException} from "@app/exceptions/api-request-exception";
-import {CurrentUser, JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
-import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
+import { ApiException } from "@app/exceptions/api-exception";
+import { ApiRequestException } from "@app/exceptions/api-request-exception";
+import { CurrentUser, JwtAuthGuard } from "../../../../../libs/security/guards/security.guard";
+import { RequirePermissions } from "../../../../../libs/security/decorators/permission.decorator";
 
 @Controller('ticket')
 export class TicketController {
-  constructor(private ticketService: TicketService) {}
+  constructor(private ticketService: TicketService) { }
 
   @HttpCode(200)
   @ApiResponse({
@@ -136,37 +136,37 @@ export class TicketController {
     const form = CreateTicketForm.from(body);
     const errors = await CreateTicketForm.validate(form);
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
-    const picked_flight = await this.ticketService.getRelevantFlightById(form);
+    const picked_flight = await this.ticketService.getRelevantFlightsById(form.flights);
     if (!picked_flight) {
       throw new ApiException(ErrorCodes.NoAvaliableSeats);
     }
-
-    const ticket = await this.ticketService.createTicket(form, user);
+    const ticket = await this.ticketService.createTicket(form, form.flights, user);
     if (!ticket) throw new ApiException(ErrorCodes.CreateTicketError);
-    return TicketDto.toEntity(ticket);
+    return TicketDto.toEntities(ticket);
   }
 
 
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'Successfully created a new ticket',
-    type: CreateTicketForm,
+    description: 'create order',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiBody({ type: CreateTicketForm })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.CreateNewTicket)
   @Post()
   async updateTicketsToOrdered(
     @CurrentUser() user: User,
   ) {
-    const ticketsInCart = await this.ticketService.getTicketsByUserId(user);
-    if (!ticketsInCart) {
-      throw new ApiException(ErrorCodes.NoTickets);
+    const userTickets = await this.ticketService.getTicketsInCartByUserId(user)
+    const decrementedFlights = await this.ticketService.decrementAvailableSeats(userTickets)
+    if (!decrementedFlights) {
+      throw new ApiException(ErrorCodes.Error);
     }
-const tickets = await this.ticketService.
-    
-    return TicketDto.toEntities(tickets);
+    const updatedTickets = await this.ticketService.updateTicketsStatus(userTickets)
+    if (!updatedTickets) {
+      throw new ApiException(ErrorCodes.Error);
+    }
+    return TicketDto.toEntities(userTickets);
   }
 }
