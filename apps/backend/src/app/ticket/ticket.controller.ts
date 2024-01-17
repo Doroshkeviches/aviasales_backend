@@ -154,7 +154,7 @@ export class TicketController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.CreateNewTicket)
-  @Post()
+  @Post('ordered')
   async updateTicketsToOrdered(
     @CurrentUser() user: User,
   ) {
