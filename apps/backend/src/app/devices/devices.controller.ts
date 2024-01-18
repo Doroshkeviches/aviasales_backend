@@ -4,9 +4,11 @@ import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { ApiException } from '@app/exceptions/api-exception';
 import { ApiRequestException } from '@app/exceptions/api-request-exception';
 import { ApiResponse } from '@nestjs/swagger';
-import { User } from '@prisma/client';
+import { User, UserPermissions } from '@prisma/client';
 import { JwtAuthGuard, CurrentUser } from 'libs/security/guards/security.guard';
 import { SignoutForm } from '../auth/domain/Signout.form';
+import { RequirePermissions } from 'libs/security/decorators/permission.decorator';
+import { DevicesDto } from './domain/devices.dto';
 
 @Controller('devices')
 export class DevicesController {
@@ -19,17 +21,15 @@ export class DevicesController {
     })
     @ApiResponse({ status: 400, description: "Bad request" })
     @UseGuards(JwtAuthGuard)
-    // @RequirePermissions(UserPermissions.RefreshToken)
+    @RequirePermissions(UserPermissions.SignoutSelectSession)
     @Post("signout-selected-session")
     async signOutOneSession(@CurrentUser() user: User, @Body() body: SignoutForm) {
         const form = SignoutForm.from(body)
         const errors = await SignoutForm.validate(form)
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
-        console.log(form)
-        const res = await this.devicesService.signoutOneSession(user, body)
-        console.log('res')
-        console.log(res)
-        return res
+
+        const deletedSession = await this.devicesService.signoutOneSession(user, body)
+        return DevicesDto.toEntity(deletedSession)
     }
 
     @HttpCode(200)
@@ -40,16 +40,14 @@ export class DevicesController {
     })
     @ApiResponse({ status: 400, description: "Bad request" })
     @UseGuards(JwtAuthGuard)
-    // @RequirePermissions(UserPermissions.RefreshToken)
+    @RequirePermissions(UserPermissions.SignoutSessions)
     @Post("signout-sessions")
     async signOutSessions(@CurrentUser() user: User, @Body() body: SignoutForm) {
         const form = SignoutForm.from(body)
         const errors = await SignoutForm.validate(form)
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors)
-        const res = await this.devicesService.signoutSessions(user, body)
-        console.log('res')
-        console.log(res)
-        return res
+        await this.devicesService.signoutSessions(user, body)
+        return true
     }
 
 
@@ -61,10 +59,10 @@ export class DevicesController {
     })
     @ApiResponse({ status: 400, description: "Bad request" })
     @UseGuards(JwtAuthGuard)
-    // @RequirePermissions(UserPermissions.RefreshToken)
+    @RequirePermissions(UserPermissions.GetUserDevices)
     @Get()
     async getUserDevices(@CurrentUser() user: User) {
         const devices = await this.devicesService.getUserDevices(user)
-        return devices
+        return DevicesDto.toEntities(devices)
     }
 }

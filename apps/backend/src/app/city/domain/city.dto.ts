@@ -3,13 +3,13 @@ import { IsString, IsUUID } from 'class-validator';
 
 export class CityDto {
   @ApiProperty({
-    description: 'Correct id',
+    description: 'City id',
   })
   @IsUUID()
   id: string;
 
   @ApiProperty({
-    description: 'Correct title',
+    description: 'City title',
   })
   @IsString()
   title: string;
@@ -22,7 +22,7 @@ export class CityDto {
     return it;
   }
   static toEntities(arr?: CityDto[]) {
-    const it = arr.map((order) => this.toEntity(order));
+    const it = arr.map((city) => this.toEntity(city));
     return it;
   }
 }

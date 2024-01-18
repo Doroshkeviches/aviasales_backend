@@ -65,10 +65,21 @@ export class FlightDto {
   @IsNotEmpty()
   plane_id: string;
 
+  @ApiProperty({
+    description: 'from_city',
+  })
   from_city: CityDto;
 
+
+  @ApiProperty({
+    description: 'to_city',
+  })
   to_city: CityDto;
 
+  
+  @ApiProperty({
+    description: 'plane',
+  })
   plane: PlaneDto;
 
   static toEntity(entity?: FlightDto) {

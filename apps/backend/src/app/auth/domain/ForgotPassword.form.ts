@@ -4,14 +4,21 @@ import {
   EmailErrorMessage,
   UuidErrorMessage,
 } from "@app/exceptions/i18n-error";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class ForgotPasswordForm {
+  @ApiProperty({
+    description: "device id",
+  })
   @IsUUID()
   @IsUUID(undefined, {
     message: UuidErrorMessage,
   })
   device_id: string;
 
+  @ApiProperty({
+    description: "email",
+  })
   @IsEmail()
   @IsEmail(undefined, {
     message: EmailErrorMessage,

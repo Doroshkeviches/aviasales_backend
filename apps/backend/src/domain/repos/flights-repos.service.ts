@@ -119,7 +119,6 @@ export class FlightsReposService {
   }
   async deleteFlight(
     { id }: Pick<Flight, 'id'>,
-    seats: Pick<Flight, 'available_seats'>
   ) {
     return this.prisma.flight.delete({
       where: { id },
@@ -127,14 +126,13 @@ export class FlightsReposService {
   }
 
   async getRelevantFlightsById(flights: string[]) {
-    const staticSeats = 1;
     return this.prisma.flight.findMany({
       where: {
         id: {
           in: flights
         },
         available_seats: {
-          gte: staticSeats,
+          gte: seats_in_one_ticket,
         },
       },
       ...includingData(),

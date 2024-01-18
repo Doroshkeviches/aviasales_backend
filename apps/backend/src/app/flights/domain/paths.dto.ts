@@ -5,37 +5,40 @@ import { FlightDto } from './flight.dto';
 import { uuid } from 'uuidv4';
 export class PathsDto {
   @ApiProperty({
-    description: 'Correct from city',
+    description: 'from city',
   })
   @IsString()
   @IsNotEmpty()
   from_city: string;
 
   @ApiProperty({
-    description: 'Correct to city',
+    description: 'to city',
   })
   @IsString()
   @IsNotEmpty()
   to_city: string;
 
   @ApiProperty({
-    description: 'Correct to city',
+    description: 'start_date',
   })
   @IsDate()
   start_date: Date;
 
   @ApiProperty({
-    description: 'Correct to city',
+    description: 'end_date',
   })
   @IsDate()
   end_date: Date;
 
   @ApiProperty({
-    description: 'Correct total',
+    description: 'totalPrice',
   })
   @IsInt()
   totalPrice: number;
 
+  @ApiProperty({
+    description: 'paths',
+  })
   @IsNotEmpty()
   paths: FlightDto[];
 

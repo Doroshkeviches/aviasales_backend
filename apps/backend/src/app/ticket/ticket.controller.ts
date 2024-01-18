@@ -67,7 +67,8 @@ export class TicketController {
   @RequirePermissions(UserPermissions.DeleteTicketById)
   @Delete(':id')
   async deleteTicketById(@CurrentUser() user: User, @Param('id') id: string) {
-    return await this.ticketService.deleteTicketById(user, { id });
+    const deletedTicket = await this.ticketService.deleteTicketById(user, { id });
+    return TicketDto.toEntity(deletedTicket)
   }
 
   @HttpCode(200)
@@ -92,8 +93,7 @@ export class TicketController {
       user,
       body
     );
-    if (!updatedTicket)
-      throw new ApiException(ErrorCodes.UpdateTicketCredsError);
+    if (!updatedTicket) throw new ApiException(ErrorCodes.UpdateTicketCredsError);
     return TicketDto.toEntity(updatedTicket);
   }
 
@@ -113,8 +113,7 @@ export class TicketController {
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
 
     const updatedTicket = await this.ticketService.updateTicketStatusById(body);
-    if (!updatedTicket)
-      throw new ApiException(ErrorCodes.UpdateTicketStatusError);
+    if (!updatedTicket) throw new ApiException(ErrorCodes.UpdateTicketStatusError);
     return TicketDto.toEntity(updatedTicket);
   }
 
@@ -149,7 +148,7 @@ export class TicketController {
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'create order',
+    description: 'update tickets status to ordered',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
@@ -190,7 +189,7 @@ export class TicketController {
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'get tickets by user id',
+    description: 'get tickets in cart by user id',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)

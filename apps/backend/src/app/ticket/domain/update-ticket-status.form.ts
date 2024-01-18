@@ -4,14 +4,14 @@ import { TicketStatus } from '@prisma/client';
 
 export class UpdateTicketStatusForm {
   @ApiProperty({
-    description: 'Correct id',
+    description: 'ticket id',
   })
   @IsUUID()
   @IsNotEmpty()
   id: string;
 
   @ApiProperty({
-    description: 'Correct status',
+    description: 'ticket status',
   })
   @IsString()
   @IsNotEmpty()
