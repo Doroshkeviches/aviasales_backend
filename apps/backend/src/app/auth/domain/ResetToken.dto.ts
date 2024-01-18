@@ -1,10 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, IsUUID, validate } from "class-validator";
+import { IsUUID, } from "class-validator";
 import { UuidErrorMessage } from "@app/exceptions/i18n-error";
 
 export class ResetTokenDto {
   @ApiProperty({
-    description: "access-token",
+    description: "reset-token",
   })
   @IsUUID()
   @IsUUID(undefined, {

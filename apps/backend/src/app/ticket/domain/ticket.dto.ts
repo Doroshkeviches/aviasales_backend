@@ -5,42 +5,42 @@ import { FlightDto } from './flight.dto';
 
 export class TicketDto {
   @ApiProperty({
-    description: 'Correct id',
+    description: 'ticket id',
   })
   @IsUUID()
   @IsNotEmpty()
   id: string;
 
   @ApiProperty({
-    description: 'Correct holder_first_name',
+    description: 'ticket holder_first_name',
   })
   @IsString()
   @IsNotEmpty()
   holder_first_name: string;
 
   @ApiProperty({
-    description: 'Correct holder_last_name',
+    description: 'ticket holder_last_name',
   })
   @IsString()
   @IsNotEmpty()
   holder_last_name: string;
 
   @ApiProperty({
-    description: 'Correct flight_id',
+    description: 'ticket flight_id',
   })
   @IsUUID()
   @IsNotEmpty()
   flight_id: string;
 
   @ApiProperty({
-    description: 'Correct user_id',
+    description: 'ticket user_id',
   })
   @IsUUID()
   @IsNotEmpty()
   user_id: string;
 
   @ApiProperty({
-    description: 'Correct status',
+    description: 'ticket status',
   })
   @IsString()
   @IsNotEmpty()

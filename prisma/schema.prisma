@@ -61,6 +61,11 @@ enum UserPermissions {
 
   AccessChat @map("permissions.access-chat")
   StartChat  @map("permissions.start-chat")
+
+  //devices
+  SignoutSelectSession @map("permissions.signout-selected-session")
+  SignoutSessions      @map("permissions.signout-sessions")
+  GetUserDevices       @map("permissions.get-user-devices")
 }
 
 model User {

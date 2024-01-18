@@ -193,7 +193,7 @@ export class TicketController {
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'get tickets by user id',
+    description: 'get tickets in cart by user id',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)

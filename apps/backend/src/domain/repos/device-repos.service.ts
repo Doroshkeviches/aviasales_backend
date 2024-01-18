@@ -65,9 +65,6 @@ export class DeviceReposService {
           device_id: data.device_id,
           reset_token: data.reset_token,
         },
-        // user: {
-        //   email: data.email,
-        // },
       },
       include: { user: true },
     });
@@ -123,7 +120,6 @@ export class DeviceReposService {
     });
   }
   async signoutOneSession(user: Partial<User>, { device_id }: Pick<Device, 'device_id'>) {
-    console.log(user.id, device_id)
     return this.prisma.device.delete({
       where: {
         user_id_device_id: {

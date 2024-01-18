@@ -4,20 +4,20 @@ import { TicketStatus } from '@prisma/client';
 
 export class CreateTicketForm {
   @ApiProperty({
-    description: 'Correct flight_id',
+    description: 'flight_id',
   })
   @IsNotEmpty()
   flights: string[];
 
   @ApiProperty({
-    description: 'Correct first name',
+    description: 'first name',
   })
   @IsString()
   @IsNotEmpty()
   holder_first_name: string;
 
   @ApiProperty({
-    description: 'Correct last name',
+    description: 'last name',
   })
   @IsString()
   @IsNotEmpty()

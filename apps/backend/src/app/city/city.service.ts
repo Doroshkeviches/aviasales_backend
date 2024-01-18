@@ -18,13 +18,6 @@ export class CityService {
     return await this.cityRepo.deleteCityById(id);
   }
 
-  async updateCityTitleById(
-    id: string,
-    newTitle: Pick<City, 'title'>
-  ) {
-    return await this.cityRepo.updateCityTitleById(id, newTitle);
-  }
-
   async createNewCity(data: Pick<City, 'title'>) {
     return await this.cityRepo.createNewCity(data);
   }
