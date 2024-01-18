@@ -37,16 +37,16 @@ export class AuthService {
         return isCompare
     }
 
-    async findSessionByEmailAndDeviceId(data: Pick<User, 'email'> & Pick<Device, 'device_id'>) {
-        return await this.deviceRepo.findSessionByEmailAndDeviceId(data);
+    async findSessionByEmail(data: Pick<User, 'email'>) {
+        return await this.usersRepo.getUserByEmail(data)
     }
 
 
-    async setResetToken(session: Device & { user: User }) {
+    async setResetToken(user: User, session: Pick<Device,'device_id'>) {
         const token = v4();
         await this.deviceRepo.updateResetToken(
             {
-                user_id: session.user.id,
+                user_id: user.id,
                 device_id: session.device_id,
                 reset_token: token
             },

@@ -24,12 +24,11 @@ export class DeviceReposService {
     });
   }
 
-  async findSessionByEmailAndDeviceId(
-    data: Pick<User, 'email'> & Pick<Device, 'device_id'>
+  async findSessionByEmail(
+    data: Pick<User, 'email'>
   ) {
     return this.prisma.device.findFirst({
       where: {
-        device_id: data.device_id,
         user: { email: data.email },
       },
       include: { user: true },
