@@ -15,8 +15,8 @@ export class TicketService {
     return await this.ticketRepo.getTicketById({ id });
   }
 
-  async getTicketsByUserId(data: Pick<User, 'id'>) {
-    return await this.ticketRepo.getTicketsByUserId(data);
+  async getActiveTicketsByUserId(data: Pick<User, 'id'>) {
+    return await this.ticketRepo.getActiveTicketsByUserId(data);
   }
   async getTicketsInCartByUserId(user: User) {
     return await this.ticketRepo.getTicketsInCartByUserId(user)

@@ -53,6 +53,7 @@ enum UserPermissions {
 
   GetAllTickets                 @map("permissions.get-all-tickets")
   GetTicketById                 @map("permissions.get-ticket-by-id")
+  GetActiveTicketsByUserId      @map("permissions.get-active-tickets-by-user-id")
   DeleteTicketById              @map("permissions.delete-ticket-by-id")
   UpdateTicketStatus            @map("permissions.update-ticket-status")
   CreateNewTicket               @map("permissions.create-new-ticket")
