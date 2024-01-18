@@ -58,7 +58,7 @@ export class AuthController {
     @HttpCode(200)
     @ApiResponse({
         status: 200,
-        description: "Successfully login",
+        description: "Successfully admin login",
         type: TokenDto,
     })
     @ApiResponse({ status: 400, description: "Bad request" })
@@ -69,13 +69,13 @@ export class AuthController {
         const errors = await SignInForm.validate(form);
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
 
-        const user = await this.authService.getAdminByEmail(form);
-        if (!user) throw new ApiException(ErrorCodes.NotExists_User);
+        const admin = await this.authService.getAdminByEmail(form);
+        if (!admin) throw new ApiException(ErrorCodes.NotExists_User);
 
-        const isCompare = await this.authService.comparePassword(user, form);
+        const isCompare = await this.authService.comparePassword(admin, form);
         if (!isCompare) throw new ApiException(ErrorCodes.InvalidPassword);
 
-        const tokens = await this.authService.authenticate(user, form);
+        const tokens = await this.authService.authenticate(admin, form);
 
         return TokenDto.toEntity(tokens);
     }
@@ -102,7 +102,7 @@ export class AuthController {
         const user = await this.authService.signUp(form);
         if (!user) throw new ApiException(ErrorCodes.CreateUserError);
 
-        const tokens = await this.authService.updateTokens(user, form);
+        const tokens = await this.authService.generateTokens(user, form);
         return TokenDto.toEntity(tokens);
     }
 
@@ -121,7 +121,10 @@ export class AuthController {
         const errors = await SignoutForm.validate(form);
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
 
-        await this.authService.signout(user, form);
+        const isSuccess = await this.authService.signout(user, form);
+        if (!isSuccess) {
+            throw new ApiException(ErrorCodes.Error)
+        }
         return true;
     }
 
@@ -134,12 +137,10 @@ export class AuthController {
     @ApiResponse({ status: 400, description: "Bad request" })
     @Post("forgot-password")
     async forgotPassword(@Body() body: ForgotPasswordForm) {
-        console.log(body)
         const form = ForgotPasswordForm.from(body);
         const errors = await ForgotPasswordForm.validate(form);
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
         const session = await this.authService.findSessionByEmailAndDeviceId(form);
-        console.log(session)
         if (!session) {
             throw new ApiException(ErrorCodes.NotExists_User);
         }
@@ -159,12 +160,13 @@ export class AuthController {
     @ApiResponse({ status: 400, description: "Bad request" })
     @Post("reset-password")
     async resetPassword(@Body() body: ResetPasswordForm) {
-        console.log(body)
         const form = ResetPasswordForm.from(body);
         const errors = await ResetPasswordForm.validate(form);
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
+
         const entity = await this.authService.findSessionByResetToken(form);
         if (!entity) throw new ApiException(ErrorCodes.Error)
+
         const user = await this.authService.changePassword(entity.user, form);
         await this.authService.deleteResetToken(user, form);
         const tokens = await this.authService.authenticate(user, form);
@@ -189,9 +191,4 @@ export class AuthController {
         const tokens = await this.securityService.refresh(user_entity, user);
         return TokenDto.toEntity(tokens);
     }
-
-
-    
-
-   
 }

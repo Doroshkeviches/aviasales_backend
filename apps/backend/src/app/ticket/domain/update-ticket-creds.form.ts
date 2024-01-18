@@ -3,21 +3,21 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateTicketCredsForm {
   @ApiProperty({
-    description: 'Correct id',
+    description: 'ticket id',
   })
   @IsUUID()
   @IsNotEmpty()
   id: string;
 
   @ApiProperty({
-    description: 'Correct first name',
+    description: 'ticket first name',
   })
   @IsString()
   @IsNotEmpty()
   holder_first_name: string;
 
   @ApiProperty({
-    description: 'Correct last name',
+    description: 'ticket last name',
   })
   @IsString()
   @IsNotEmpty()

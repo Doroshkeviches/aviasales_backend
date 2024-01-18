@@ -7,70 +7,79 @@ import { CityDto } from './city.dto';
 
 export class FlightDto {
   @ApiProperty({
-    description: 'Correct id',
+    description: 'id',
   })
   @IsUUID()
   @IsNotEmpty()
   id: string;
 
   @ApiProperty({
-    description: 'Correct from city id',
+    description: 'from city id',
   })
   @IsUUID()
   @IsNotEmpty()
   from_city_id: string;
 
   @ApiProperty({
-    description: 'Correct to city id',
+    description: 'to city id',
   })
   @IsUUID()
   @IsNotEmpty()
   to_city_id: string;
 
   @ApiProperty({
-    description: 'Correct start flight date',
+    description: 'start flight date',
   })
   @IsNotEmpty()
   start_flight_date: Date;
 
   @ApiProperty({
-    description: 'Correct end flight date',
+    description: 'end flight date',
   })
   @IsNotEmpty()
   end_flight_date: Date;
 
   @ApiProperty({
-    description: 'Correct status',
+    description: 'status',
   })
   @IsString()
   @IsNotEmpty()
   status: FlightStatus;
 
   @ApiProperty({
-    description: 'Correct price',
+    description: 'price',
   })
   @IsInt()
   price: number;
 
   @ApiProperty({
-    description: 'Correct available seats',
+    description: 'available seats',
   })
   @IsInt()
   available_seats: number;
 
   @ApiProperty({
-    description: 'Correct plane id',
+    description: 'plane id',
   })
   @IsUUID()
   @IsNotEmpty()
   plane_id: string;
 
+  @ApiProperty({
+    description: 'from_city',
+  })
   @IsNotEmpty()
   from_city: CityDto;
 
+  @ApiProperty({
+    description: 'to_city',
+  })
   @IsNotEmpty()
   to_city: CityDto;
 
+  @ApiProperty({
+    description: 'plane',
+  })
   @IsNotEmpty()
   plane: PlaneDto;
 

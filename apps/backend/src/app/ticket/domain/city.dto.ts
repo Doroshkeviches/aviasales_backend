@@ -3,13 +3,13 @@ import { IsString, IsUUID } from 'class-validator';
 
 export class CityDto {
   @ApiProperty({
-    description: 'Correct id',
+    description: 'Сity id',
   })
   @IsUUID()
   id: string;
 
   @ApiProperty({
-    description: 'Correct title',
+    description: 'Сity title',
   })
   @IsString()
   title: string;

@@ -4,21 +4,21 @@ import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class PlaneDto {
   @ApiProperty({
-    description: 'Correct plane id',
+    description: 'plane plane id',
   })
   @IsUUID()
   @IsNotEmpty()
   id: string;
 
   @ApiProperty({
-    description: 'Correct plane title',
+    description: 'plane plane title',
   })
   @IsString()
   @IsNotEmpty()
   title: string;
 
   @ApiProperty({
-    description: 'Correct plane seats',
+    description: 'plane plane seats',
   })
   @IsInt()
   seats: number;
@@ -32,7 +32,7 @@ export class PlaneDto {
     return it;
   }
   static toEntities(arr?: PlaneDto[]) {
-    const it = arr.map((order) => this.toEntity(order));
+    const it = arr.map((plane) => this.toEntity(plane));
     return it;
   }
 }

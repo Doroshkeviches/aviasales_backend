@@ -72,37 +72,9 @@ export class CityController {
     if (city) throw new ApiException(ErrorCodes.ExistedCity);
 
     const newCity = await this.cityService.createNewCity(body);
-    if (!newCity) throw new ApiException(ErrorCodes.CreateCityError);
     return CityDto.toEntity(newCity);
   }
 
-  @HttpCode(200)
-  @ApiResponse({
-    status: 200,
-    description: 'Successfully update city title',
-  })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiBody({ type: CityForm })
-  @UseGuards(JwtAuthGuard)
-  @RequirePermissions(UserPermissions.UpdateCityTitleById)
-  @Put(':id')
-  async updateCityTitleById(
-    @Param('id') city_id: string,
-    @Body() body: CityForm
-  ) {
-    const form = CityForm.from(body);
-    const errors = await CityForm.validate(form);
-    if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
-    const city = await this.cityService.getCityByTitle(form);
-    if (city) throw new ApiException(ErrorCodes.ExistedCity);
-
-    const updatedCity = await this.cityService.updateCityTitleById(
-      city_id,
-      body
-    );
-    if (!updatedCity) throw new ApiException(ErrorCodes.UpdateCityError);
-    return CityDto.toEntity(updatedCity);
-  }
 
   @HttpCode(200)
   @ApiResponse({

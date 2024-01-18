@@ -5,7 +5,7 @@ import * as bcrypt from 'bcryptjs';
 import { Device, User, UserRoles } from '@prisma/client';
 import { DeviceReposService } from '@/src/domain/repos/device-repos.service';
 import { v4 } from 'uuid';
-import {SecurityService} from "@app/security";
+import { SecurityService } from "@app/security";
 
 
 
@@ -18,8 +18,8 @@ export class AuthService {
         private securityService: SecurityService,
     ) { }
 
-    async updateTokens(user: User, device_id: Pick<Device, 'device_id'>) {
-        const tokens = await this.securityService.generateTokens(user,device_id)
+    async generateTokens(user: User, device_id: Pick<Device, 'device_id'>) {
+        const tokens = await this.securityService.generateTokens(user, device_id)
         return tokens;
     }
     async getUserByEmail(email: Pick<User, 'email'>) {
@@ -35,7 +35,6 @@ export class AuthService {
     async comparePassword(user: User, password: Pick<User, 'password'>) {
         const isCompare = await bcrypt.compare(password.password, user.password)
         return isCompare
-
     }
 
     async findSessionByEmailAndDeviceId(data: Pick<User, 'email'> & Pick<Device, 'device_id'>) {
@@ -45,7 +44,7 @@ export class AuthService {
 
     async setResetToken(session: Device & { user: User }) {
         const token = v4();
-        const entity = await this.deviceRepo.updateResetToken(
+        await this.deviceRepo.updateResetToken(
             {
                 user_id: session.user.id,
                 device_id: session.device_id,
@@ -75,7 +74,7 @@ export class AuthService {
         return await this.deviceRepo.signoutOneSession(user, device_id)
     }
     async authenticate(user: User, device_id: Pick<Device, 'device_id'>) {
-        const tokens = await this.securityService.generateTokens(user,device_id)
+        const tokens = await this.securityService.generateTokens(user, device_id)
         await this.deviceRepo.updateSession(user, device_id);
         return tokens;
     }

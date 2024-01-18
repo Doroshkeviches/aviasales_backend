@@ -3,28 +3,28 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserForm {
   @ApiProperty({
-    description: ' id',
+    description: 'user id',
   })
   @IsUUID()
   @IsNotEmpty()
   id: string;
 
   @ApiProperty({
-    description: 'Correct first name',
+    description: 'user first name',
   })
   @IsOptional()
   @IsString()
   first_name?: string;
 
   @ApiProperty({
-    description: 'Correct last name',
+    description: 'user last name',
   })
   @IsOptional()
   @IsString()
   last_name?: string;
 
   @ApiProperty({
-    description: 'Correct last name',
+    description: 'user last name',
   })
   @IsEmail()
   @IsOptional()
