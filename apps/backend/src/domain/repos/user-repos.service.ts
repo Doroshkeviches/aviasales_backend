@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Device, Role, User, UserRoles } from "@prisma/client";
+import { Device, Role, TicketStatus, User, UserRoles } from "@prisma/client";
 import { user_id } from "@/src/types/user-id.type";
 import { PrismaService } from "@app/prisma";
 
@@ -7,6 +7,11 @@ const includingData = () => {
   return {
     include: {
       tickets: {
+        where: {
+          status: {
+            not: TicketStatus.InCart
+          }
+        },
         include: {
           flight: {
             include: {
@@ -64,7 +69,7 @@ export class UsersReposService {
   async getOneUserById({ id }: Pick<User, "id">) {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      ...includingData(),
+      ...includingData()
     });
     return user;
   }

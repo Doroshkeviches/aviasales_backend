@@ -37,6 +37,9 @@ export class TicketReposService {
   async getActiveTicketsByUserId({ id }: Pick<User, 'id'>) {
     return await this.prisma.ticket.findMany({
       where: { user_id: id, status: { not: TicketStatus.InCart } },
+      orderBy: {
+        status: "desc"
+      },
       ...includingData(),
     });
   }
