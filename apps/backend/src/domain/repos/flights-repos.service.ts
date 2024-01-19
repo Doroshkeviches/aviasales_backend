@@ -83,6 +83,22 @@ export class FlightsReposService {
 
 
   }
+  async incrementAvailableSeats(
+    ticket: Ticket
+  ) {
+    return await this.prisma.flight.update({
+      where: {
+        id: ticket.flight_id
+      },
+      data: {
+        available_seats: {
+          increment: seats_in_one_ticket
+        }
+      }
+    })
+
+
+  }
   async getAllFlights(
     data: Pick<Flight, 'start_flight_date' | 'from_city_id'>
   ) {
