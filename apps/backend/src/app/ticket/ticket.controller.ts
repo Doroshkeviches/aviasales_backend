@@ -57,6 +57,20 @@ export class TicketController {
     return TicketDto.toEntities(tickets);
   }
 
+
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully delete ticket by id',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.DeleteTicketById)
+  @Delete('/ordered/:id')
+  async deleteOrderedTicketById(@CurrentUser() user: User, @Param('id') id: string) {
+    return await this.ticketService.deleteOrderedTicketById(user, { id });
+  }
+
   @HttpCode(200)
   @ApiResponse({
     status: 200,

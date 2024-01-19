@@ -43,7 +43,7 @@ export class TicketReposService {
 
 
   async updateTicketsStatus(tickets: Ticket[]) {
-   return this.prisma.ticket.updateMany({
+    return this.prisma.ticket.updateMany({
       where: {
         id: {
           in: tickets.map(ticket => ticket.id)
@@ -71,6 +71,13 @@ export class TicketReposService {
   async deleteTicketById(user: User, { id }: Pick<Ticket, 'id'>) {
     return await this.prisma.ticket.delete({
       where: { id, user_id: user.id },
+      ...includingData(),
+    });
+  }
+
+  async deleteOrderedTicketById(user: User, { id }: Pick<Ticket, 'id'>) {
+    return await this.prisma.ticket.delete({
+      where: { id, user_id: user.id, status: TicketStatus.Ordered },
       ...includingData(),
     });
   }

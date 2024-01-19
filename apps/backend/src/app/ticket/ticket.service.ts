@@ -30,10 +30,13 @@ export class TicketService {
 
   async deleteTicketById(user: User, { id }: Pick<Ticket, 'id'>) {
     const deletedTicket = await this.ticketRepo.deleteTicketById(user, { id });
+    return deletedTicket
+  }
+  async deleteOrderedTicketById(user: User, { id }: Pick<Ticket, 'id'>) {
+    const deletedTicket = await this.ticketRepo.deleteOrderedTicketById(user, { id });
     await this.flightRepo.incrementAvailableSeats(deletedTicket)
     return deletedTicket
   }
-
   async updateTicketStatusById(data: Pick<Ticket, 'id' | 'status'>) {
     return await this.ticketRepo.updateTicketStatusById(data);
   }
