@@ -19,7 +19,7 @@ import { UserSessionDto } from "@app/security/dtos/UserSessionDto";
 import { RequestDto } from "./domain/request.dto";
 import {uuid} from "uuidv4";
 
-@WebSocketGateway({ cors: '*:*' })
+@WebSocketGateway()
 export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
   constructor(
     private readonly redisService: RedisService,
@@ -63,13 +63,13 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     // const userDto = UserSessionDto.fromPayload(client.data.user);
     // const user = await this.securityService.getUserById({id: userDto.id});
     // const requestDto = RequestDto.toEntity(user);
-    const requestDto = RequestDto.toEntity({
-      id: uuid(),
-      first_name: 'AAAA',
-      last_name: 'BBBB'
-    });
+    // const requestDto = RequestDto.toEntity({
+    //   id: uuid(),
+    //   first_name: 'AAAA',
+    //   last_name: 'BBBB'
+    // });
 
-    await this.redisService.onRequest(requestDto);
+    // await this.redisService.onRequest(requestDto);
 
     await this.redisService.subToMessage(roomId, this.server,client);
   }
