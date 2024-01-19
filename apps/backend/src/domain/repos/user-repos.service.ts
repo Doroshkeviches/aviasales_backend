@@ -12,6 +12,9 @@ const includingData = () => {
             not: TicketStatus.InCart
           }
         },
+        orderBy: {
+          status: "desc"
+        },
         include: {
           flight: {
             include: {

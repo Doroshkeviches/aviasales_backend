@@ -91,7 +91,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
       return true;
     }
 
-    if (roleEntity.type === UserRoles.Admin) {
+    if (roleEntity.type === UserRoles.Client) {
       return true;
     }
 

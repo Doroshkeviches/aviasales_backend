@@ -22,6 +22,11 @@ export class TicketReposService {
 
   async getAllTickets() {
     return await this.prisma.ticket.findMany({
+      where: {
+        status: {
+          not: TicketStatus.InCart
+        }
+      },
       ...includingData(),
     });
   }
