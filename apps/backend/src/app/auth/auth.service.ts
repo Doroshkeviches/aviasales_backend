@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { RolesReposService } from '@/src/domain/repos/roles-repos.service';
-import { UsersRepoService } from '@/src/domain/repos/user-repos.service';
 import * as bcrypt from 'bcryptjs';
 import { Device, User, UserRoles } from '@prisma/client';
-import { DeviceRepoService } from '@/src/domain/repos/device-repos.service';
 import { v4 } from 'uuid';
 import {SecurityService} from "@app/security";
+import {UsersRepoService} from "@backend/domain/repos/user-repos.service";
+import {DeviceRepoService} from "@backend/domain/repos/device-repos.service";
+import {RolesReposService} from "@backend/domain/repos/roles-repos.service";
 
 
 
@@ -29,7 +29,6 @@ export class AuthService {
 
     async getAdminByEmail(email: Pick<User, 'email'>) {
         return this.usersRepo.getAdminByEmail(email)
-
     }
 
     async comparePassword(user: User, password: Pick<User, 'password'>) {

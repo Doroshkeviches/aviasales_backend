@@ -8,10 +8,10 @@ import { FlightStatus, TicketStatus } from '@prisma/client';
 import { Exception } from 'handlebars';
 import { BadRequestException } from '@nestjs/common';
 import { I18nContext, I18nService } from 'nestjs-i18n';
-import { ErrorCodes } from '@/src/../../../../../libs/exceptions/enums/error-codes.enum';
 import {ApiException} from "@app/exceptions/api-exception";
 import {ApiRequestException} from "@app/exceptions/api-request-exception";
-import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
+import {JwtAuthGuard} from "../../../../../libs/security/src/guards/security.guard";
+import {ErrorCodes} from "../../../../../libs/exceptions/src/enums/error-codes.enum";
 
 describe('AuthController', () => {
   let controller: UserController;

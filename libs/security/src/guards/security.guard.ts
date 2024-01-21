@@ -12,7 +12,7 @@ import { PERMISSION_KEY } from "../decorators/permission.decorator";
 import { SecurityService } from "@app/security";
 import { UserSessionDto } from "@app/security/dtos/UserSessionDto";
 import { ApiException } from "@app/exceptions/api-exception";
-import {ErrorCodes} from "../../exceptions/enums/error-codes.enum";
+import {ErrorCodes} from "@app/exceptions/enums/error-codes.enum";
 
 export const CurrentUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {

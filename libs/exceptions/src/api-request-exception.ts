@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { I18nContext } from 'nestjs-i18n';
-import {ErrorCodes} from "../enums/error-codes.enum";
+import {ErrorCodes} from "./enums/error-codes.enum";
 
 export class ApiRequestException extends BadRequestException {
   constructor(errorCode: ErrorCodes, errors: object) {

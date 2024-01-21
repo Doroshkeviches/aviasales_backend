@@ -1,15 +1,13 @@
-import { Module, MiddlewareConsumer, RequestMethod } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AuthModule } from "./app/auth/auth.module";
 import { CityModule } from "./app/city/city.module";
 import { FlightsModule } from "./app/flights/flights.module";
 import { UserModule } from "./app/user/user.module";
 import { TicketModule } from "./app/ticket/ticket.module";
-
-import config_app from "../../../libs/security/config/app.config";
-import config_i18n from "../../../libs/security/config/i18n.config";
-import config_security from "../../../libs/security/config/security.config";
-
+import config_app from "@app/security/config/app.config";
+import config_i18n from "@app/security/config/i18n.config";
+import config_security from "@app/security/config/security.config";
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from "nestjs-i18n";
 import { APP_FILTER } from "@nestjs/core";
 import {SecurityModule} from "@app/security";

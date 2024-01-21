@@ -11,13 +11,13 @@ import {
 import { UserService } from './user.service';
 import { ApiResponse } from '@nestjs/swagger';
 import { UpdateUserForm } from './domain/UpdateUserForm';
-import { ErrorCodes } from '@/src/../../../../../libs/exceptions/enums/error-codes.enum';
 import { UserPermissions } from '@prisma/client';
 import { UserDto } from './domain/user.dto';
 import {ApiException} from "@app/exceptions/api-exception";
 import {ApiRequestException} from "@app/exceptions/api-request-exception";
-import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
-import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
+import {JwtAuthGuard} from "../../../../../libs/security/src/guards/security.guard";
+import {RequirePermissions} from "../../../../../libs/security/src/decorators/permission.decorator";
+import {ErrorCodes} from "../../../../../libs/exceptions/src/enums/error-codes.enum";
 
 @Controller('user')
 export class UserController {

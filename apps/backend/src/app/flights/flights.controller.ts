@@ -9,15 +9,15 @@ import {
 } from '@nestjs/common';
 import { FlightsService } from './flights.service';
 import { ChangeFlightStatus } from './domain/ChangeFlightStatusForm';
-import { ErrorCodes } from '@/src/../../../../../libs/exceptions/enums/error-codes.enum';
 import { ChangeFlightPrice } from './domain/ChangeFlightPriceForm';
 import { UserPermissions } from '@prisma/client';
 import { PathsDto } from './domain/paths.dto';
 import { ApiResponse } from '@nestjs/swagger';
 import {ApiException} from "@app/exceptions/api-exception";
 import {ApiRequestException} from "@app/exceptions/api-request-exception";
-import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
-import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
+import {JwtAuthGuard} from "../../../../../libs/security/src/guards/security.guard";
+import {RequirePermissions} from "../../../../../libs/security/src/decorators/permission.decorator";
+import {ErrorCodes} from "../../../../../libs/exceptions/src/enums/error-codes.enum";
 
 @Controller('flights')
 export class FlightsController {

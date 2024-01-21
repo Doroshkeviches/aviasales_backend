@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { CityService } from './city.service';
 import { CityController } from './city.controller';
-import { DomainModule } from '@/src/domain';
 import {SecurityModule} from "@app/security";
+import {DomainModule} from "@backend/domain";
 
 @Module({
   imports: [DomainModule, SecurityModule],

@@ -10,7 +10,6 @@ import { AuthService } from "./auth.service";
 import { SignUpForm } from "./domain/SignUpForm";
 import { SignInForm } from "./domain/SignInForm";
 import { TokenDto } from "./domain/TokenDto";
-import { decoded_user } from "@/src/types/decoded-user.type";
 import { ApiBody, ApiResponse } from "@nestjs/swagger";
 import { User, UserPermissions } from "@prisma/client";
 import { SignoutForm } from "./domain/SignoutForm";
@@ -20,9 +19,10 @@ import { ResetPasswordForm } from "./domain/ResetPasswordForm";
 import { ApiRequestException } from "@app/exceptions/api-request-exception";
 import { SecurityService } from "@app/security";
 import { ApiException } from "@app/exceptions/api-exception";
-import {CurrentUser, JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
-import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
-import {ErrorCodes} from "../../../../../libs/exceptions/enums/error-codes.enum";
+import {ErrorCodes} from "@app/exceptions/enums/error-codes.enum";
+import {RequirePermissions} from "@app/security/decorators/permission.decorator";
+import {CurrentUser, JwtAuthGuard} from "@app/security/guards/security.guard";
+import {decoded_user} from "@backend/types/decoded-user.type";
 
 @Controller("auth")
 export class AuthController {

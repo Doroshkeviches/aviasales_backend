@@ -1,7 +1,7 @@
-import { CityReposService } from '@/src/domain/repos/city-repos.service';
-import { FlightsRepoService } from '@/src/domain/repos/flights-repos.service';
 import { Injectable } from '@nestjs/common';
 import { City, Flight, Ticket } from '@prisma/client';
+import {FlightsRepoService} from "@backend/domain/repos/flights-repos.service";
+import {CityReposService} from "@backend/domain/repos/city-repos.service";
 
 @Injectable()
 export class FlightsService {

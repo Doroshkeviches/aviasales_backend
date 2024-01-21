@@ -2,12 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 // ============ Entities ================
 import { UserService } from './user.service';
-import { UsersRepoService } from '@/src/domain/repos/user-repos.service';
 import { UserDto } from './domain/user.dto';
 import { CityDto } from './domain/city.dto';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
+import {UsersRepoService} from "@backend/domain/repos/user-repos.service";
+import {JwtAuthGuard} from "@app/security/guards/security.guard";
 describe('CartService', () => {
     let service: UserService;
     let repo: UsersRepoService;

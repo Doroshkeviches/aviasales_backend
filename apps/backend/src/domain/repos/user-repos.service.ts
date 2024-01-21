@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { Role, User, UserRoles } from "@prisma/client";
-import { user_id } from "@/src/types/user-id.type";
 import {PrismaService} from "@app/prisma";
 
 const includingData = () => {
@@ -88,12 +87,6 @@ export class UsersRepoService {
       },
     });
     return user;
-  }
-
-  async deleteUser({ id }: user_id) {
-    return this.prisma.user.delete({
-      where: { id },
-    });
   }
 
   async changePassword(user: User, data: Partial<User>) {

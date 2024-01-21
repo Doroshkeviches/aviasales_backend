@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DomainModule } from 'apps/backend/src/domain';
 import { PassportModule } from '@nestjs/passport';
 import {SecurityStrategy} from "./security.strategy";
+
 @Module({
   imports: [DomainModule, ConfigModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
