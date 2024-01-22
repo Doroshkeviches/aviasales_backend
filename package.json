@@ -98,7 +98,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "apps",
+    "rootDir": ".",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -109,13 +109,13 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "^@app/security(|/.*)$": "<rootDir>/libs/security/src/$1",
-      "^@app/domain(|/.*)$": "<rootDir>/libs/domain/src/$1",
-      "^@app/prisma(|/.*)$": "<rootDir>/libs/prisma/src/$1",
-      "^@app/libs/test(|/.*)$": "<rootDir>/libs/libs/test/src/$1",
-      "^@app/exceptions(|/.*)$": "<rootDir>/libs/exceptions/src/$1",
-      "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
-      "^@/(.*)$": "<rootDir>/backend/$1"
+      "^@app/security(.*)$": "<rootDir>/libs/security/src/$1",
+      "^@app/domain(.*)$": "<rootDir>/libs/domain/src/$1",
+      "^@app/prisma(.*)$": "<rootDir>/libs/prisma/src/$1",
+      "^@app/libs/(.*)$": "<rootDir>/libs/$1",
+      "^@app/exceptions(.*)$": "<rootDir>/libs/exceptions/src/$1",
+      "^@app/config(.*)$": "<rootDir>/libs/config/src/$1",
+      "^@/(.*)$": "<rootDir>/apps/backend/$1"
     }
    
   }

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 // ============ Entities ================
 import { UserService } from './user.service';
-import { UsersRepoService } from '@/src/domain/repos/user-repos.service';
+import { UsersReposService } from '@/src/domain/repos/user-repos.service';
 import { UserDto } from './domain/user.dto';
 import { CityDto } from './domain/city.dto';
 import { plainToInstance } from 'class-transformer';
@@ -10,7 +10,7 @@ import { validate } from 'class-validator';
 import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
 describe('CartService', () => {
     let service: UserService;
-    let repo: UsersRepoService;
+    let repo: UsersReposService;
     let i18n: any = {
         t: () => jest.fn().mockResolvedValue(true),
       };
@@ -40,14 +40,14 @@ describe('CartService', () => {
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [UserService, UsersRepoService],
+            providers: [UserService, UsersReposService],
         })
-            .overrideProvider(UsersRepoService).useValue(mockUserRepo)
+            .overrideProvider(UsersReposService).useValue(mockUserRepo)
             .overrideGuard(JwtAuthGuard).useValue(mockPermissionGuard)
             .compile();
 
         service = module.get<UserService>(UserService);
-        repo = module.get<UsersRepoService>(UsersRepoService)
+        repo = module.get<UsersReposService>(UsersReposService)
     });
     it('should be defined', () => {
         expect(service).toBeDefined();

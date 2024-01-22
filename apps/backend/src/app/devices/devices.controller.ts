@@ -5,10 +5,10 @@ import { ApiException } from '@app/exceptions/api-exception';
 import { ApiRequestException } from '@app/exceptions/api-request-exception';
 import { ApiResponse } from '@nestjs/swagger';
 import { User, UserPermissions } from '@prisma/client';
-import { JwtAuthGuard, CurrentUser } from 'libs/security/guards/security.guard';
 import { SignoutForm } from '../auth/domain/Signout.form';
-import { RequirePermissions } from 'libs/security/decorators/permission.decorator';
+import { RequirePermissions } from '@app/libs/security/decorators/permission.decorator';
 import { DevicesDto } from './domain/devices.dto';
+import { CurrentUser, JwtAuthGuard } from '@app/libs/security/guards/security.guard';
 
 @Controller('devices')
 export class DevicesController {

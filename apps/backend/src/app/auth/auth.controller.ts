@@ -100,8 +100,6 @@ export class AuthController {
         }
 
         const user = await this.authService.signUp(form);
-        if (!user) throw new ApiException(ErrorCodes.CreateUserError);
-
         const tokens = await this.authService.generateTokens(user, form);
         return TokenDto.toEntity(tokens);
     }
@@ -122,9 +120,6 @@ export class AuthController {
         if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
 
         const isSuccess = await this.authService.signout(user, form);
-        if (!isSuccess) {
-            throw new ApiException(ErrorCodes.Error)
-        }
         return true;
     }
 
@@ -147,9 +142,6 @@ export class AuthController {
         }
 
         const token = await this.authService.setResetToken(session,form);
-        if (!token) {
-            throw new ApiException(ErrorCodes.NotExists_User);
-        }
         return ResetTokenDto.toEntity({ token });
     }
 

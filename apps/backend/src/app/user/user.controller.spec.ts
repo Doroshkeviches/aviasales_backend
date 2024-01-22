@@ -4,14 +4,14 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { UserDto } from './domain/user.dto';
 import { any, string } from 'joi';
-import { JwtAuthGuard } from '@/src/libs/security/guards/security.guard';
+import { JwtAuthGuard } from '@app/libs/security/guards/security.guard';
 import { FlightStatus, TicketStatus } from '@prisma/client';
 import { Exception } from 'handlebars';
 import { BadRequestException } from '@nestjs/common';
 import { I18nContext, I18nService } from 'nestjs-i18n';
-import { ApiException } from '@/src/libs/exceptions/api-exception';
+import { ApiException } from '@app/exceptions/api-exception';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
-import { ApiRequestException } from '@/src/libs/exceptions/api-request-exception';
+import { ApiRequestException } from '@app/exceptions/api-request-exception';
 
 describe('AuthController', () => {
   let controller: UserController;

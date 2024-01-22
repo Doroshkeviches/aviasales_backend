@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RolesReposService } from 'apps/backend/src/domain/repos/roles-repos.service';
-import { UsersReposService } from 'apps/backend/src/domain/repos/user-repos.service';
+import { RolesReposService } from '@/src/domain/repos/roles-repos.service';
+import { UsersReposService } from '@/src/domain/repos/user-repos.service';
 import { ConfigService } from '@nestjs/config';
 import { Device, Role, User } from '@prisma/client';
-import { user_id } from 'apps/backend/src/types/user-id.type';
-import { DeviceReposService } from 'apps/backend/src/domain/repos/device-repos.service';
+import { user_id } from '@/src/types/user-id.type';
+import { DeviceReposService } from '@/src/domain/repos/device-repos.service';
 import * as bcrypt from 'bcryptjs';
 
 
