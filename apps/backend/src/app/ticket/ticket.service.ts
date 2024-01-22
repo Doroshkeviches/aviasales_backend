@@ -2,14 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { Ticket, User } from '@prisma/client';
 import { TicketReposService } from '@/src/domain/repos/ticket-repos.service';
 import { FlightsReposService } from '@/src/domain/repos/flights-repos.service';
+import { PaginatedQueryDto } from './domain/paginatedQuery.dto';
 
 @Injectable()
 export class TicketService {
   constructor(private ticketRepo: TicketReposService,
     private flightRepo: FlightsReposService) { }
 
-  async getAllTickets() {
-    return await this.ticketRepo.getAllTickets();
+  async getAllTickets(paginatedQuery: PaginatedQueryDto) {
+    return await this.ticketRepo.getAllTickets(paginatedQuery)
   }
   async getTicketById({ id }: Pick<Ticket, 'id'>) {
     return await this.ticketRepo.getTicketById({ id });

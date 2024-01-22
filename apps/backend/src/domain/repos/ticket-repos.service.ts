@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Ticket, User, TicketStatus } from '@prisma/client';
 import { PrismaService } from "@app/prisma";
+import { PaginatedQueryDto } from '@/src/app/user/domain/paginatedQuery.dto';
 
 const includingData = () => {
   return {
@@ -20,13 +21,17 @@ export class TicketReposService {
   constructor(private prisma: PrismaService) { }
 
 
-  async getAllTickets() {
+  async getAllTickets({ pageNumber, pageSize }: PaginatedQueryDto) {
+    const skip = (pageNumber - 1) * pageSize;
+
     return await this.prisma.ticket.findMany({
       where: {
         status: {
           not: TicketStatus.InCart
         }
       },
+      take: pageSize,
+      skip,
       ...includingData(),
     });
   }

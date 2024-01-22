@@ -8,6 +8,7 @@ import {
   Param,
   Body,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { TicketService } from './ticket.service';
@@ -22,10 +23,11 @@ import { ApiException } from '@app/exceptions/api-exception';
 import { ApiRequestException } from '@app/exceptions/api-request-exception';
 import { RequirePermissions } from 'libs/security/decorators/permission.decorator';
 import { CurrentUser, JwtAuthGuard } from 'libs/security/guards/security.guard';
+import { PaginatedQueryDto } from './domain/paginatedQuery.dto';
 
 @Controller('ticket')
 export class TicketController {
-  constructor(private ticketService: TicketService) {}
+  constructor(private ticketService: TicketService) { }
 
   @HttpCode(200)
   @ApiResponse({
@@ -36,8 +38,8 @@ export class TicketController {
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.GetAllTickets)
   @Get()
-  async getAllTickets() {
-    const tickets = await this.ticketService.getAllTickets();
+  async getAllTickets(@Query() paginatedQuery: PaginatedQueryDto) {
+    const tickets = await this.ticketService.getAllTickets(paginatedQuery);
     if (!tickets) throw new ApiException(ErrorCodes.NoTickets);
     return TicketDto.toEntities(tickets);
   }

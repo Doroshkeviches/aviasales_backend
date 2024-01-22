@@ -18,6 +18,7 @@ import {ApiException} from "@app/exceptions/api-exception";
 import {ApiRequestException} from "@app/exceptions/api-request-exception";
 import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
 import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
+import { PaginatedQueryDto } from './domain/paginatedQuery.dto';
 
 @Controller('user')
 export class UserController {
@@ -31,8 +32,8 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.GetAllUsers)
   @Get()
-  async getAllUsers(@Query('page') page: number) {
-    const users = await this.userService.getAllUsers(page);
+  async getAllUsers(@Query() paginatedQuery: PaginatedQueryDto) {
+    const users = await this.userService.getAllUsers(paginatedQuery);
     return UserDto.toEntities(users);
   }
 
