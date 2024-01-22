@@ -1,8 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import {Injectable} from "@nestjs/common";
+import {ConfigService} from "@nestjs/config";
 import Redis from "ioredis";
 
-import { MessageDto } from "../../../apps/chat-gateway/src/domain/message.dto";
+import {MessageDto} from "../../../apps/chat-gateway/src/domain/message.dto";
+import {RequestDto} from "../../../apps/chat-gateway/src/domain/request.dto";
 
 @Injectable()
 export class RedisService {
@@ -15,15 +16,18 @@ export class RedisService {
   }
 
   async saveMessage(message: MessageDto) {
-    await this.client.lpush(message.room_id, JSON.stringify(message), "EX", 86400);
+    await this.client.lpush(message.room_id, JSON.stringify(message));
+    await this.client.expire(message.room_id, 86400);
   }
 
-  async addRoom(roomId: string) {
-    await this.client.sadd("rooms", roomId, "EX", 86400);
+  async addRoom(room: RequestDto) {
+    await this.client.hmset(`room:${room.id}`, room);
   }
 
   async isRoomInStore(roomId: string) {
-    return this.client.sismember("rooms", roomId);
+    const roomKey = `room:${roomId}`;
+    const exists = await this.client.exists(roomKey);
+    return exists === 1;
   }
 
   async getAllMessages(roomId: string) {
@@ -32,7 +36,20 @@ export class RedisService {
   }
 
   async getRooms() {
-    return this.client.smembers("rooms");
+    const roomKeys = await this.client.keys('room:*');
+
+    const roomPromises = roomKeys.map(async (roomKey) => {
+      const roomData = await this.client.hgetall(roomKey);
+      return roomData;
+    })
+
+    const rooms = await Promise.all(roomPromises);
+
+    return rooms.map((roomData) => ({
+      id: roomData.id,
+      first_name: roomData.first_name,
+      last_name: roomData.last_name
+    }));
   }
 
 }

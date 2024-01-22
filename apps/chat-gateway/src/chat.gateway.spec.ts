@@ -171,6 +171,8 @@ describe("ChatGateway", () => {
     const user = mockSecurityService.getUserById(userDto);
 
     expect(user).toEqual(mockUser);
+
+
   })
 
   it("customer should join a room and send a request", async () => {
