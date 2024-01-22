@@ -1,9 +1,7 @@
-<<<<<<< HEAD
 import { Test, TestingModule } from "@nestjs/testing";
 import { I18nContext, I18nService } from "nestjs-i18n";
 import { ConfigModule } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
-
 import { jest, expect } from "@jest/globals";
 
 import { SecurityService } from "@app/security";
@@ -13,30 +11,11 @@ import { JwtAuthGuard } from "@app/security/guards/security.guard";
 
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
-import { TokenDto } from "./domain/TokenDto";
-import { SignInForm } from "./domain/SignInForm";
-
 import { UserRoles } from "@prisma/client";
+import {TokenDto} from "@/backend/app/auth/domain/Token.dto";
+import {SignInForm} from "@/backend/app/auth/domain/SignIn.form";
 
 describe("AuthController", () => {
-=======
-import { Test, TestingModule } from '@nestjs/testing';
-import { jest, expect } from '@jest/globals';
-import { JwtAuthGuard } from 'libs/security/guards/security.guard';
-import { I18nContext, I18nService } from 'nestjs-i18n';
-import { ApiException } from '@app/exceptions/api-exception';
-import { ApiRequestException } from '@app/exceptions/api-request-exception';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { TokenDto } from './domain/Token.dto';
-import { SecurityService } from 'libs/security/src';
-import { ConfigModule } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
-import { SignInForm } from './domain/SignIn.form';
-import { UserRoles } from '@prisma/client';
-
-describe('AuthController', () => {
->>>>>>> 15fc22f05449d6b28ca56875aeb24018c7b91ffd
   let controller: AuthController;
   let service: AuthService;
   let securityService: SecurityService;

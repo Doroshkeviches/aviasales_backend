@@ -23,8 +23,11 @@
       "jest"
     ],
     "paths": {
-      "@backend/*": [
+      "@/backend/*": [
         "apps/backend/src/*"
+      ],
+      "@app/libs/*": [
+        "libs/*"
       ],
       "@app/libs/test": [
         "libs/libs/test/src"

@@ -6,57 +6,44 @@ import {
   Post,
   Query,
   UseGuards,
-} from '@nestjs/common';
-import { FlightsService } from './flights.service';
-<<<<<<< HEAD
-import { ChangeFlightStatus } from './domain/ChangeFlightStatusForm';
-import { ChangeFlightPrice } from './domain/ChangeFlightPriceForm';
-import { UserPermissions } from '@prisma/client';
-import { PathsDto } from './domain/paths.dto';
-import { ApiResponse } from '@nestjs/swagger';
-import {ApiException} from "@app/exceptions/api-exception";
-import {ApiRequestException} from "@app/exceptions/api-request-exception";
-import {JwtAuthGuard} from "../../../../../libs/security/src/guards/security.guard";
-import {RequirePermissions} from "../../../../../libs/security/src/decorators/permission.decorator";
-import {ErrorCodes} from "../../../../../libs/exceptions/src/enums/error-codes.enum";
-=======
-import { ChangeFlightStatus } from './domain/ChangeFlightStatus.form';
-import { ErrorCodes } from '@/src/enums/error-codes.enum';
-import { ChangeFlightPrice } from './domain/ChangeFlightPrice.form';
-import { UserPermissions } from '@prisma/client';
-import { PathsDto } from './domain/paths.dto';
-import { ApiResponse } from '@nestjs/swagger';
+} from "@nestjs/common";
+import { FlightsService } from "./flights.service";
+import { ApiResponse } from "@nestjs/swagger";
+import { JwtAuthGuard } from "@app/security/guards/security.guard";
+import { RequirePermissions } from "@app/security/decorators/permission.decorator";
+import { UserPermissions } from "@prisma/client";
 import { ApiException } from "@app/exceptions/api-exception";
+import { ErrorCodes } from "@app/exceptions/enums/error-codes.enum";
+import { FlightsSorted } from "@/backend/app/flights/enum/flights-sortedBy.enum";
+import { PathsDto } from "@/backend/app/flights/domain/paths.dto";
+import { ChangeFlightStatus } from "@/backend/app/flights/domain/ChangeFlightStatus.form";
 import { ApiRequestException } from "@app/exceptions/api-request-exception";
-import { JwtAuthGuard } from "../../../../../libs/security/guards/security.guard";
-import { RequirePermissions } from "../../../../../libs/security/decorators/permission.decorator";
-import { FlightsSorted } from './enum/flights-sortedBy.enum';
-import { FlightDto } from './domain/flight.dto';
->>>>>>> 15fc22f05449d6b28ca56875aeb24018c7b91ffd
+import { FlightDto } from "@/backend/app/flights/domain/flight.dto";
+import { ChangeFlightPrice } from "@/backend/app/flights/domain/ChangeFlightPrice.form";
 
-@Controller('flights')
+@Controller("flights")
 export class FlightsController {
-  constructor(private flightService: FlightsService) { }
+  constructor(private flightService: FlightsService) {}
 
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'Successfully get array of paths',
+    description: "Successfully get array of paths",
   })
-  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 400, description: "Bad request" })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.GetArrayOfPath)
   @Get()
   async getArrayOfPath(
-    @Query('from_city') from_city: string,
-    @Query('to_city') to_city: string,
-    @Query('date') date_string: string,
-    @Query('isReturn') isReturn: boolean,
-    @Query('returnDate') returnDate: string,
-    @Query('sortedBy') sortedBy: string
+    @Query("from_city") from_city: string,
+    @Query("to_city") to_city: string,
+    @Query("date") date_string: string,
+    @Query("isReturn") isReturn: boolean,
+    @Query("returnDate") returnDate: string,
+    @Query("sortedBy") sortedBy: string,
   ) {
     const start_flight_date = new Date(date_string);
-    const return_flight_date = new Date(returnDate)
+    const return_flight_date = new Date(returnDate);
     const from_city_entity = await this.flightService.getCityByTitle({
       title: from_city,
     });
@@ -89,7 +76,6 @@ export class FlightsController {
     if (sortedBy === FlightsSorted.Time) {
       const sortedPathByTime = this.flightService.sortArraysByTotalTime(path);
       return PathsDto.toEntities(sortedPathByTime);
-
     }
     const sortedPathByPrice = this.flightService.sortArraysByTotalPrice(path);
     return PathsDto.toEntities(sortedPathByPrice);
@@ -98,36 +84,36 @@ export class FlightsController {
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'Successfully change flight status',
+    description: "Successfully change flight status",
   })
-  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 400, description: "Bad request" })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.ChangeFlightStatus)
-  @Post('status')
+  @Post("status")
   async changeFlightStatus(@Body() body: ChangeFlightStatus) {
     const form = ChangeFlightStatus.from(body);
     const errors = ChangeFlightStatus.validate(form);
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
-    
+
     const updatedFlight = await this.flightService.changeFlightStatus(form);
-    return FlightDto.toEntity(updatedFlight)
+    return FlightDto.toEntity(updatedFlight);
   }
 
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'Successfully change flight price',
+    description: "Successfully change flight price",
   })
-  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 400, description: "Bad request" })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.ChangeFlightPrice)
-  @Post('price')
+  @Post("price")
   async changeFlightPrice(@Body() body: ChangeFlightPrice) {
     const form = ChangeFlightPrice.from(body);
     const errors = ChangeFlightPrice.validate(form);
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
 
     const updatedFlight = await this.flightService.changeFlightPrice(form);
-    return FlightDto.toEntity(updatedFlight)
+    return FlightDto.toEntity(updatedFlight);
   }
 }

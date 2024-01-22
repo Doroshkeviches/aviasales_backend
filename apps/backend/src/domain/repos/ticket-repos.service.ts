@@ -31,10 +31,16 @@ export class TicketReposService {
     });
   }
 
-
   async getTicketById({ id }: Pick<Ticket, 'id'>) {
     return await this.prisma.ticket.findUnique({
       where: { id },
+      ...includingData(),
+    });
+  }
+
+  async getTicketsByUserId({ user_id }: Pick<Ticket, 'user_id'>) {
+    return await this.prisma.ticket.findMany({
+      where: { user_id, status: { not: TicketStatus.InCart } },
       ...includingData(),
     });
   }
