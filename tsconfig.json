@@ -29,12 +29,6 @@
       "@app/libs/*": [
         "libs/*"
       ],
-      "@app/libs/test": [
-        "libs/libs/test/src"
-      ],
-      "@app/libs/test/*": [
-        "libs/libs/test/src/*"
-      ],
       "@app/prisma": [
         "libs/prisma/src"
       ],
