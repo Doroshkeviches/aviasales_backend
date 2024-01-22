@@ -5,10 +5,10 @@ CREATE TYPE "UserRoles" AS ENUM ('admin', 'client', 'manager');
 CREATE TYPE "FlightStatus" AS ENUM ('planned', 'flying', 'fulfilled', 'canceled');
 
 -- CreateEnum
-CREATE TYPE "TicketStatus" AS ENUM ('fulfilled', 'in cart', 'canceled');
+CREATE TYPE "TicketStatus" AS ENUM ('fulfilled', 'in cart', 'canceled', 'ordered');
 
 -- CreateEnum
-CREATE TYPE "UserPermissions" AS ENUM ('permissions.all', 'permissions.signout', 'permissions.password-change', 'permissions.refresh-token', 'permissions.get-all-users', 'permissions.get-user-by-id', 'permissions.get-users-by-search-query', 'permissions.update-user', 'permissions.get-all-cities', 'permissions.get-city-by-id', 'permissions.create-new-city', 'permissions.update-city-title-by-id', 'permissions.delete-city-by-id', 'permissions.get-array-of-path', 'permissions.change-flight-status', 'permissions.change-flight-price', 'permissions.get-all-tickets', 'permissions.get-ticket-by-id', 'permissions.delete-ticket-by-id', 'permissions.update-ticket-status', 'permissions.create-new-ticket', 'permissions.update-ticket-holder-credentials', 'permissions.access-chat', 'permissions.start-chat');
+CREATE TYPE "UserPermissions" AS ENUM ('permissions.all', 'permissions.signout', 'permissions.password-change', 'permissions.refresh-token', 'permissions.get-all-users', 'permissions.get-user-by-id', 'permissions.get-users-by-search-query', 'permissions.update-user', 'permissions.get-all-cities', 'permissions.get-city-by-id', 'permissions.create-new-city', 'permissions.update-city-title-by-id', 'permissions.delete-city-by-id', 'permissions.get-array-of-path', 'permissions.change-flight-status', 'permissions.change-flight-price', 'permissions.get-all-tickets', 'permissions.get-ticket-by-id', 'permissions.get-active-tickets-by-user-id', 'permissions.delete-ticket-by-id', 'permissions.update-ticket-status', 'permissions.create-new-ticket', 'permissions.update-ticket-holder-credentials', 'permissions.get-rooms', 'permissions.get-messages', 'permissions.send-messages', 'permissions.join-room', 'permissions.publish-to-rooms', 'permissions.subscribe-to-rooms', 'permissions.signout-selected-session', 'permissions.signout-sessions', 'permissions.get-user-devices');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -88,18 +88,11 @@ CREATE TABLE "roles" (
     CONSTRAINT "roles_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "messages" (
-    "room_id" UUID NOT NULL,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "text" TEXT NOT NULL,
-    "user_id" UUID NOT NULL,
-
-    CONSTRAINT "messages_pkey" PRIMARY KEY ("room_id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE INDEX "users_email_idx" ON "users"("email");
 
 -- CreateIndex
 CREATE INDEX "users_id_idx" ON "users"("id");
@@ -125,9 +118,6 @@ CREATE INDEX "cities_id_idx" ON "cities"("id");
 -- CreateIndex
 CREATE UNIQUE INDEX "roles_id_type_key" ON "roles"("id", "type");
 
--- CreateIndex
-CREATE INDEX "messages_room_id_idx" ON "messages"("room_id");
-
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_role_id_role_type_fkey" FOREIGN KEY ("role_id", "role_type") REFERENCES "roles"("id", "type") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -148,6 +138,3 @@ ALTER TABLE "flights" ADD CONSTRAINT "flights_to_city_id_fkey" FOREIGN KEY ("to_
 
 -- AddForeignKey
 ALTER TABLE "flights" ADD CONSTRAINT "flights_plane_id_fkey" FOREIGN KEY ("plane_id") REFERENCES "planes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "messages" ADD CONSTRAINT "messages_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

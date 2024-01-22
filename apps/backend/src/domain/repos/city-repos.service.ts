@@ -28,14 +28,6 @@ export class CityReposService {
     });
   }
 
-  async updateCityTitleById(id: string, title: Pick<City, 'title'>) {
-    const city = await this.prisma.city.update({
-      where: { id },
-      data: { ...title },
-    });
-    return city;
-  }
-
   async createNewCity(data: Pick<City, 'title'>) {
     const { title } = data;
     const newCity = await this.prisma.city.create({

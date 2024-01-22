@@ -47,6 +47,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
         }
 
         decodedUser = await this.validateTokenAndGetUser(authHeader);
+
         request.user = decodedUser;
         return this.validatePermissions(decodedUser, requiredPermissions);
       case "ws":
@@ -71,12 +72,10 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
     const decodedUser = UserSessionDto.fromPayload(
       this.jwtService.verify(token),
     );
-    const user = await this.securityService.getUserById({ id: decodedUser.id });
-
+    const user = await this.securityService.findSessionByUserIdAndDeviceId(decodedUser);
     if (!user) {
-      throw new ApiException(ErrorCodes.NotAuthorizedRequest);
+      throw new UnauthorizedException(ErrorCodes.NotAuthorizedRequest);
     }
-
     return decodedUser;
   }
 
@@ -87,7 +86,6 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
     const roleEntity = await this.securityService.getRoleById({
       id: user.role_id,
     });
-
     if (!requiredPermissions) {
       return true;
     }
@@ -101,7 +99,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
     );
 
     if (!hasPermission) {
-      throw new ApiException(ErrorCodes.NotAuthorizedRequest);
+      throw new UnauthorizedException(ErrorCodes.NotAuthorizedRequest);
     }
 
     return true;

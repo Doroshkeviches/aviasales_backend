@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Role, UserPermissions, UserRoles } from '@prisma/client';
-import {PrismaService} from "@app/prisma";
+import { PrismaService } from "@app/prisma";
 
 @Injectable()
 export class RolesReposService {
     constructor(private prisma: PrismaService) { }
     async getRole(type: UserRoles) {
-        const role = this.prisma.role.findFirst({ where: { type } })
-        return role
+        return this.prisma.role.findFirst({ where: { type } })
     }
     async createRole(type: UserRoles) {
         return this.prisma.role.create({
@@ -17,7 +16,7 @@ export class RolesReposService {
             }
         })
     }
-    async getRoleById(id: Pick<Role, 'id'>) {
-        return this.prisma.role.findUnique({ where: { id: id.id } })
+    async getRoleById({ id }: Pick<Role, 'id'>) {
+        return this.prisma.role.findUnique({ where: { id } })
     }
 }

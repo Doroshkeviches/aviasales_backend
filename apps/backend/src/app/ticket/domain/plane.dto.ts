@@ -3,14 +3,23 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID, validate } from 'class-validator';
 
 export class PlaneDto {
+    @ApiProperty({
+        description: 'plane id',
+    })
     @IsUUID()
     @IsNotEmpty()
     id: string;
 
+    @ApiProperty({
+        description: 'plane title',
+    })
     @IsString()
     @IsNotEmpty()
     title: string
 
+    @ApiProperty({
+        description: 'plane seats',
+    })
     @IsInt()
     seats: number
 

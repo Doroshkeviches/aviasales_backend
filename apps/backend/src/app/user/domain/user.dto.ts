@@ -34,6 +34,7 @@ export class UserDto {
   @IsNotEmpty()
   tickets: TicketDto[];
 
+
   static toEntity(entity?: UserDto) {
     const it = {
       id: entity.id,

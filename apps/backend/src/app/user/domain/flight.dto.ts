@@ -7,59 +7,59 @@ import { CityDto } from './city.dto';
 
 export class FlightDto {
   @ApiProperty({
-    description: 'Correct id',
+    description: 'flight id',
   })
   @IsUUID()
   @IsNotEmpty()
   id: string;
 
   @ApiProperty({
-    description: 'Correct from_city_id',
+    description: 'flight from_city_id',
   })
   @IsUUID()
   @IsNotEmpty()
   from_city_id: string;
 
   @ApiProperty({
-    description: 'Correct to_city_id',
+    description: 'flight to_city_id',
   })
   @IsUUID()
   @IsNotEmpty()
   to_city_id: string;
 
   @ApiProperty({
-    description: 'Correct start_flight_date',
+    description: 'flight start_flight_date',
   })
   @IsNotEmpty()
   start_flight_date: Date;
 
   @ApiProperty({
-    description: 'Correct end_flight_date',
+    description: 'flight end_flight_date',
   })
   @IsNotEmpty()
   end_flight_date: Date;
 
   @ApiProperty({
-    description: 'Correct status',
+    description: 'flight status',
   })
   @IsString()
   @IsNotEmpty()
   status: FlightStatus;
 
   @ApiProperty({
-    description: 'Correct price',
+    description: 'flight price',
   })
   @IsInt()
   price: number;
 
   @ApiProperty({
-    description: 'Correct available_seats',
+    description: 'flight available_seats',
   })
   @IsInt()
   available_seats: number;
 
   @ApiProperty({
-    description: 'Correct plane_id',
+    description: 'flight plane_id',
   })
   @IsUUID()
   @IsNotEmpty()
@@ -87,7 +87,7 @@ export class FlightDto {
     return it;
   }
   static toEntities(arr?: FlightDto[]) {
-    const it = arr.map((order) => this.toEntity(order));
+    const it = arr.map((flight) => this.toEntity(flight));
     return it;
   }
 }

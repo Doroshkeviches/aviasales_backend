@@ -1,8 +1,6 @@
 import { IsEmail } from "@nestjs/class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import {
-  IsNotEmpty,
-  IsString,
   IsStrongPassword,
   IsUUID,
   validate,

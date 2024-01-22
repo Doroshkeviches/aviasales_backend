@@ -1,11 +1,19 @@
 import { Injectable } from "@nestjs/common";
-import { Role, User, UserRoles } from "@prisma/client";
-import {PrismaService} from "@app/prisma";
+import { Device, Role, TicketStatus, User, UserRoles } from "@prisma/client";
+import { PrismaService } from "@app/prisma";
 
 const includingData = () => {
   return {
     include: {
       tickets: {
+        where: {
+          status: {
+            not: TicketStatus.InCart
+          }
+        },
+        orderBy: {
+          status: "desc"
+        },
         include: {
           flight: {
             include: {
@@ -21,8 +29,8 @@ const includingData = () => {
 };
 
 @Injectable()
-export class UsersRepoService {
-  constructor(private prisma: PrismaService) {}
+export class UsersReposService {
+  constructor(private prisma: PrismaService) { }
   async getAllUsers(page: number, pageSize: number = 10) {
     const skip = (page - 1) * pageSize;
     return this.prisma.user.findMany({
@@ -62,7 +70,7 @@ export class UsersRepoService {
   async getOneUserById({ id }: Pick<User, "id">) {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      ...includingData(),
+      ...includingData()
     });
     return user;
   }

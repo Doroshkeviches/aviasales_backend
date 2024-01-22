@@ -4,14 +4,10 @@ import {
   Flight,
   FlightStatus,
   Plane,
-  Role,
   Ticket,
-  UserPermissions,
-  UserRoles,
 } from '@prisma/client';
-import { v4 as uuidv4 } from 'uuid';
-import {PrismaService} from "@app/prisma";
-
+import { PrismaService } from "@app/prisma";
+const seats_in_one_ticket = 1
 const includingData = () => {
   return {
     include: {
@@ -23,8 +19,8 @@ const includingData = () => {
 };
 
 @Injectable()
-export class FlightsRepoService {
-  constructor(private prisma: PrismaService) {}
+export class FlightsReposService {
+  constructor(private prisma: PrismaService) { }
   async createFlight(
     from_city: City,
     to_city: City,
@@ -64,26 +60,50 @@ export class FlightsRepoService {
     });
   }
   async decrementAvailableSeats(
-    { id }: Pick<Flight, 'id'>,
-    seats: Pick<Flight, 'available_seats'>
+    tickets: Ticket[]
   ) {
-    return this.prisma.flight.update({
+    return await this.prisma.$transaction(async (tx) => {
+      try {
+        return await Promise.all(tickets.map(async (ticket) => {
+          return tx.flight.update({
+            where: {
+              id: ticket.flight_id,
+              available_seats: { gte: seats_in_one_ticket },
+            },
+            data: {
+              available_seats: { decrement: seats_in_one_ticket },
+            },
+            ...includingData(),
+          });
+        }))
+      } catch (error) {
+        return
+      }
+    })
+
+
+  }
+  async incrementAvailableSeats(
+    ticket: Ticket
+  ) {
+    return await this.prisma.flight.update({
       where: {
-        id,
-        available_seats: { gte: seats.available_seats },
+        id: ticket.flight_id
       },
       data: {
-        available_seats: { decrement: seats.available_seats },
-      },
-      ...includingData(),
-    });
+        available_seats: {
+          increment: seats_in_one_ticket
+        }
+      }
+    })
+
+
   }
   async getAllFlights(
     data: Pick<Flight, 'start_flight_date' | 'from_city_id'>
   ) {
     const next_day_date = new Date(data.start_flight_date);
     next_day_date.setDate(next_day_date.getDate() + 1);
-    console.log(data.start_flight_date);
     return this.prisma.flight.findMany({
       where: {
         OR: [
@@ -115,23 +135,24 @@ export class FlightsRepoService {
   }
   async deleteFlight(
     { id }: Pick<Flight, 'id'>,
-    seats: Pick<Flight, 'available_seats'>
   ) {
     return this.prisma.flight.delete({
       where: { id },
     });
   }
 
-  async getRelevantFlightById({ flight_id }: Pick<Ticket, 'flight_id'>) {
-    const staticSeats = 1;
-    return this.prisma.flight.findUnique({
+  async getRelevantFlightsById(flights: string[]) {
+    return this.prisma.flight.findMany({
       where: {
-        id: flight_id,
+        id: {
+          in: flights
+        },
         available_seats: {
-          gte: staticSeats,
+          gte: seats_in_one_ticket,
         },
       },
       ...includingData(),
     });
   }
+
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+<<<<<<< HEAD
 import * as bcrypt from 'bcryptjs';
 import { Device, User, UserRoles } from '@prisma/client';
 import { v4 } from 'uuid';
@@ -6,20 +7,29 @@ import {SecurityService} from "@app/security";
 import {UsersRepoService} from "@backend/domain/repos/user-repos.service";
 import {DeviceRepoService} from "@backend/domain/repos/device-repos.service";
 import {RolesReposService} from "@backend/domain/repos/roles-repos.service";
+=======
+import { RolesReposService } from '@/src/domain/repos/roles-repos.service';
+import { UsersReposService } from '@/src/domain/repos/user-repos.service';
+import * as bcrypt from 'bcryptjs';
+import { Device, User, UserRoles } from '@prisma/client';
+import { DeviceReposService } from '@/src/domain/repos/device-repos.service';
+import { v4 } from 'uuid';
+import { SecurityService } from "@app/security";
+>>>>>>> 15fc22f05449d6b28ca56875aeb24018c7b91ffd
 
 
 
 @Injectable()
 export class AuthService {
     constructor(
-        private usersRepo: UsersRepoService,
-        private deviceRepo: DeviceRepoService,
+        private usersRepo: UsersReposService,
+        private deviceRepo: DeviceReposService,
         private rolesRepo: RolesReposService,
         private securityService: SecurityService,
     ) { }
 
-    async updateTokens(user: User, { device_id }: Pick<Device, 'device_id'>) {
-        const tokens = await this.securityService.generateTokens(user)
+    async generateTokens(user: User, device_id: Pick<Device, 'device_id'>) {
+        const tokens = await this.securityService.generateTokens(user, device_id)
         return tokens;
     }
     async getUserByEmail(email: Pick<User, 'email'>) {
@@ -34,19 +44,18 @@ export class AuthService {
     async comparePassword(user: User, password: Pick<User, 'password'>) {
         const isCompare = await bcrypt.compare(password.password, user.password)
         return isCompare
-
     }
 
-    async findSessionByEmailAndDeviceId(data: Pick<User, 'email'> & Pick<Device, 'device_id'>) {
-        return await this.deviceRepo.findSessionByEmailAndDeviceId(data);
+    async findSessionByEmail(data: Pick<User, 'email'>) {
+        return await this.usersRepo.getUserByEmail(data)
     }
 
 
-    async setResetToken(session: Device & { user: User }) {
+    async setResetToken(user: User, session: Pick<Device,'device_id'>) {
         const token = v4();
-        const entity = await this.deviceRepo.updateResetToken(
+        await this.deviceRepo.updateResetToken(
             {
-                user_id: session.user.id,
+                user_id: user.id,
                 device_id: session.device_id,
                 reset_token: token
             },
@@ -67,13 +76,19 @@ export class AuthService {
         return await this.deviceRepo.deleteRecord(user, device_id)
     }
 
+    async signoutSessions(user: User, device_id: Pick<Device, 'device_id'>) {
+        return await this.deviceRepo.signoutSessions(user, device_id)
+    }
+    async signoutOneSession(user: User, device_id: Pick<Device, 'device_id'>) {
+        return await this.deviceRepo.signoutOneSession(user, device_id)
+    }
     async authenticate(user: User, device_id: Pick<Device, 'device_id'>) {
-        const tokens = await this.securityService.generateTokens(user)
+        const tokens = await this.securityService.generateTokens(user, device_id)
         await this.deviceRepo.updateSession(user, device_id);
         return tokens;
     }
 
-    async findSessionByResetToken(data: Pick<User, 'email'> & Pick<Device, 'device_id' | 'reset_token'>
+    async findSessionByResetToken(data: Pick<Device, 'device_id' | 'reset_token'>
     ) {
         return await this.deviceRepo.findByResetToken(data);
     }

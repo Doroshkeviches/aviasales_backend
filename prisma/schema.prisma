@@ -28,6 +28,7 @@ enum TicketStatus {
   Fulfilled @map("fulfilled")
   InCart    @map("in cart")
   Canceled  @map("canceled")
+  Ordered   @map("ordered")
 }
 
 enum UserPermissions {
@@ -52,6 +53,7 @@ enum UserPermissions {
 
   GetAllTickets                 @map("permissions.get-all-tickets")
   GetTicketById                 @map("permissions.get-ticket-by-id")
+  GetActiveTicketsByUserId      @map("permissions.get-active-tickets-by-user-id")
   DeleteTicketById              @map("permissions.delete-ticket-by-id")
   UpdateTicketStatus            @map("permissions.update-ticket-status")
   CreateNewTicket               @map("permissions.create-new-ticket")
@@ -63,6 +65,11 @@ enum UserPermissions {
   JoinRoom         @map("permissions.join-room")
   PublishToRooms   @map("permissions.publish-to-rooms")
   SubscribeToRooms @map("permissions.subscribe-to-rooms")
+
+  //devices
+  SignoutSelectSession @map("permissions.signout-selected-session")
+  SignoutSessions      @map("permissions.signout-sessions")
+  GetUserDevices       @map("permissions.get-user-devices")
 }
 
 model User {
@@ -77,6 +84,7 @@ model User {
   tickets    Ticket[]
   devices    Device[]
 
+  @@index([email])
   @@index([id])
   @@map("users")
 }

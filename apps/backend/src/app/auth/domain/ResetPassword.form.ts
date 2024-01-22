@@ -1,16 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsStrongPassword, IsUUID, NotEquals, validate } from 'class-validator';
-import {EmailErrorMessage, StrongPasswordErrorMessage, UuidErrorMessage} from "@app/exceptions/i18n-error";
+import { IsStrongPassword, IsUUID, NotEquals, validate } from 'class-validator';
+import { StrongPasswordErrorMessage, UuidErrorMessage } from "@app/exceptions/i18n-error";
 
 export class ResetPasswordForm {
-    @ApiProperty({
-        description: 'email',
-    })
-    @IsEmail(undefined, {
-        message: EmailErrorMessage,
-    })
-    email!: string;
-
     @ApiProperty({
         description: 'device id',
     })
@@ -31,7 +23,7 @@ export class ResetPasswordForm {
     @IsStrongPassword(undefined, { message: StrongPasswordErrorMessage })
     @NotEquals('password', {
         message: 'Current password should not match with new password',
-      })
+    })
     password_confirm!: string;
 
     @ApiProperty({
@@ -44,7 +36,6 @@ export class ResetPasswordForm {
 
     static from(form?: ResetPasswordForm) {
         const it = new ResetPasswordForm();
-        it.email = form?.email;
         it.device_id = form?.device_id;
         it.password = form?.password;
         it.password_confirm = form?.password_confirm;

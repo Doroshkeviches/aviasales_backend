@@ -10,7 +10,7 @@ export class SignoutForm {
   @IsUUID(undefined, {
     message: UuidErrorMessage,
   })
-  device_id!: string;
+  device_id: string;
 
   static from(form?: SignoutForm) {
     const it = new SignoutForm();

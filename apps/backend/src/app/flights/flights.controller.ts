@@ -8,6 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { FlightsService } from './flights.service';
+<<<<<<< HEAD
 import { ChangeFlightStatus } from './domain/ChangeFlightStatusForm';
 import { ChangeFlightPrice } from './domain/ChangeFlightPriceForm';
 import { UserPermissions } from '@prisma/client';
@@ -18,10 +19,24 @@ import {ApiRequestException} from "@app/exceptions/api-request-exception";
 import {JwtAuthGuard} from "../../../../../libs/security/src/guards/security.guard";
 import {RequirePermissions} from "../../../../../libs/security/src/decorators/permission.decorator";
 import {ErrorCodes} from "../../../../../libs/exceptions/src/enums/error-codes.enum";
+=======
+import { ChangeFlightStatus } from './domain/ChangeFlightStatus.form';
+import { ErrorCodes } from '@/src/enums/error-codes.enum';
+import { ChangeFlightPrice } from './domain/ChangeFlightPrice.form';
+import { UserPermissions } from '@prisma/client';
+import { PathsDto } from './domain/paths.dto';
+import { ApiResponse } from '@nestjs/swagger';
+import { ApiException } from "@app/exceptions/api-exception";
+import { ApiRequestException } from "@app/exceptions/api-request-exception";
+import { JwtAuthGuard } from "../../../../../libs/security/guards/security.guard";
+import { RequirePermissions } from "../../../../../libs/security/decorators/permission.decorator";
+import { FlightsSorted } from './enum/flights-sortedBy.enum';
+import { FlightDto } from './domain/flight.dto';
+>>>>>>> 15fc22f05449d6b28ca56875aeb24018c7b91ffd
 
 @Controller('flights')
 export class FlightsController {
-  constructor(private flightService: FlightsService) {}
+  constructor(private flightService: FlightsService) { }
 
   @HttpCode(200)
   @ApiResponse({
@@ -37,8 +52,8 @@ export class FlightsController {
     @Query('to_city') to_city: string,
     @Query('date') date_string: string,
     @Query('isReturn') isReturn: boolean,
-    @Query('returnDate') returnDate: string 
-
+    @Query('returnDate') returnDate: string,
+    @Query('sortedBy') sortedBy: string
   ) {
     const start_flight_date = new Date(date_string);
     const return_flight_date = new Date(returnDate)
@@ -67,15 +82,17 @@ export class FlightsController {
       isReturn,
       { start_flight_date: return_flight_date },
     );
-   
+
     if (!path.length) {
       throw new ApiException(ErrorCodes.NoPath);
     }
+    if (sortedBy === FlightsSorted.Time) {
+      const sortedPathByTime = this.flightService.sortArraysByTotalTime(path);
+      return PathsDto.toEntities(sortedPathByTime);
 
+    }
     const sortedPathByPrice = this.flightService.sortArraysByTotalPrice(path);
-    // const sortedPathByTime = this.flightService.sortArraysByTotalTime(path);
     return PathsDto.toEntities(sortedPathByPrice);
-    return sortedPathByPrice
   }
 
   @HttpCode(200)
@@ -91,7 +108,9 @@ export class FlightsController {
     const form = ChangeFlightStatus.from(body);
     const errors = ChangeFlightStatus.validate(form);
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
-    return this.flightService.changeFlightStatus(form);
+    
+    const updatedFlight = await this.flightService.changeFlightStatus(form);
+    return FlightDto.toEntity(updatedFlight)
   }
 
   @HttpCode(200)
@@ -107,6 +126,8 @@ export class FlightsController {
     const form = ChangeFlightPrice.from(body);
     const errors = ChangeFlightPrice.validate(form);
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
-    return this.flightService.changeFlightPrice(form);
+
+    const updatedFlight = await this.flightService.changeFlightPrice(form);
+    return FlightDto.toEntity(updatedFlight)
   }
 }
