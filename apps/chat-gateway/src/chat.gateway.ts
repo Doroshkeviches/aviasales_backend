@@ -59,7 +59,7 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
   @SubscribeMessage(ChatEventsEnum.ConnectManager)
   async handleManagerConnection(@ConnectedSocket() client: Socket) {
     const userDto = UserSessionDto.fromPayload(client.data.user);
-    const manager = await this.securityService.getUserById({ id: userDto.id });
+    const manager = await this.securityService.getManagerById({ id: userDto.id });
 
     if (!manager) throw new ApiException(ErrorCodes.NoUser);
 

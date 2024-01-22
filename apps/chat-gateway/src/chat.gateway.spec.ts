@@ -14,6 +14,7 @@ import {User, UserRoles} from "@prisma/client";
 import {RedisService} from "@app/redis";
 import {user_id} from "@/backend/types/user-id.type";
 import {JwtAuthGuard} from "@app/security/guards/security.guard";
+import {UserSessionDto} from "@app/security/dtos/UserSessionDto";
 
 const mockRoomId = v4();
 const mockMessage = "Hello";
@@ -32,6 +33,7 @@ const mockUser = {
   email: "client@client.com",
   password: "$2a$05$5htSIabJmdX86Rj5lqto8e3/w0HJAowRcnpTGovPkkqm1R5a4SJ6i",
   tickets: [],
+  device_id: "068b0a86-f711-4d8d-9977-94e5e7aa9777"
 };
 
 async function eventReception(from: Socket, event: string): Promise<void> {
@@ -161,6 +163,15 @@ describe("ChatGateway", () => {
   it("should be defined", () => {
     expect(gateway).toBeDefined();
   });
+
+  it("user should send request on first connect", async () => {
+    customerClient.connect();
+
+    const userDto = UserSessionDto.fromPayload(mockUser);
+    const user = mockSecurityService.getUserById(userDto);
+
+    expect(user).toEqual(mockUser);
+  })
 
   it("customer should join a room and send a request", async () => {
     customerClient.connect();

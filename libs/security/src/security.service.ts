@@ -49,6 +49,11 @@ export class SecurityService {
   async getUserById(id: user_id) {
     return this.usersRepos.getOneUserById(id);
   }
+
+  async getManagerById(id: user_id) {
+    return this.usersRepos.getManagerById(id);
+  }
+
   async findSessionByUserIdAndDeviceId(
     data: Pick<User, "id"> & Pick<Device, "device_id">,
   ) {

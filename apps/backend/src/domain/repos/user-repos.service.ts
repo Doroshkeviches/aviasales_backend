@@ -75,6 +75,18 @@ export class UsersReposService {
     return user;
   }
 
+  async getManagerById({ id }: Pick<User, "id">) {
+    return this.prisma.user.findUnique({
+      where: {
+        id,
+        role_type: {
+          in: [UserRoles.Admin, UserRoles.Manager],
+        },
+      }
+    })
+
+  }
+
   async createUser(
     dto: Pick<User, "email" | "first_name" | "last_name">,
     role: Role,
