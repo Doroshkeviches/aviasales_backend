@@ -127,8 +127,10 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     const errors = await MessageForm.validate(form);
     if (errors) throw new WsException("Invalid form");
 
-    await this.redisService.saveMessage(form);
-    this.server.to(data.room_id).emit("message", form);
+    const messageDto = MessageDto.toEntity(form);
+    await this.redisService.saveMessage(messageDto);
+
+    this.server.to(data.room_id).emit("message", messageDto);
   }
 
   async handleDisconnect(client: Socket) {}

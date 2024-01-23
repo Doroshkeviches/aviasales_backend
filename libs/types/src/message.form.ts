@@ -1,9 +1,6 @@
 import { IsNotEmpty, IsString, IsUUID, validate } from "class-validator";
-import { v4 } from "uuid";
 
 export class MessageForm {
-  id: string;
-  created_at: number;
   @IsString()
   @IsNotEmpty()
   message: string;
@@ -30,8 +27,6 @@ export class MessageForm {
     it.last_name = form.last_name;
     it.room_id = form.room_id;
     it.user_id = form.user_id;
-    it.id = v4();
-    it.created_at = new Date().getTime();
     return it;
   }
 
