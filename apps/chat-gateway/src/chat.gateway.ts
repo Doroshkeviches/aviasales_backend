@@ -6,6 +6,7 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { RedisService } from "@app/redis";
@@ -13,20 +14,20 @@ import { SecurityService } from "@app/security";
 import { JwtAuthGuard } from "@app/security/guards/security.guard";
 import { UserSessionDto } from "@app/security/dtos/UserSessionDto";
 import { RequirePermissions } from "@app/security/decorators/permission.decorator";
-import { ErrorCodes } from "@app/exceptions/enums/error-codes.enum";
-import { ApiException } from "@app/exceptions/api-exception";
 import { ChatEventsEnum } from "./domain/chat-events.enum";
 import { RequestDto } from "@app/types/request.dto";
-import { UseGuards } from "@nestjs/common";
+import { UseFilters, UseGuards } from "@nestjs/common";
 import { RoomForm } from "@app/types/room.form";
-import { ApiRequestException } from "@app/exceptions/api-request-exception";
 import { MessageForm } from "@app/types/message.form";
 import { RoomDto } from "@app/types/room.dto";
 import { UserPermissions } from "@prisma/client";
+import { MessageDto } from "@app/types";
+import { WsExceptionFilter } from "@app/exceptions/ws-exception.filter";
 
 @WebSocketGateway({
-  cors: true
+  cors: true,
 })
+@UseFilters(WsExceptionFilter)
 export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
   constructor(
     private readonly redisService: RedisService,
@@ -43,7 +44,7 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     const userDto = UserSessionDto.fromPayload(client.data.user);
     const user = await this.securityService.getUserById({ id: userDto.id });
 
-    if (!user) throw new ApiException(ErrorCodes.NoUser);
+    if (!user) throw new WsException("User does not exist");
     await client.join(user.id);
 
     const room = await this.redisService.isRoomInStore(user.id);
@@ -63,7 +64,7 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
       id: userDto.id,
     });
 
-    if (!manager) throw new ApiException(ErrorCodes.NoUser);
+    if (!manager) throw new WsException("Invalid form");
 
     await client.join("rooms");
   }
@@ -78,7 +79,7 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     const form = RoomForm.from(data);
     const errors = await RoomForm.validate(form);
 
-    if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
+    if (errors) throw new WsException("Invalid form");
 
     client.join(data.room_id);
   }
@@ -93,13 +94,14 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     const form = RoomForm.from(data);
     const errors = await RoomForm.validate(form);
 
-    if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
+    if (errors) throw new WsException("Invalid form");
 
     const messages = await this.redisService.getAllMessages(data.room_id);
+    if (!messages) throw new WsException("No existing messages");
 
-    if (!messages) throw new ApiException(ErrorCodes.NoMessages);
+    const messagesDto = MessageDto.toEntities(messages);
 
-    this.server.to(client.id).emit("messages", messages);
+    this.server.to(client.id).emit("messages", messagesDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -108,7 +110,7 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
   async handleRoomsGet(@ConnectedSocket() client: Socket) {
     const rooms = await this.redisService.getRooms();
 
-    if (!rooms) throw new ApiException(ErrorCodes.NoRooms);
+    if (!rooms) throw new WsException("No existing rooms");
 
     const roomsDto = RoomDto.toEntities(rooms);
     this.server.to(client.id).emit("rooms", roomsDto);
@@ -123,7 +125,7 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
   ) {
     const form = MessageForm.from(data);
     const errors = await MessageForm.validate(form);
-    if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
+    if (errors) throw new WsException("Invalid form");
 
     await this.redisService.saveMessage(form);
     this.server.to(data.room_id).emit("message", form);

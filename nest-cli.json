@@ -5,7 +5,13 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/backend/tsconfig.app.json"
+    "tsConfigPath": "apps/backend/tsconfig.app.json",
+    "assets": [
+      {
+        "include": "resources/**/*",
+        "watchAssets": true
+      }
+    ]
   },
   "projects": {
     "backend": {

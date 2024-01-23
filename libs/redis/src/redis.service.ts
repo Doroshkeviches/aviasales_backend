@@ -5,6 +5,7 @@ import Redis from "ioredis";
 import { RequestDto } from "@app/types/request.dto";
 import { MessageForm } from "@app/types/message.form";
 import { RoomDto } from "@app/types/room.dto";
+import { EXPIRE_IN_24H } from "@app/types/chat.constants";
 
 @Injectable()
 export class RedisService {
@@ -22,7 +23,7 @@ export class RedisService {
       message.created_at,
       JSON.stringify(message),
     );
-    await this.client.expire(`room:${message.room_id}:messages`, 86400);
+    await this.client.expire(`room:${message.room_id}:messages`, EXPIRE_IN_24H);
   }
 
   async addRoom(room: RequestDto) {

@@ -15,6 +15,9 @@ export class MessageForm {
   last_name: string;
   @IsUUID()
   @IsNotEmpty()
+  user_id: string;
+  @IsUUID()
+  @IsNotEmpty()
   room_id: string;
 
   static from(form: MessageForm) {
@@ -26,6 +29,7 @@ export class MessageForm {
     it.first_name = form.first_name;
     it.last_name = form.last_name;
     it.room_id = form.room_id;
+    it.user_id = form.user_id;
     it.id = v4();
     it.created_at = new Date().getTime();
     return it;
