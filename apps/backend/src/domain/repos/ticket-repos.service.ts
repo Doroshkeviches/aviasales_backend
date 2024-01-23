@@ -34,7 +34,11 @@ export class TicketReposService {
       skip,
       ...includingData(),
     });
-    const totalTicketCount = await this.prisma.ticket.count()
+    const totalTicketCount = await this.prisma.ticket.count({where: {
+      status: {
+        not: TicketStatus.InCart
+      }
+    }})
     return { totalTicketCount, tickets }
   }
 

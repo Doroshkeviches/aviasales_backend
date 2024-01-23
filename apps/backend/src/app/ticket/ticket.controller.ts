@@ -48,21 +48,6 @@ export class TicketController {
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'Successfully get single ticket',
-  })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @UseGuards(JwtAuthGuard)
-  @RequirePermissions(UserPermissions.GetTicketById)
-  @Get(':id')
-  async getTicketById(@Param('id') id: string) {
-    const ticket = await this.ticketService.getTicketById({ id });
-    if (!ticket) throw new ApiException(ErrorCodes.NoTicket);
-    return TicketDto.toEntity(ticket);
-  }
-
-  @HttpCode(200)
-  @ApiResponse({
-    status: 200,
     description: "Successfully get active tickets",
   })
   @ApiResponse({ status: 400, description: "Bad request" })
