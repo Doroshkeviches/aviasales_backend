@@ -5,10 +5,10 @@ CREATE TYPE "UserRoles" AS ENUM ('admin', 'client', 'manager');
 CREATE TYPE "FlightStatus" AS ENUM ('planned', 'flying', 'fulfilled', 'canceled');
 
 -- CreateEnum
-CREATE TYPE "TicketStatus" AS ENUM ('fulfilled', 'in cart', 'canceled');
+CREATE TYPE "TicketStatus" AS ENUM ('fulfilled', 'in cart', 'canceled', 'ordered');
 
 -- CreateEnum
-CREATE TYPE "UserPermissions" AS ENUM ('permissions.all', 'permissions.signout', 'permissions.password-change', 'permissions.refresh-token', 'permissions.get-all-users', 'permissions.get-user-by-id', 'permissions.get-users-by-search-query', 'permissions.update-user', 'permissions.get-all-cities', 'permissions.get-city-by-id', 'permissions.create-new-city', 'permissions.update-city-title-by-id', 'permissions.delete-city-by-id', 'permissions.get-array-of-path', 'permissions.change-flight-status', 'permissions.change-flight-price', 'permissions.get-all-tickets', 'permissions.get-ticket-by-id', 'permissions.delete-ticket-by-id', 'permissions.update-ticket-status', 'permissions.create-new-ticket', 'permissions.update-ticket-holder-credentials', 'permissions.access-chat', 'permissions.start-chat');
+CREATE TYPE "UserPermissions" AS ENUM ('permissions.all', 'permissions.signout', 'permissions.password-change', 'permissions.refresh-token', 'permissions.get-all-users', 'permissions.get-user-by-id', 'permissions.get-users-by-search-query', 'permissions.update-user', 'permissions.get-all-cities', 'permissions.get-city-by-id', 'permissions.create-new-city', 'permissions.update-city-title-by-id', 'permissions.delete-city-by-id', 'permissions.get-array-of-path', 'permissions.change-flight-status', 'permissions.change-flight-price', 'permissions.get-all-tickets', 'permissions.get-ticket-by-id', 'permissions.get-active-tickets-by-user-id', 'permissions.delete-ticket-by-id', 'permissions.update-ticket-status', 'permissions.create-new-ticket', 'permissions.update-ticket-holder-credentials', 'permissions.get-rooms', 'permissions.get-messages', 'permissions.send-messages', 'permissions.join-room', 'permissions.publish-to-rooms', 'permissions.subscribe-to-rooms', 'permissions.signout-selected-session', 'permissions.signout-sessions', 'permissions.get-user-devices');
 
 -- CreateTable
 CREATE TABLE "users" (

@@ -1,6 +1,6 @@
-import { UsersReposService } from '@/src/domain/repos/user-repos.service';
-import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Injectable } from "@nestjs/common";
+import { UsersReposService } from "@/backend/domain/repos/user-repos.service";
+import { User } from "@prisma/client";
 
 @Injectable()
 export class UserService {
@@ -12,7 +12,7 @@ export class UserService {
   async updateUser(data: Partial<User>) {
     return this.userRepo.updateUser(data);
   }
-  async getOneUserById(id: Pick<User, 'id'>) {
+  async getOneUserById(id: Pick<User, "id">) {
     return this.userRepo.getOneUserById(id);
   }
   async getUsersBySearchQuery(searchQuery: string) {

@@ -23,7 +23,7 @@ export default registerAs('security', (): JwtModuleOptions => {
   const secret = readFileSync(
     resolve(
       process.cwd(),
-      `./libs/security/config/certs/${envVars.NODE_ENV}-private.pem`,
+      `./libs/security/src/config/certs/${envVars.NODE_ENV}-private.pem`,
     ),
   );
 

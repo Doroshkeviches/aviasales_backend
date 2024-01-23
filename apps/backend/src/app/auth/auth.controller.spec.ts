@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { jest, expect } from '@jest/globals';
-import { JwtAuthGuard } from 'libs/security/guards/security.guard';
+import { JwtAuthGuard } from '@app/libs/security/src/guards/security.guard';
 import { I18nContext, I18nService } from 'nestjs-i18n';
 import { ApiException } from '@app/exceptions/api-exception';
 import { ApiRequestException } from '@app/exceptions/api-request-exception';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TokenDto } from './domain/Token.dto';
-import { SecurityService } from 'libs/security/src';
+import { SecurityService } from '@app/libs/security/src';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { SignInForm } from './domain/SignIn.form';
@@ -90,7 +90,7 @@ describe('AuthController', () => {
       return true
     }),
 
-    findSessionByEmailAndDeviceId: jest.fn((data: { email: string, device_id: string }) => {
+    findSessionByEmail: jest.fn((data: { email: string, device_id: string }) => {
       if (data.email === 'wrong@email.com') {
         return null
       }
@@ -103,6 +103,27 @@ describe('AuthController', () => {
       }
       return user
     }),
+
+    changePassword: jest.fn(() => {
+      return user
+    }),
+    deleteResetToken: jest.fn(() => {
+      return user
+    }),
+    authenticate: jest.fn(() => {
+      return tokens
+    }),
+    setResetToken: jest.fn(() => {
+      return 'string'
+    }),
+    signout: jest.fn((id: string) => {
+      if (id === 'wrong user id') {
+        return null
+      }
+      return 'string'
+    }),
+
+
 
 
     // updateUser: jest.fn((data: { id: string }) => {
@@ -248,6 +269,17 @@ describe('AuthController', () => {
 
 
   describe('sign In for admin', () => {
+    it('wrong form', async () => {
+      const invalidDTO: SignInForm | any = {
+        ...signInDto,
+        email: 'not email'
+      }
+      try {
+        await controller.signIn(invalidDTO);
+      } catch (error) {
+        expect(error).toBeInstanceOf(ApiRequestException);
+      }
+    });
     it('should throw ApiRequestException', async () => {
       const invalidUserId = { ...signInAdminDto, email: 'not email' };
       let i18n: any = {
@@ -257,6 +289,13 @@ describe('AuthController', () => {
       };
       jest.spyOn(I18nContext, 'current').mockReturnValue(i18n);
       await expect(controller.adminSignin(invalidUserId)).rejects.toThrow(ApiRequestException);
+    });
+    it('should get admin by email', async () => {
+      // Arrange
+      const email = "email@email.com"
+      // Actq
+      const result = await mockAuthService.getUserByEmail(email);
+      expect(result).toEqual(user);
     });
 
     it('should throw ApiException no-admin', async () => {
@@ -297,6 +336,17 @@ describe('AuthController', () => {
       await expect(controller.signUp(invalidUserEmail)).rejects.toThrow(ApiRequestException);
     });
 
+    it('should throw ApiException no-admin', async () => {
+      const invalidAdminEmail = { ...signUpDto, email: 'admin@admin.com' };
+      let i18n: any = {
+        t: (key: string) => {
+          return key;
+        },
+      };
+      jest.spyOn(service, 'getUserByEmail').mockResolvedValueOnce(user);
+      jest.spyOn(I18nContext, 'current').mockReturnValue(i18n);
+      await expect(controller.signUp(invalidAdminEmail)).rejects.toThrow(ApiException);
+    });
     it('should throw ApiException no-admin', async () => {
       const invalidAdminEmail = { ...signUpDto, email: 'admin@admin.com' };
       let i18n: any = {
@@ -351,16 +401,15 @@ describe('AuthController', () => {
 
   describe('reset-password', () => {
     it('should throw ApiRequestException', async () => {
-      const invalidUserEmail = { ...reset_password, email: 'not email' };
+      const invalidSession = { ...reset_password, reset_token: 'invalid token' };
       let i18n: any = {
         t: (key: string) => {
           return key;
         },
       };
       jest.spyOn(I18nContext, 'current').mockReturnValue(i18n);
-      await expect(controller.resetPassword(invalidUserEmail)).rejects.toThrow(ApiRequestException);
+      await expect(controller.resetPassword(invalidSession)).rejects.toThrow(ApiRequestException);
     });
-
     it('should throw ApiException no session', async () => {
       const invalidSession = { ...reset_password, reset_token: 'ee7c493a-31d9-48c0-8838-1f466eab181a' };
       let i18n: any = {

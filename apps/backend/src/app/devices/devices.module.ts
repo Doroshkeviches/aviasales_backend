@@ -1,12 +1,12 @@
-import { Module } from '@nestjs/common';
-import { DevicesService } from './devices.service';
-import { DevicesController } from './devices.controller';
-import { DomainModule } from '@/src/domain';
-import { SecurityModule } from '@app/security';
+import { Module } from "@nestjs/common";
+import { DevicesService } from "./devices.service";
+import { DevicesController } from "./devices.controller";
+import { SecurityModule } from "@app/security";
+import { DomainModule } from "@/backend/domain";
 
 @Module({
   imports: [DomainModule, SecurityModule],
   providers: [DevicesService],
-  controllers: [DevicesController]
+  controllers: [DevicesController],
 })
-export class DevicesModule { }
+export class DevicesModule {}

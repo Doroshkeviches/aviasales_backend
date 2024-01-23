@@ -59,8 +59,12 @@ enum UserPermissions {
   CreateNewTicket               @map("permissions.create-new-ticket")
   UpdateTicketHolderCredentials @map("permissions.update-ticket-holder-credentials")
 
-  AccessChat @map("permissions.access-chat")
-  StartChat  @map("permissions.start-chat")
+  GetRooms         @map("permissions.get-rooms")
+  GetMessages      @map("permissions.get-messages")
+  SendMessages     @map("permissions.send-messages")
+  JoinRoom         @map("permissions.join-room")
+  PublishToRooms   @map("permissions.publish-to-rooms")
+  SubscribeToRooms @map("permissions.subscribe-to-rooms")
 
   //devices
   SignoutSelectSession @map("permissions.signout-selected-session")

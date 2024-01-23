@@ -3,87 +3,129 @@ import {
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import { Logger, UseGuards } from "@nestjs/common";
-import { User, UserPermissions, UserRoles } from "@prisma/client";
-import { RedisService } from "./redis/redis.service";
-import { MessageDto } from "./domain/message.dto";
-import { JwtAuthGuard } from "../../../libs/security/guards/security.guard";
+import { RedisService } from "@app/redis";
 import { SecurityService } from "@app/security";
+import { JwtAuthGuard } from "@app/security/guards/security.guard";
 import { UserSessionDto } from "@app/security/dtos/UserSessionDto";
-import { RequestDto } from "./domain/request.dto";
-import {uuid} from "uuidv4";
+import { RequirePermissions } from "@app/security/decorators/permission.decorator";
+import { ErrorCodes } from "@app/exceptions/enums/error-codes.enum";
+import { ApiException } from "@app/exceptions/api-exception";
+import { ChatEventsEnum } from "./domain/chat-events.enum";
+import { RequestDto } from "@app/types/request.dto";
+import { UseGuards } from "@nestjs/common";
+import { RoomForm } from "@app/types/room.form";
+import { ApiRequestException } from "@app/exceptions/api-request-exception";
+import { MessageForm } from "@app/types/message.form";
+import { RoomDto } from "@app/types/room.dto";
+import { UserPermissions } from "@prisma/client";
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
   constructor(
     private readonly redisService: RedisService,
     private readonly securityService: SecurityService,
-  ) { }
+  ) {}
   @WebSocketServer() server: Server;
 
-  async handleConnection(@ConnectedSocket() client: Socket) {
-    console.log(`Client ${client.id} connected`);
+  async handleConnection(@ConnectedSocket() client: Socket) {}
+
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.PublishToRooms)
+  @SubscribeMessage(ChatEventsEnum.ConnectUser)
+  async handleUserConnection(@ConnectedSocket() client: Socket) {
+    const userDto = UserSessionDto.fromPayload(client.data.user);
+    const user = await this.securityService.getUserById({ id: userDto.id });
+
+    if (!user) throw new ApiException(ErrorCodes.NoUser);
+    await client.join(user.id);
+
+    const room = await this.redisService.isRoomInStore(user.id);
+    if (!room) {
+      const requestDto = RequestDto.toEntity(user);
+      await this.redisService.addRoom(requestDto);
+      this.server.to("rooms").emit("new-chat", requestDto);
+    }
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // require permissions <- for manager only
-  @SubscribeMessage("join-requests-channel")
-  async joinRequestsChannel(@ConnectedSocket() client: Socket) {
-    client.join('requests');
-    console.log("joined request channel");
-    this.server.to(client.id).emit('message', `successfully joined room requests`); // remove this later
-    await this.redisService.subToRequestChannel(this.server);
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.SubscribeToRooms)
+  @SubscribeMessage(ChatEventsEnum.ConnectManager)
+  async handleManagerConnection(@ConnectedSocket() client: Socket) {
+    const userDto = UserSessionDto.fromPayload(client.data.user);
+    const manager = await this.securityService.getManagerById({
+      id: userDto.id,
+    });
+
+    if (!manager) throw new ApiException(ErrorCodes.NoUser);
+
+    await client.join("rooms");
   }
 
-  // @UseGuards(JwtAuthGuard)
-  @SubscribeMessage("accept-request")
-  async acceptRequest(@ConnectedSocket() client: Socket, @MessageBody() userId: string) {
-    client.join(userId);
-    client.to(userId).emit('message', `manager joined chat`); // remove this later
-    await this.redisService.subToMessage(userId, this.server,client);
-  }
-  
-  // @UseGuards(JwtAuthGuard)
-  @SubscribeMessage("join-chat")
-  // for user
-  async joinRoom(@ConnectedSocket() client: Socket, @MessageBody() roomId: string) {
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.JoinRoom)
+  @SubscribeMessage(ChatEventsEnum.JoinRoom)
+  async handleRoomJoin(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: RoomForm,
+  ) {
+    const form = RoomForm.from(data);
+    const errors = await RoomForm.validate(form);
 
-    client.join(roomId);
-    client.to(roomId).emit('message', `manager joined chat`); // remove this later
+    if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
 
-    // this.server.to(roomId).emit('message', `successfully joined room ${roomId}`); // remove this later
-
-    // console.log(client.data);
-    // const userDto = UserSessionDto.fromPayload(client.data.user);
-    // const user = await this.securityService.getUserById({id: userDto.id});
-    // const requestDto = RequestDto.toEntity(user);
-    // const requestDto = RequestDto.toEntity({
-    //   id: uuid(),
-    //   first_name: 'AAAA',
-    //   last_name: 'BBBB'
-    // });
-
-    // await this.redisService.onRequest(requestDto);
-
-    await this.redisService.subToMessage(roomId, this.server,client);
+    client.join(data.room_id);
   }
 
-  @SubscribeMessage("message")
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetMessages)
+  @SubscribeMessage(ChatEventsEnum.GetMessages)
+  async handleMessagesGet(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: RoomForm,
+  ) {
+    const form = RoomForm.from(data);
+    const errors = await RoomForm.validate(form);
+
+    if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
+
+    const messages = await this.redisService.getAllMessages(data.room_id);
+
+    if (!messages) throw new ApiException(ErrorCodes.NoMessages);
+
+    this.server.to(client.id).emit("messages", messages);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetRooms)
+  @SubscribeMessage(ChatEventsEnum.GetRooms)
+  async handleRoomsGet(@ConnectedSocket() client: Socket) {
+    const rooms = await this.redisService.getRooms();
+
+    if (!rooms) throw new ApiException(ErrorCodes.NoRooms);
+
+    const roomsDto = RoomDto.toEntities(rooms);
+    this.server.to(client.id).emit("rooms", roomsDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.SendMessages)
+  @SubscribeMessage(ChatEventsEnum.Message)
   async handleMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: MessageDto,
+    @MessageBody() data: MessageForm,
   ) {
-    await this.redisService.onSendMessage(data.room_id, data.message)
+    const form = MessageForm.from(data);
+    const errors = await MessageForm.validate(form);
+    if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
+
+    await this.redisService.saveMessage(form);
+    this.server.to(data.room_id).emit("message", form);
   }
 
-  async handleDisconnect(client: Socket) {
-    console.log(`Client ${client.id} disconnected`);
-    await this.redisService.onDisconnect();
-  }
+  async handleDisconnect(client: Socket) {}
 }

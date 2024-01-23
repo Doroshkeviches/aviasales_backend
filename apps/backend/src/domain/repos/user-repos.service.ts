@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { Device, Role, TicketStatus, User, UserRoles } from "@prisma/client";
-import { user_id } from "@/src/types/user-id.type";
 import { PrismaService } from "@app/prisma";
 
 const includingData = () => {
@@ -68,7 +67,6 @@ export class UsersReposService {
     });
   }
 
-
   async getOneUserById({ id }: Pick<User, "id">) {
     const user = await this.prisma.user.findUnique({
       where: { id },
@@ -77,7 +75,17 @@ export class UsersReposService {
     return user;
   }
 
+  async getManagerById({ id }: Pick<User, "id">) {
+    return this.prisma.user.findUnique({
+      where: {
+        id,
+        role_type: {
+          in: [UserRoles.Admin, UserRoles.Manager],
+        },
+      }
+    })
 
+  }
 
   async createUser(
     dto: Pick<User, "email" | "first_name" | "last_name">,
@@ -99,12 +107,6 @@ export class UsersReposService {
       },
     });
     return user;
-  }
-
-  async deleteUser({ id }: user_id) {
-    return this.prisma.user.delete({
-      where: { id },
-    });
   }
 
   async changePassword(user: User, data: Partial<User>) {

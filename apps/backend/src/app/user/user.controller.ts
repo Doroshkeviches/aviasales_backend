@@ -10,14 +10,15 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiResponse } from '@nestjs/swagger';
-import { UpdateUserForm } from './domain/UpdateUser.form';
-import { ErrorCodes } from '@/src/enums/error-codes.enum';
-import { UserPermissions } from '@prisma/client';
-import { UserDto } from './domain/user.dto';
-import {ApiException} from "@app/exceptions/api-exception";
+import {RequirePermissions} from "@app/security/decorators/permission.decorator";
+import {JwtAuthGuard} from "@app/security/guards/security.guard";
+import {UserPermissions} from "@prisma/client";
+import {UserDto} from "@/backend/app/user/domain/user.dto";
+import {UpdateUserForm} from "@/backend/app/user/domain/UpdateUser.form";
 import {ApiRequestException} from "@app/exceptions/api-request-exception";
-import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
-import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
+import {ErrorCodes} from "@app/exceptions/enums/error-codes.enum";
+import {ApiException} from "@app/exceptions/api-exception";
+
 
 @Controller('user')
 export class UserController {
