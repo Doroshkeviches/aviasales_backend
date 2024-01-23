@@ -177,7 +177,7 @@ export class TicketController {
   })
   @ApiResponse({ status: 400, description: "Bad request" })
   @UseGuards(JwtAuthGuard)
-  @RequirePermissions(UserPermissions.CreateNewTicket)
+  @RequirePermissions(UserPermissions.UpdateTicketStatusToOrdered)
   @Post("ordered")
   async updateTicketsToOrdered(@CurrentUser() user: User) {
     const userTickets = await this.ticketService.getTicketsInCartByUserId(user);
@@ -201,7 +201,7 @@ export class TicketController {
   })
   @ApiResponse({ status: 400, description: "Bad request" })
   @UseGuards(JwtAuthGuard)
-  @RequirePermissions(UserPermissions.CreateNewTicket)
+  @RequirePermissions(UserPermissions.GetTicketsInCartByUserId)
   @Get("cart")
   async getTicketsInCartByUserId(@CurrentUser() user: User) {
     const tickets = await this.ticketService.getTicketsInCartByUserId(user);

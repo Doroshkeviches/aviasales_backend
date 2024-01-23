@@ -9,14 +9,62 @@ async function main() {
   const Client = await prisma.role.create({
     data: {
       type: UserRoles.Client,
-      permissions: [UserPermissions.All],
+      permissions: [
+          UserPermissions.Signout,
+          UserPermissions.PasswordChange,
+          UserPermissions.RefreshToken,
+          UserPermissions.GetUserById,
+          UserPermissions.UpdateUser,
+          UserPermissions.GetAllCities,
+          UserPermissions.GetCityById,
+          UserPermissions.CreateNewCity,
+          UserPermissions.UpdateCityTitleById,
+          UserPermissions.DeleteCityById,
+          UserPermissions.GetArrayOfPath,
+          UserPermissions.GetActiveTicketsByUserId,
+          UserPermissions.DeleteTicketById,
+          UserPermissions.CreateNewTicket,
+          UserPermissions.UpdateTicketHolderCredentials,
+          UserPermissions.GetTicketsInCartByUserId,
+          UserPermissions.UpdateTicketStatusToOrdered,
+          UserPermissions.SendMessages,
+          UserPermissions.GetMessages,
+          UserPermissions.PublishToRooms,
+          UserPermissions.SignoutSelectSession,
+          UserPermissions.SignoutSessions,
+          UserPermissions.GetUserDevices
+      ],
     },
   });
 
   const Manager = await prisma.role.create({
     data: {
       type: UserRoles.Manager,
-      permissions: [UserPermissions.All],
+      permissions: [
+          UserPermissions.GetAllUsers,
+          UserPermissions.GetUserById,
+          UserPermissions.GetUsersBySearchQuery,
+          UserPermissions.UpdateUser,
+          UserPermissions.GetAllUsers,
+          UserPermissions.GetCityById,
+          UserPermissions.CreateNewCity,
+          UserPermissions.UpdateCityTitleById,
+          UserPermissions.DeleteCityById,
+          UserPermissions.GetArrayOfPath,
+          UserPermissions.GetAllTickets,
+          UserPermissions.GetActiveTicketsByUserId,
+          UserPermissions.DeleteTicketById,
+          UserPermissions.UpdateTicketStatus,
+          UserPermissions.UpdateTicketHolderCredentials,
+          UserPermissions.GetRooms,
+          UserPermissions.GetMessages,
+          UserPermissions.SendMessages,
+          UserPermissions.JoinRoom,
+          UserPermissions.SubscribeToRooms,
+          UserPermissions.SignoutSelectSession,
+          UserPermissions.SignoutSessions,
+          UserPermissions.GetUserDevices
+      ],
     },
   });
 
