@@ -7,7 +7,7 @@ import { jest } from "@jest/globals";
 import { ConfigModule } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { v4 } from "uuid";
-import { RequestDto } from "./domain/request.dto";
+import { RequestDto } from "@app/types/request.dto";
 import { Server } from "socket.io";
 import { SecurityService } from "@app/security";
 import {User, UserRoles} from "@prisma/client";
@@ -15,7 +15,7 @@ import {RedisService} from "@app/redis";
 import {user_id} from "@/backend/types/user-id.type";
 import {JwtAuthGuard} from "@app/security/guards/security.guard";
 import {UserSessionDto} from "@app/security/dtos/UserSessionDto";
-import {MessageDto} from "./domain/message.dto";
+import {MessageDto} from "@app/types/message.dto";
 
 const mockRoomId = v4();
 const mockMessage = "Hello";

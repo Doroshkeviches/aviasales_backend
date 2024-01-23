@@ -16,13 +16,13 @@ import { RequirePermissions } from "@app/security/decorators/permission.decorato
 import { ErrorCodes } from "@app/exceptions/enums/error-codes.enum";
 import { ApiException } from "@app/exceptions/api-exception";
 import { ChatEventsEnum } from "./domain/chat-events.enum";
-import { RequestDto } from "./domain/request.dto";
+import { RequestDto } from "@app/types/request.dto";
 import { UseGuards } from "@nestjs/common";
-import { v4 } from "uuid";
-import { RoomForm } from "./domain/room.form";
+import { RoomForm } from "@app/types/room.form";
 import { ApiRequestException } from "@app/exceptions/api-request-exception";
-import { MessageForm } from "./domain/message.form";
-import { RoomDto } from "./domain/room.dto";
+import { MessageForm } from "@app/types/message.form";
+import { RoomDto } from "@app/types/room.dto";
+import { UserPermissions } from "@prisma/client";
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
@@ -34,20 +34,12 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
 
   async handleConnection(@ConnectedSocket() client: Socket) {}
 
-  // @UseGuards(JwtAuthGuard)
-  // @RequirePermissions(UserPermissions.PublishToRooms)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.PublishToRooms)
   @SubscribeMessage(ChatEventsEnum.ConnectUser)
   async handleUserConnection(@ConnectedSocket() client: Socket) {
-    // const userDto = UserSessionDto.fromPayload(client.data.user);
-    // const user = await this.securityService.getUserById({ id: userDto.id });
-
-    const user = {
-      id: v4(),
-      email: "user@user.com",
-      device_id: v4(),
-      first_name: "John",
-      last_name: "Doe",
-    };
+    const userDto = UserSessionDto.fromPayload(client.data.user);
+    const user = await this.securityService.getUserById({ id: userDto.id });
 
     if (!user) throw new ApiException(ErrorCodes.NoUser);
     await client.join(user.id);
@@ -60,8 +52,8 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     }
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @RequirePermissions(UserPermissions.SubscribeToRooms)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.SubscribeToRooms)
   @SubscribeMessage(ChatEventsEnum.ConnectManager)
   async handleManagerConnection(@ConnectedSocket() client: Socket) {
     const userDto = UserSessionDto.fromPayload(client.data.user);
@@ -74,8 +66,8 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     await client.join("rooms");
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @RequirePermissions(UserPermissions.JoinRoom)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.JoinRoom)
   @SubscribeMessage(ChatEventsEnum.JoinRoom)
   async handleRoomJoin(
     @ConnectedSocket() client: Socket,
@@ -89,8 +81,8 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     client.join(data.room_id);
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @RequirePermissions(UserPermissions.GetMessages)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetMessages)
   @SubscribeMessage(ChatEventsEnum.GetMessages)
   async handleMessagesGet(
     @ConnectedSocket() client: Socket,
@@ -108,8 +100,8 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     this.server.to(client.id).emit("messages", messages);
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @RequirePermissions(UserPermissions.GetRooms)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetRooms)
   @SubscribeMessage(ChatEventsEnum.GetRooms)
   async handleRoomsGet(@ConnectedSocket() client: Socket) {
     const rooms = await this.redisService.getRooms();
@@ -120,8 +112,8 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     this.server.to(client.id).emit("rooms", roomsDto);
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @RequirePermissions(UserPermissions.SendMessages)
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.SendMessages)
   @SubscribeMessage(ChatEventsEnum.Message)
   async handleMessage(
     @ConnectedSocket() client: Socket,

@@ -2,9 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Redis from "ioredis";
 
-import { RequestDto } from "../../../apps/chat-gateway/src/domain/request.dto";
-import { MessageForm } from "../../../apps/chat-gateway/src/domain/message.form";
-import { RoomDto } from "../../../apps/chat-gateway/src/domain/room.dto";
+import { RequestDto } from "@app/types/request.dto";
+import { MessageForm } from "@app/types/message.form";
+import { RoomDto } from "@app/types/room.dto";
 
 @Injectable()
 export class RedisService {

@@ -123,7 +123,12 @@
       "^@app/exceptions(.*)$": "<rootDir>/libs/exceptions/src/$1",
       "^@app/config(.*)$": "<rootDir>/libs/config/src/$1",
       "^@/backend/(.*)$": "<rootDir>/apps/backend/src/$1",
-      "^@app/redis(.*)$": "<rootDir>/libs/redis/src/$1"
-    }
+      "^@app/redis(.*)$": "<rootDir>/libs/redis/src/$1",
+      "^@app/types(|/.*)$": "<rootDir>/libs/types/src/$1"
+    },
+    "roots": [
+      "<rootDir>/src/",
+      "<rootDir>/libs/"
+    ]
   }
 }
