@@ -29,6 +29,8 @@ import { PrismaModule } from "@app/prisma";
       useFactory: (config: ConfigService) => config.get("i18n"),
     }),
   ],
-  providers: [ChatGateway],
+  providers: [
+    ChatGateway
+  ],
 })
 export class ChatGatewayModule {}

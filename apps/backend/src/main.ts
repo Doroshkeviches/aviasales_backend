@@ -24,7 +24,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   app.use(cookieParser())
-  app.use(cors({ // без корсов у меня не работают запросы когда запускаю фронт и бэк локально (выключил корсы только на этап разработки)
+  app.use(cors({
     credentials: true,
     origin: "http://localhost:3000"
   }));
