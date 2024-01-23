@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Ticket, User, TicketStatus } from '@prisma/client';
 import { PrismaService } from "@app/prisma";
-import { PaginatedQueryDto } from '@/src/app/user/domain/paginatedQuery.dto';
+import { PaginatedQueryDto } from '@/backend/app/user/domain/paginatedQuery.dto';
 
 const includingData = () => {
   return {
@@ -38,10 +38,16 @@ export class TicketReposService {
     return { totalTicketCount, tickets }
   }
 
-
   async getTicketById({ id }: Pick<Ticket, 'id'>) {
     return await this.prisma.ticket.findUnique({
       where: { id },
+      ...includingData(),
+    });
+  }
+
+  async getTicketsByUserId({ user_id }: Pick<Ticket, 'user_id'>) {
+    return await this.prisma.ticket.findMany({
+      where: { user_id, status: { not: TicketStatus.InCart } },
       ...includingData(),
     });
   }

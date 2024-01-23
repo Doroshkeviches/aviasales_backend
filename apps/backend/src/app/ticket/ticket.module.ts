@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
-import { DomainModule } from '@/src/domain';
-import { TicketService } from './ticket.service';
-import { TicketController } from './ticket.controller';
-import {SecurityModule} from "@app/security";
+import { Module } from "@nestjs/common";
+import { TicketService } from "./ticket.service";
+import { TicketController } from "./ticket.controller";
+import { SecurityModule } from "@app/security";
+import { DomainModule } from "@/backend/domain";
 
 @Module({
   imports: [DomainModule, SecurityModule],

@@ -46,11 +46,29 @@
     },
     "security": {
       "type": "library",
-      "root": "libs/security",
+      "root": "libs/security/src",
       "entryFile": "index",
       "sourceRoot": "libs/security/src",
       "compilerOptions": {
         "tsConfigPath": "libs/security/tsconfig.lib.json"
+      }
+    },
+    "redis": {
+      "type": "library",
+      "root": "libs/redis",
+      "entryFile": "index",
+      "sourceRoot": "libs/redis/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/redis/tsconfig.lib.json"
+      }
+    },
+    "types": {
+      "type": "library",
+      "root": "libs/types",
+      "entryFile": "index",
+      "sourceRoot": "libs/types/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/types/tsconfig.lib.json"
       }
     }
   },

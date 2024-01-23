@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { City } from '@prisma/client';
-import { CityReposService } from '@/src/domain/repos/city-repos.service';
+import {CityReposService} from "@/backend/domain/repos/city-repos.service";
 
 @Injectable()
 export class CityService {

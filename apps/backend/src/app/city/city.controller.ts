@@ -13,12 +13,13 @@ import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { CityService } from './city.service';
 import { City, UserPermissions } from '@prisma/client';
 import { CityForm } from './domain/city.form';
-import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { CityDto } from './domain/city.dto';
 import {ApiException} from "@app/exceptions/api-exception";
 import {ApiRequestException} from "@app/exceptions/api-request-exception";
-import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
-import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
+import {JwtAuthGuard} from "@app/security/guards/security.guard";
+import {RequirePermissions} from "@app/security/decorators/permission.decorator";
+import {ErrorCodes} from "@app/exceptions/enums/error-codes.enum";
+
 
 @Controller('city')
 export class CityController {

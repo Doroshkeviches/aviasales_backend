@@ -1,14 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "declaration": false,
-    "outDir": "../../dist/apps/backend"
+    "declaration": true,
+    "outDir": "../../dist/libs/redis"
   },
-  "paths": {
-        "@backend/*": [
-          "apps/backend/src/*"
-        ]
-      },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

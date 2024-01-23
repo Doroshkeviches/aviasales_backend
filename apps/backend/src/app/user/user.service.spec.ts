@@ -2,15 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 // ============ Entities ================
 import { UserService } from './user.service';
-import { UsersRepoService } from '@/src/domain/repos/user-repos.service';
 import { UserDto } from './domain/user.dto';
 import { CityDto } from './domain/city.dto';
-import { plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
-import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
+import {JwtAuthGuard} from "@app/security/guards/security.guard";
+import {UsersReposService} from "@/backend/domain/repos/user-repos.service";
 describe('CartService', () => {
     let service: UserService;
-    let repo: UsersRepoService;
+    let repo: UsersReposService;
     let i18n: any = {
         t: () => jest.fn().mockResolvedValue(true),
       };
@@ -40,14 +38,14 @@ describe('CartService', () => {
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [UserService, UsersRepoService],
+            providers: [UserService, UsersReposService],
         })
-            .overrideProvider(UsersRepoService).useValue(mockUserRepo)
+            .overrideProvider(UsersReposService).useValue(mockUserRepo)
             .overrideGuard(JwtAuthGuard).useValue(mockPermissionGuard)
             .compile();
 
         service = module.get<UserService>(UserService);
-        repo = module.get<UsersRepoService>(UsersRepoService)
+        repo = module.get<UsersReposService>(UsersReposService)
     });
     it('should be defined', () => {
         expect(service).toBeDefined();
@@ -57,7 +55,7 @@ describe('CartService', () => {
     describe('should return users', () => {
         it('should return carts', async () => {
             repo.getAllUsers = jest.fn().mockResolvedValue([user])
-            expect(await service.getAllUsers(1)).toEqual([user])
+            expect(await service.getAllUsers({pageNumber: 1, pageSize: 10})).toEqual([user])
         })
 
         it('should return user by id', async () => {

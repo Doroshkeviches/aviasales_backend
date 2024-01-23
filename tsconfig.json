@@ -23,14 +23,11 @@
       "jest"
     ],
     "paths": {
-      "@/src/*": [
+      "@/backend/*": [
         "apps/backend/src/*"
       ],
-      "@app/libs/test": [
-        "libs/libs/test/src"
-      ],
-      "@app/libs/test/*": [
-        "libs/libs/test/src/*"
+      "@app/libs/*": [
+        "libs/*"
       ],
       "@app/prisma": [
         "libs/prisma/src"
@@ -51,10 +48,22 @@
         "libs/security/src/*"
       ],
       "@app/config": [
-        "libs/config/src",
+        "libs/security/src/config"
       ],
       "@app/config/*": [
-        "libs/config/src/*",
+        "libs/security/src/config/*"
+      ],
+      "@app/redis": [
+        "libs/redis/src"
+      ],
+      "@app/redis/*": [
+        "libs/redis/src/*"
+      ],
+      "@app/types": [
+        "libs/types/src"
+      ],
+      "@app/types/*": [
+        "libs/types/src/*"
       ]
     }
   }

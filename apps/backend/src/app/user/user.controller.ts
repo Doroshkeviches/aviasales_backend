@@ -11,13 +11,13 @@ import {
 import { UserService } from './user.service';
 import { ApiResponse } from '@nestjs/swagger';
 import { UpdateUserForm } from './domain/UpdateUser.form';
-import { ErrorCodes } from '@/src/enums/error-codes.enum';
+import { ErrorCodes } from '@app/exceptions/enums/error-codes.enum';
 import { UserPermissions } from '@prisma/client';
 import { UserDto } from './domain/user.dto';
 import { ApiException } from "@app/exceptions/api-exception";
 import { ApiRequestException } from "@app/exceptions/api-request-exception";
-import { JwtAuthGuard } from "../../../../../libs/security/guards/security.guard";
-import { RequirePermissions } from "../../../../../libs/security/decorators/permission.decorator";
+import { JwtAuthGuard } from "@app/security/guards/security.guard";
+import { RequirePermissions } from "@app/security/decorators/permission.decorator";
 import { PaginatedQueryDto } from './domain/paginatedQuery.dto';
 import { CountingUserDto } from './domain/countinUsers.dto';
 

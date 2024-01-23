@@ -33,5 +33,8 @@
   "no-flights": "no flights on this date",
   "no-path" : "no path on this date",
   "no-sorted-paths-by-price":"There are no paths sorted by price",
-  "no-avaliable-seats":"no available seats on this date"
+  "no-avaliable-seats":"no available seats on this date",
+
+  "no-rooms": "No rooms found",
+  "no-messages": "No messages found"
 }

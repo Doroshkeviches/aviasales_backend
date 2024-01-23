@@ -12,10 +12,16 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
+    "start:all": "concurrently \"npm run start:backend\" \"npm run start:chat-gateway\"",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/backend/main",
+    "build:backend": "nest build backend",
+    "build:chat-gateway": "nest build chat-gateway",
+    "start:backend": "nest start backend",
+    "start:chat-gateway": "nest start chat-gateway",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test:chat": "jest ./apps/chat-gateway --detectOpenHandles",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -59,6 +65,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.4",
     "uuid": "^9.0.1",
     "uuidv4": "^6.2.13"
   },
@@ -98,7 +105,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "apps",
+    "rootDir": ".",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -109,14 +116,19 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "^@app/security(|/.*)$": "<rootDir>/libs/security/src/$1",
-      "^@app/domain(|/.*)$": "<rootDir>/libs/domain/src/$1",
-      "^@app/prisma(|/.*)$": "<rootDir>/libs/prisma/src/$1",
-      "^@app/libs/test(|/.*)$": "<rootDir>/libs/libs/test/src/$1",
-      "^@app/exceptions(|/.*)$": "<rootDir>/libs/exceptions/src/$1",
-      "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
-      "^@/(.*)$": "<rootDir>/backend/$1"
-    }
-   
+      "^@app/security(.*)$": "<rootDir>/libs/security/src/$1",
+      "^@app/domain(.*)$": "<rootDir>/libs/domain/src/$1",
+      "^@app/prisma(.*)$": "<rootDir>/libs/prisma/src/$1",
+      "^@app/libs/(.*)$": "<rootDir>/libs/$1",
+      "^@app/exceptions(.*)$": "<rootDir>/libs/exceptions/src/$1",
+      "^@app/config(.*)$": "<rootDir>/libs/config/src/$1",
+      "^@/backend/(.*)$": "<rootDir>/apps/backend/src/$1",
+      "^@app/redis(.*)$": "<rootDir>/libs/redis/src/$1",
+      "^@app/types(|/.*)$": "<rootDir>/libs/types/src/$1"
+    },
+    "roots": [
+      "<rootDir>/src/",
+      "<rootDir>/libs/"
+    ]
   }
 }

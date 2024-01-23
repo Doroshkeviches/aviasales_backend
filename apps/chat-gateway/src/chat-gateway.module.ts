@@ -1,22 +1,19 @@
 import { Module } from "@nestjs/common";
-import { ChatController } from "./chat-gateway.controller";
-import { ChatGatewayService } from "./chat-gateway.service";
 import { SecurityModule } from "@app/security";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import config_app from "../../../libs/security/config/app.config";
-import config_i18n from "../../../libs/security/config/i18n.config";
-import config_security from "../../../libs/security/config/security.config";
+import config_app from "@app/security/config/app.config";
+import config_i18n from "@app/security/config/i18n.config";
+import config_security from "@app/security/config/security.config";
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from "nestjs-i18n";
-import { APP_FILTER } from "@nestjs/core";
-import { PrismaClientExceptionFilter } from "@app/exceptions/global-exception.filter";
-import { RedisModule } from "./redis/redis.module";
 import { ChatGateway } from "./chat.gateway";
-import { createClient } from 'redis'
+import { RedisModule } from "@app/redis";
+import { PrismaModule } from "@app/prisma";
 
 @Module({
   imports: [
     RedisModule,
     SecurityModule,
+    PrismaModule,
     ConfigModule.forRoot({
       envFilePath: ".env",
       load: [config_app, config_i18n, config_security],
@@ -32,13 +29,6 @@ import { createClient } from 'redis'
       useFactory: (config: ConfigService) => config.get("i18n"),
     }),
   ],
-  controllers: [ChatController],
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: PrismaClientExceptionFilter,
-    },
-    ChatGateway,
-  ],
+  providers: [ChatGateway],
 })
-export class ChatGatewayModule { }
+export class ChatGatewayModule {}

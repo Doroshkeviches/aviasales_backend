@@ -14,28 +14,28 @@ import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { TicketService } from './ticket.service';
 import { UpdateTicketCredsForm } from './domain/update-ticket-creds.form';
 import { UpdateTicketStatusForm } from './domain/update-ticket-status.form';
-import { ErrorCodes } from '@/src/enums/error-codes.enum';
+import { ErrorCodes } from '@app/exceptions/enums/error-codes.enum';
 import { User } from '.prisma/client';
 import { TicketDto } from './domain/ticket.dto';
 import { CreateTicketForm } from './domain/create-ticket.form';
 import { UserPermissions } from '@prisma/client';
 import { ApiException } from '@app/exceptions/api-exception';
 import { ApiRequestException } from '@app/exceptions/api-request-exception';
-import { RequirePermissions } from 'libs/security/decorators/permission.decorator';
-import { CurrentUser, JwtAuthGuard } from 'libs/security/guards/security.guard';
+import { RequirePermissions } from '@app/security/decorators/permission.decorator';
+import { CurrentUser, JwtAuthGuard } from '@app/security/guards/security.guard';
 import { PaginatedQueryDto } from './domain/paginatedQuery.dto';
 import { CountingTicketsDto } from './domain/countingTickets.dto';
 
-@Controller('ticket')
+@Controller("ticket")
 export class TicketController {
   constructor(private ticketService: TicketService) { }
 
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'Successfully get all tickets',
+    description: "Successfully get all tickets",
   })
-  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 400, description: "Bad request" })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.GetAllTickets)
   @Get()
@@ -48,58 +48,75 @@ export class TicketController {
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'Successfully get active tickets',
+    description: 'Successfully get single ticket',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @UseGuards(JwtAuthGuard)
+  @RequirePermissions(UserPermissions.GetTicketById)
+  @Get(':id')
+  async getTicketById(@Param('id') id: string) {
+    const ticket = await this.ticketService.getTicketById({ id });
+    if (!ticket) throw new ApiException(ErrorCodes.NoTicket);
+    return TicketDto.toEntity(ticket);
+  }
+
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: "Successfully get active tickets",
+  })
+  @ApiResponse({ status: 400, description: "Bad request" })
+  @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.GetActiveTicketsByUserId)
-  @Get('tickets/:id')
-  async getActiveTicketsByUserId(@Param('id') id: string) {
+  @Get("tickets/:id")
+  async getActiveTicketsByUserId(@Param("id") id: string) {
     const tickets = await this.ticketService.getActiveTicketsByUserId({ id });
     if (!tickets) throw new ApiException(ErrorCodes.NoTicket);
     return TicketDto.toEntities(tickets);
   }
 
-
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'Successfully delete ticket by id',
+    description: "Successfully delete ticket by id",
   })
-  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 400, description: "Bad request" })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.DeleteTicketById)
-  @Delete('/ordered/:id')
-  async deleteOrderedTicketById(@CurrentUser() user: User, @Param('id') id: string) {
+  @Delete("/ordered/:id")
+  async deleteOrderedTicketById(
+    @CurrentUser() user: User,
+    @Param("id") id: string,
+  ) {
     return await this.ticketService.deleteOrderedTicketById(user, { id });
   }
 
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'Successfully delete ticket by id',
+    description: "Successfully delete ticket by id",
   })
-  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 400, description: "Bad request" })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.DeleteTicketById)
-  @Delete(':id')
-  async deleteTicketById(@CurrentUser() user: User, @Param('id') id: string) {
+  @Delete(":id")
+  async deleteTicketById(@CurrentUser() user: User, @Param("id") id: string) {
     return await this.ticketService.deleteTicketById(user, { id });
   }
 
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'Successfully update ticket holder credentials',
+    description: "Successfully update ticket holder credentials",
   })
-  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 400, description: "Bad request" })
   @ApiBody({ type: UpdateTicketCredsForm })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.UpdateTicketHolderCredentials)
-  @Put('updateCreds')
+  @Put("updateCreds")
   async updateTicketHolderCredsById(
     @CurrentUser() user: User,
-    @Body() body: UpdateTicketCredsForm
+    @Body() body: UpdateTicketCredsForm,
   ) {
     const form = UpdateTicketCredsForm.from(body);
     const errors = await UpdateTicketCredsForm.validate(form);
@@ -107,7 +124,7 @@ export class TicketController {
 
     const updatedTicket = await this.ticketService.updateTicketHolderCredsById(
       user,
-      body
+      body,
     );
     if (!updatedTicket)
       throw new ApiException(ErrorCodes.UpdateTicketCredsError);
@@ -117,13 +134,13 @@ export class TicketController {
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'Successfully update ticket status',
+    description: "Successfully update ticket status",
   })
-  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 400, description: "Bad request" })
   @ApiBody({ type: UpdateTicketStatusForm })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.UpdateTicketStatus)
-  @Put('updateStatus')
+  @Put("updateStatus")
   async updateTicketStatusById(@Body() body: UpdateTicketStatusForm) {
     const form = UpdateTicketStatusForm.from(body);
     const errors = await UpdateTicketStatusForm.validate(form);
@@ -138,23 +155,23 @@ export class TicketController {
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'Successfully created a new ticket',
+    description: "Successfully created a new ticket",
     type: CreateTicketForm,
   })
-  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 400, description: "Bad request" })
   @ApiBody({ type: CreateTicketForm })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.CreateNewTicket)
   @Post()
   async createTicket(
     @CurrentUser() user: User,
-    @Body() body: CreateTicketForm
+    @Body() body: CreateTicketForm,
   ) {
     const form = CreateTicketForm.from(body);
     const errors = await CreateTicketForm.validate(form);
     if (errors) throw new ApiRequestException(ErrorCodes.InvalidForm, errors);
     const picked_flight = await this.ticketService.getRelevantFlightsById(
-      form.flights
+      form.flights,
     );
     if (!picked_flight) {
       throw new ApiException(ErrorCodes.NoAvaliableSeats);
@@ -162,7 +179,7 @@ export class TicketController {
     const ticket = await this.ticketService.createTicket(
       form,
       form.flights,
-      user
+      user,
     );
     if (!ticket) throw new ApiException(ErrorCodes.CreateTicketError);
     return TicketDto.toEntities(ticket);
@@ -171,12 +188,12 @@ export class TicketController {
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'create order',
+    description: "create order",
   })
-  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 400, description: "Bad request" })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.CreateNewTicket)
-  @Post('ordered')
+  @Post("ordered")
   async updateTicketsToOrdered(@CurrentUser() user: User) {
     const userTickets = await this.ticketService.getTicketsInCartByUserId(user);
     const decrementedFlights =
@@ -195,16 +212,14 @@ export class TicketController {
   @HttpCode(200)
   @ApiResponse({
     status: 200,
-    description: 'get tickets in cart by user id',
+    description: "get tickets in cart by user id",
   })
-  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 400, description: "Bad request" })
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.CreateNewTicket)
-  @Get('cart')
-  async getTicketsInCartByUserId(
-    @CurrentUser() user: User,
-  ) {
-    const tickets = await this.ticketService.getTicketsInCartByUserId(user)
+  @Get("cart")
+  async getTicketsInCartByUserId(@CurrentUser() user: User) {
+    const tickets = await this.ticketService.getTicketsInCartByUserId(user);
     return TicketDto.toEntities(tickets);
   }
 }

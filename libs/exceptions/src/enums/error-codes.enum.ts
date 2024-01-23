@@ -33,5 +33,8 @@ export enum ErrorCodes {
   NoFlights = 'errors.no-flights',
   NoPath = 'errors.no-path',
   SortedPathsByPriceError = 'errors.no-sorted-paths-by-price',
-  NoAvaliableSeats = 'errors.no-avaliable-seats',
+  NoAvaliableSeats = 'errors.no-available-seats',
+
+  NoRooms = "errors.no-rooms",
+  NoMessages = "errors.no-messages"
 }
