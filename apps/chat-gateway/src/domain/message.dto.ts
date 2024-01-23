@@ -26,4 +26,9 @@ export class MessageDto {
 
     return it;
   }
+
+  static toEntities(arr?: MessageDto[]) {
+    const it = arr.map((message) => this.toEntity(message));
+    return it;
+  }
 }

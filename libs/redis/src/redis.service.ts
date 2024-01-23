@@ -1,9 +1,10 @@
-import {Injectable} from "@nestjs/common";
-import {ConfigService} from "@nestjs/config";
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import Redis from "ioredis";
 
-import {MessageDto} from "../../../apps/chat-gateway/src/domain/message.dto";
-import {RequestDto} from "../../../apps/chat-gateway/src/domain/request.dto";
+import { RequestDto } from "../../../apps/chat-gateway/src/domain/request.dto";
+import { MessageForm } from "../../../apps/chat-gateway/src/domain/message.form";
+import { RoomDto } from "../../../apps/chat-gateway/src/domain/room.dto";
 
 @Injectable()
 export class RedisService {
@@ -15,8 +16,12 @@ export class RedisService {
     this.client = new Redis({ host, port });
   }
 
-  async saveMessage(message: MessageDto) {
-    await this.client.zadd(`room:${message.room_id}:messages`, message.created_at, JSON.stringify(message));
+  async saveMessage(message: MessageForm) {
+    await this.client.zadd(
+      `room:${message.room_id}:messages`,
+      message.created_at,
+      JSON.stringify(message),
+    );
     await this.client.expire(`room:${message.room_id}:messages`, 86400);
   }
 
@@ -36,20 +41,12 @@ export class RedisService {
   }
 
   async getRooms() {
-    const roomKeys = await this.client.keys('room:*');
+    const roomKeys = await this.client.keys("room:*[^:messages]");
 
     const roomPromises = roomKeys.map(async (roomKey) => {
-      const roomData = await this.client.hgetall(roomKey);
-      return roomData;
-    })
+      return this.client.hgetall(roomKey) as unknown as RoomDto;
+    });
 
-    const rooms = await Promise.all(roomPromises);
-
-    return rooms.map((roomData) => ({
-      id: roomData.id,
-      first_name: roomData.first_name,
-      last_name: roomData.last_name
-    }));
+    return await Promise.all(roomPromises);
   }
-
 }
