@@ -8,24 +8,27 @@ import {
   Param,
   Body,
   UseGuards,
-} from "@nestjs/common";
-import { ApiBody, ApiResponse } from "@nestjs/swagger";
-import { TicketService } from "./ticket.service";
-import { UpdateTicketCredsForm } from "./domain/update-ticket-creds.form";
-import { UpdateTicketStatusForm } from "./domain/update-ticket-status.form";
-import { User } from ".prisma/client";
-import { TicketDto } from "./domain/ticket.dto";
-import { CreateTicketForm } from "./domain/create-ticket.form";
-import { UserPermissions } from "@prisma/client";
-import { CurrentUser, JwtAuthGuard } from "@app/security/guards/security.guard";
-import { RequirePermissions } from "@app/security/decorators/permission.decorator";
-import { ApiException } from "@app/exceptions/api-exception";
-import { ErrorCodes } from "@app/exceptions/enums/error-codes.enum";
-import { ApiRequestException } from "@app/exceptions/api-request-exception";
+  Query,
+} from '@nestjs/common';
+import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { TicketService } from './ticket.service';
+import { UpdateTicketCredsForm } from './domain/update-ticket-creds.form';
+import { UpdateTicketStatusForm } from './domain/update-ticket-status.form';
+import { ErrorCodes } from '@app/exceptions/enums/error-codes.enum';
+import { User } from '.prisma/client';
+import { TicketDto } from './domain/ticket.dto';
+import { CreateTicketForm } from './domain/create-ticket.form';
+import { UserPermissions } from '@prisma/client';
+import { ApiException } from '@app/exceptions/api-exception';
+import { ApiRequestException } from '@app/exceptions/api-request-exception';
+import { RequirePermissions } from '@app/security/decorators/permission.decorator';
+import { CurrentUser, JwtAuthGuard } from '@app/security/guards/security.guard';
+import { PaginatedQueryDto } from './domain/paginatedQuery.dto';
+import { CountingTicketsDto } from './domain/countingTickets.dto';
 
 @Controller("ticket")
 export class TicketController {
-  constructor(private ticketService: TicketService) {}
+  constructor(private ticketService: TicketService) { }
 
   @HttpCode(200)
   @ApiResponse({
@@ -36,10 +39,10 @@ export class TicketController {
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.GetAllTickets)
   @Get()
-  async getAllTickets() {
-    const tickets = await this.ticketService.getAllTickets();
+  async getAllTickets(@Query() paginatedQuery: PaginatedQueryDto) {
+    const tickets = await this.ticketService.getAllTickets(paginatedQuery);
     if (!tickets) throw new ApiException(ErrorCodes.NoTickets);
-    return TicketDto.toEntities(tickets);
+    return CountingTicketsDto.toEntity(tickets);
   }
 
   @HttpCode(200)

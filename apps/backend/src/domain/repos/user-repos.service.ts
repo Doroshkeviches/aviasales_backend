@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Device, Role, TicketStatus, User, UserRoles } from "@prisma/client";
 import { PrismaService } from "@app/prisma";
+import { PaginatedQueryDto } from "@/backend/app/user/domain/paginatedQuery.dto";
 
 const includingData = () => {
   return {
@@ -31,13 +32,15 @@ const includingData = () => {
 @Injectable()
 export class UsersReposService {
   constructor(private prisma: PrismaService) { }
-  async getAllUsers(page: number, pageSize: number = 10) {
-    const skip = (page - 1) * pageSize;
-    return this.prisma.user.findMany({
+  async getAllUsers({ pageNumber, pageSize }: PaginatedQueryDto) {
+    const skip = (pageNumber - 1) * pageSize;
+    const users = await this.prisma.user.findMany({
       take: pageSize,
       skip,
       ...includingData(),
     });
+    const totalUserCount = await this.prisma.user.count();
+    return { totalUserCount, users }
   }
 
   async getUsersBySearchQuery(searchQuery: string) {

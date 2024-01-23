@@ -55,7 +55,7 @@ describe('CartService', () => {
     describe('should return users', () => {
         it('should return carts', async () => {
             repo.getAllUsers = jest.fn().mockResolvedValue([user])
-            expect(await service.getAllUsers(1)).toEqual([user])
+            expect(await service.getAllUsers({pageNumber: 1, pageSize: 10})).toEqual([user])
         })
 
         it('should return user by id', async () => {

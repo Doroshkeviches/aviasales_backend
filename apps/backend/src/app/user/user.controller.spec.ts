@@ -78,7 +78,7 @@ describe("AuthController", () => {
       expect(controller).toBeDefined();
     });
     it("should return an array of users", async () => {
-      expect(await controller.getAllUsers(1)).toEqual([user]);
+      expect(await controller.getAllUsers({pageNumber: 1, pageSize: 10})).toEqual([user]);
     });
   });
 

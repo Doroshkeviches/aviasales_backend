@@ -10,19 +10,20 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiResponse } from '@nestjs/swagger';
-import {RequirePermissions} from "@app/security/decorators/permission.decorator";
-import {JwtAuthGuard} from "@app/security/guards/security.guard";
-import {UserPermissions} from "@prisma/client";
-import {UserDto} from "@/backend/app/user/domain/user.dto";
-import {UpdateUserForm} from "@/backend/app/user/domain/UpdateUser.form";
-import {ApiRequestException} from "@app/exceptions/api-request-exception";
-import {ErrorCodes} from "@app/exceptions/enums/error-codes.enum";
-import {ApiException} from "@app/exceptions/api-exception";
-
+import { UpdateUserForm } from './domain/UpdateUser.form';
+import { ErrorCodes } from '@app/exceptions/enums/error-codes.enum';
+import { UserPermissions } from '@prisma/client';
+import { UserDto } from './domain/user.dto';
+import { ApiException } from "@app/exceptions/api-exception";
+import { ApiRequestException } from "@app/exceptions/api-request-exception";
+import { JwtAuthGuard } from "@app/security/guards/security.guard";
+import { RequirePermissions } from "@app/security/decorators/permission.decorator";
+import { PaginatedQueryDto } from './domain/paginatedQuery.dto';
+import { CountingUserDto } from './domain/countinUsers.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
   @HttpCode(200)
   @ApiResponse({
     status: 200,
@@ -32,9 +33,10 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @RequirePermissions(UserPermissions.GetAllUsers)
   @Get()
-  async getAllUsers(@Query('page') page: number) {
-    const users = await this.userService.getAllUsers(page);
-    return UserDto.toEntities(users);
+  async getAllUsers(@Query() paginatedQuery: PaginatedQueryDto) {
+    const users = await this.userService.getAllUsers(paginatedQuery);
+    console.log(users)
+    return CountingUserDto.toEntity(users);
   }
 
   @HttpCode(200)

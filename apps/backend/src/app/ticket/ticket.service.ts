@@ -1,7 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { Ticket, User } from "@prisma/client";
-import { TicketReposService } from "@/backend/domain/repos/ticket-repos.service";
-import { FlightsReposService } from "@/backend/domain/repos/flights-repos.service";
+import { Injectable } from '@nestjs/common';
+import { Ticket, User } from '@prisma/client';
+import { TicketReposService } from '@/backend/domain/repos/ticket-repos.service';
+import { FlightsReposService } from '@/backend/domain/repos/flights-repos.service';
+import { PaginatedQueryDto } from './domain/paginatedQuery.dto';
 
 @Injectable()
 export class TicketService {
@@ -10,8 +11,8 @@ export class TicketService {
     private flightRepo: FlightsReposService,
   ) {}
 
-  async getAllTickets() {
-    return await this.ticketRepo.getAllTickets();
+  async getAllTickets(paginatedQuery: PaginatedQueryDto) {
+    return await this.ticketRepo.getAllTickets(paginatedQuery)
   }
 
   async getTicketById({ id }: Pick<Ticket, "id">) {

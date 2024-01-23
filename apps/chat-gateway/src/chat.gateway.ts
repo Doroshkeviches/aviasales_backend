@@ -24,7 +24,9 @@ import { MessageForm } from "@app/types/message.form";
 import { RoomDto } from "@app/types/room.dto";
 import { UserPermissions } from "@prisma/client";
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: true
+})
 export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
   constructor(
     private readonly redisService: RedisService,

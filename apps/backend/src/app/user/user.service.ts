@@ -1,3 +1,4 @@
+import { PaginatedQueryDto } from './domain/paginatedQuery.dto';
 import { Injectable } from "@nestjs/common";
 import { UsersReposService } from "@/backend/domain/repos/user-repos.service";
 import { User } from "@prisma/client";
@@ -6,8 +7,8 @@ import { User } from "@prisma/client";
 export class UserService {
   constructor(private userRepo: UsersReposService) {}
 
-  async getAllUsers(page: number) {
-    return await this.userRepo.getAllUsers(page);
+  async getAllUsers(paginatedQuery: PaginatedQueryDto) {
+    return await this.userRepo.getAllUsers(paginatedQuery);
   }
   async updateUser(data: Partial<User>) {
     return this.userRepo.updateUser(data);
