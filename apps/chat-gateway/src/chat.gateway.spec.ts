@@ -15,14 +15,10 @@ import {RedisService} from "@app/redis";
 import {user_id} from "@/backend/types/user-id.type";
 import {JwtAuthGuard} from "@app/security/guards/security.guard";
 import {UserSessionDto} from "@app/security/dtos/UserSessionDto";
+import {MessageDto} from "./domain/message.dto";
 
 const mockRoomId = v4();
 const mockMessage = "Hello";
-const mockRequestDto: RequestDto = {
-  id: "e1239ef2-2341-418e-af75-393f3a9a7cc2",
-  first_name: "John",
-  last_name: "Smith",
-};
 const mockServer: Server = new Server();
 const mockUser = {
   id: "7bfe13fd-2d0c-467c-82a4-c31fb34d6452",
@@ -35,6 +31,10 @@ const mockUser = {
   tickets: [],
   device_id: "068b0a86-f711-4d8d-9977-94e5e7aa9777"
 };
+const mockRequestDto: RequestDto = RequestDto.toEntity(mockUser);
+const mockRoomDto = {
+  room_id: mockUser.id
+}
 
 async function eventReception(from: Socket, event: string): Promise<void> {
   return new Promise<void>((resolve) => {
@@ -89,13 +89,16 @@ describe("ChatGateway", () => {
   };
 
   const mockRedisService = {
-      onRequest: jest.fn(() => {
+    addRoom: jest.fn((dto: RequestDto) => dto.id === mockUser.id),
+    isRoomInStore: jest.fn((roomId: string) => roomId === mockUser.id),
+    saveMessage: jest.fn((message: MessageDto) => {
+    }),
+    getAllMessages: jest.fn((roomId: string) => {
 
-      }),
-      subToMessage: jest.fn((user: Pick<User, 'id' | 'first_name' | 'last_name'>) => {
+    }),
+    getRooms: jest.fn(() => {
 
-      }),
-
+    })
   };
 
   beforeAll(async () => {
@@ -172,7 +175,14 @@ describe("ChatGateway", () => {
 
     expect(user).toEqual(mockUser);
 
+    customerClient.emit("join-room", {room_id: user.id});
+    const room = mockRedisService.isRoomInStore(user.id);
 
+
+
+    customerClient.on("join-room", (data) => {
+      expect(data).toMatchObject(mockRoomDto);
+    })
   })
 
   it("customer should join a room and send a request", async () => {

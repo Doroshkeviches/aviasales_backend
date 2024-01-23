@@ -52,10 +52,11 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     }
 
     if (!user) throw new ApiException(ErrorCodes.NoUser);
-
+    console.log(`user ${user.id} connected`)
     await client.join(user.id);
 
     const room = await this.redisService.isRoomInStore(user.id);
+    console.log("room?", room);
     if (!room) {
       const requestDto = RequestDto.toEntity(user);
       await this.redisService.addRoom(requestDto);
@@ -77,6 +78,8 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
       first_name: "ALex",
       last_name: "A"
     }
+
+    console.log(`manager ${manager.id} connected`)
 
     if (!manager) throw new ApiException(ErrorCodes.NoUser);
 
@@ -119,8 +122,10 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: MessageDto,
   ) {
+    data.id = v4();
+    data.created_at = new Date().getTime();
     await this.redisService.saveMessage(data);
-    this.server.to(data.room_id).except(client.id).emit("message", data);
+    this.server.to(data.room_id).emit("message", data);
   }
 
   async handleDisconnect(client: Socket) {}

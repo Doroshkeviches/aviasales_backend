@@ -1,14 +1,17 @@
-import { IsString, IsUUID } from "class-validator";
+import { IsNumber, IsString, IsUUID } from "class-validator";
 
 export class MessageDto {
   @IsUUID()
   id: string;
   @IsString()
-  message: string;
+  message!: string;
   @IsString()
-  from_id: string;
+  first_name!: string;
+  @IsString()
+  last_name!: string;
   @IsUUID()
-  room_id: string;
+  room_id!: string;
+  @IsNumber()
   created_at?: number;
 
   static toEntity(entity?: MessageDto) {
@@ -16,7 +19,8 @@ export class MessageDto {
       id: entity.id,
       message: entity.message,
       room_id: entity.room_id,
-      from_id: entity?.from_id,
+      first_name: entity.first_name,
+      last_name: entity.last_name,
       created_at: entity?.created_at,
     };
 

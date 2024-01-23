@@ -16,8 +16,8 @@ export class RedisService {
   }
 
   async saveMessage(message: MessageDto) {
-    await this.client.lpush(message.room_id, JSON.stringify(message));
-    await this.client.expire(message.room_id, 86400);
+    await this.client.zadd(`room:${message.room_id}:messages`, message.created_at, JSON.stringify(message));
+    await this.client.expire(`room:${message.room_id}:messages`, 86400);
   }
 
   async addRoom(room: RequestDto) {
@@ -31,7 +31,7 @@ export class RedisService {
   }
 
   async getAllMessages(roomId: string) {
-    const messages = await this.client.lrange(roomId, 0, -1);
+    const messages = await this.client.zrange(`room:${roomId}:messages`, 0, -1);
     return messages.map((messageJson) => JSON.parse(messageJson));
   }
 
