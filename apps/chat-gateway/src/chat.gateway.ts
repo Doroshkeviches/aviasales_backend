@@ -19,7 +19,9 @@ import { UserSessionDto } from "@app/security/dtos/UserSessionDto";
 import { RequestDto } from "./domain/request.dto";
 import {uuid} from "uuidv4";
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: true
+})
 export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
   constructor(
     private readonly redisService: RedisService,
