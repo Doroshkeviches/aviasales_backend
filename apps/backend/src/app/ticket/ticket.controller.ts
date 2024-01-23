@@ -24,6 +24,7 @@ import { ApiRequestException } from '@app/exceptions/api-request-exception';
 import { RequirePermissions } from 'libs/security/decorators/permission.decorator';
 import { CurrentUser, JwtAuthGuard } from 'libs/security/guards/security.guard';
 import { PaginatedQueryDto } from './domain/paginatedQuery.dto';
+import { CountingTicketsDto } from './domain/countingTickets.dto';
 
 @Controller('ticket')
 export class TicketController {
@@ -41,7 +42,7 @@ export class TicketController {
   async getAllTickets(@Query() paginatedQuery: PaginatedQueryDto) {
     const tickets = await this.ticketService.getAllTickets(paginatedQuery);
     if (!tickets) throw new ApiException(ErrorCodes.NoTickets);
-    return TicketDto.toEntities(tickets);
+    return CountingTicketsDto.toEntity(tickets);
   }
 
   @HttpCode(200)

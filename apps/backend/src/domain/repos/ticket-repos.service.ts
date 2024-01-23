@@ -24,7 +24,7 @@ export class TicketReposService {
   async getAllTickets({ pageNumber, pageSize }: PaginatedQueryDto) {
     const skip = (pageNumber - 1) * pageSize;
 
-    return await this.prisma.ticket.findMany({
+    const tickets = await this.prisma.ticket.findMany({
       where: {
         status: {
           not: TicketStatus.InCart
@@ -34,6 +34,8 @@ export class TicketReposService {
       skip,
       ...includingData(),
     });
+    const totalTicketCount = await this.prisma.ticket.count()
+    return { totalTicketCount, tickets }
   }
 
 

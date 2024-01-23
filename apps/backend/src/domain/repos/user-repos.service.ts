@@ -35,11 +35,13 @@ export class UsersReposService {
   constructor(private prisma: PrismaService) { }
   async getAllUsers({ pageNumber, pageSize }: PaginatedQueryDto) {
     const skip = (pageNumber - 1) * pageSize;
-    return this.prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       take: pageSize,
       skip,
       ...includingData(),
     });
+    const totalUserCount = await this.prisma.user.count();
+    return { totalUserCount, users }
   }
 
   async getUsersBySearchQuery(searchQuery: string) {

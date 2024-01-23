@@ -14,15 +14,16 @@ import { UpdateUserForm } from './domain/UpdateUser.form';
 import { ErrorCodes } from '@/src/enums/error-codes.enum';
 import { UserPermissions } from '@prisma/client';
 import { UserDto } from './domain/user.dto';
-import {ApiException} from "@app/exceptions/api-exception";
-import {ApiRequestException} from "@app/exceptions/api-request-exception";
-import {JwtAuthGuard} from "../../../../../libs/security/guards/security.guard";
-import {RequirePermissions} from "../../../../../libs/security/decorators/permission.decorator";
+import { ApiException } from "@app/exceptions/api-exception";
+import { ApiRequestException } from "@app/exceptions/api-request-exception";
+import { JwtAuthGuard } from "../../../../../libs/security/guards/security.guard";
+import { RequirePermissions } from "../../../../../libs/security/decorators/permission.decorator";
 import { PaginatedQueryDto } from './domain/paginatedQuery.dto';
+import { CountingUserDto } from './domain/countinUsers.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
   @HttpCode(200)
   @ApiResponse({
     status: 200,
@@ -34,7 +35,8 @@ export class UserController {
   @Get()
   async getAllUsers(@Query() paginatedQuery: PaginatedQueryDto) {
     const users = await this.userService.getAllUsers(paginatedQuery);
-    return UserDto.toEntities(users);
+    console.log(users)
+    return CountingUserDto.toEntity(users);
   }
 
   @HttpCode(200)
