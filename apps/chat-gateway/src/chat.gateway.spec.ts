@@ -1,4 +1,4 @@
-import { ExecutionContext, INestApplication } from "@nestjs/common";
+import { ExecutionContext, INestApplication, Req } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ChatGateway } from "./chat.gateway";
 import { Socket, io } from "socket.io-client";
@@ -9,12 +9,13 @@ import { v4 } from "uuid";
 import { RequestDto } from "@app/types/request.dto";
 import { Server } from "socket.io";
 import { SecurityService } from "@app/security";
-import {User, UserRoles} from "@prisma/client";
-import {RedisService} from "@app/redis";
-import {user_id} from "@/backend/types/user-id.type";
-import {JwtAuthGuard} from "@app/security/guards/security.guard";
-import {UserSessionDto} from "@app/security/dtos/UserSessionDto";
-import {MessageDto} from "@app/types/message.dto";
+import { User, UserRoles } from "@prisma/client";
+import { RedisService } from "@app/redis";
+import { user_id } from "@/backend/types/user-id.type";
+import { JwtAuthGuard } from "@app/security/guards/security.guard";
+import { UserSessionDto } from "@app/security/dtos/UserSessionDto";
+import { MessageDto } from "@app/types/message.dto";
+import {RoomDto, RoomForm} from "@app/types";
 
 const mockRoomId = v4();
 const mockMessage = "Hello";
@@ -28,11 +29,25 @@ const mockUser = {
   email: "client@client.com",
   password: "$2a$05$5htSIabJmdX86Rj5lqto8e3/w0HJAowRcnpTGovPkkqm1R5a4SJ6i",
   tickets: [],
-  device_id: "068b0a86-f711-4d8d-9977-94e5e7aa9777"
+  device_id: "068b0a86-f711-4d8d-9977-94e5e7aa9777",
 };
+const mockManager = {
+  id: "147dc155-5724-4c47-9b80-340e4526dd5d",
+  first_name: "Manager",
+  last_name: "Michael",
+  role_id: "096b4535-94ab-4fac-83cf-5dfc1572e2b2",
+  role_type: UserRoles.Manager,
+  email: "manager@manager.com",
+  password: "$2a$10$whyX00PcWpStyLBxgHjtE.TqUsLmb/wx87Vqcs5T9ZVi.vXJo0/v6",
+  tickets: [],
+  device_id: "42b1703c-e1ed-422d-a60b-5c95c8d2c9aa"
+}
 const mockRequestDto: RequestDto = RequestDto.toEntity(mockUser);
 const mockRoomDto = {
-  room_id: mockUser.id
+  room_id: mockUser.id,
+};
+const mockRoomsDto = {
+  room_id: "rooms",
 }
 
 async function eventReception(from: Socket, event: string): Promise<void> {
@@ -82,6 +97,8 @@ describe("ChatGateway", () => {
       console.log("mock user id", mockUser.id);
       if (id === mockUser.id) {
         return mockUser;
+      } else if (id === mockManager.id) {
+        return mockManager;
       }
       return null;
     }),
@@ -90,24 +107,15 @@ describe("ChatGateway", () => {
   const mockRedisService = {
     addRoom: jest.fn((dto: RequestDto) => dto.id === mockUser.id),
     isRoomInStore: jest.fn((roomId: string) => roomId === mockUser.id),
-    saveMessage: jest.fn((message: MessageDto) => {
-    }),
-    getAllMessages: jest.fn((roomId: string) => {
-
-    }),
-    getRooms: jest.fn(() => {
-
-    })
+    saveMessage: jest.fn((message: MessageDto) => {}),
+    getAllMessages: jest.fn((roomId: string) => {}),
+    getRooms: jest.fn(() => [RoomDto.toEntity(mockUser)]),
   };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [],
-      providers: [
-        RedisService,
-        SecurityService,
-        ChatGateway,
-      ],
+      providers: [RedisService, SecurityService, ChatGateway],
       imports: [
         ConfigModule.forRoot(),
         JwtModule.register({ secretOrPrivateKey: "SECRET" }),
@@ -162,12 +170,34 @@ describe("ChatGateway", () => {
 
     expect(user).toEqual(mockUser);
 
-    customerClient.emit("join-room", {room_id: user.id});
+    customerClient.emit("join-room", { room_id: user.id });
     const room = mockRedisService.isRoomInStore(user.id);
+    expect(room).toBeFalsy();
 
+    const requestDto = RequestDto.toEntity(user);
+    mockRedisService.addRoom(requestDto);
+    expect(mockRedisService.getRooms).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining(RoomDto.toEntity(mockUser)),
+      ]),
+    );
 
     customerClient.on("join-room", (data) => {
       expect(data).toMatchObject(mockRoomDto);
+    });
+  });
+
+  it("manager should join rooms on connect", async () => {
+    managerClient.connect();
+
+    const managerDto = UserSessionDto.fromPayload(mockManager);
+    const manager = mockSecurityService.getUserById(managerDto);
+
+    expect(manager).toEqual(mockManager);
+
+    managerClient.emit("join-room", RoomForm.from(mockRoomsDto));
+    managerClient.on("join-room", (data) => {
+      expect(data).toMatchObject(mockRoomsDto);
     })
   })
 
