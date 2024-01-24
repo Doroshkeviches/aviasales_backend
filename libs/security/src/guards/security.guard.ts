@@ -47,8 +47,8 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
 
         decodedUser = await this.validateTokenAndGetUser(authHeader);
 
-        request.user = decodedUser;
-        return this.validatePermissions(decodedUser, requiredPermissions);
+        request.user = decodedUser.user;
+        return this.validatePermissions(decodedUser.user, requiredPermissions);
       case "ws":
         const client = context.switchToWs().getClient();
         authHeader = client.handshake.headers?.authorization;
@@ -57,8 +57,8 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
         }
 
         decodedUser = await this.validateTokenAndGetUser(authHeader);
-        client.data.user = decodedUser;
-        return this.validatePermissions(decodedUser, requiredPermissions);
+        client.data.user = decodedUser.user;
+        return this.validatePermissions(decodedUser.user, requiredPermissions);
       default:
         return false;
     }
@@ -82,9 +82,11 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
     user: UserSessionDto,
     requiredPermissions: UserPermissions[],
   ): Promise<boolean> {
+
     const roleEntity = await this.securityService.getRoleById({
-      id: user.role_id,
+      id: user.role_id
     });
+
     if (!requiredPermissions) {
       return true;
     }

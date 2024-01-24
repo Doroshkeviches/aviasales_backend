@@ -2,7 +2,6 @@ import { ExecutionContext, INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ChatGateway } from "./chat.gateway";
 import { Socket, io } from "socket.io-client";
-import { I18nContext, I18nService } from "nestjs-i18n";
 import { jest } from "@jest/globals";
 import { ConfigModule } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
@@ -105,10 +104,6 @@ describe("ChatGateway", () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [],
       providers: [
-        {
-          provide: I18nService,
-          useValue: { t: jest.fn(() => "some value") },
-        },
         RedisService,
         SecurityService,
         ChatGateway,
@@ -131,14 +126,6 @@ describe("ChatGateway", () => {
     securityService = module.get<SecurityService>(SecurityService);
 
     app = module.createNestApplication();
-
-    // redisServiceSpy = {
-    //     onRequest: jest.spyOn(redisService, 'onRequest'),
-    //     onSendMessage: jest.spyOn(redisService, 'onSendMessage'),
-    //     subToMessage: jest.spyOn(redisService, 'subToMessage'),
-    //     subToRequestChannel: jest.spyOn(redisService, 'subToRequestChannel'),
-    //     onDisconnect: jest.spyOn(redisService, 'onDisconnect')
-    // }
 
     // Instantiate the app
     // app = await createNestApp(ChatGateway);
@@ -177,7 +164,6 @@ describe("ChatGateway", () => {
 
     customerClient.emit("join-room", {room_id: user.id});
     const room = mockRedisService.isRoomInStore(user.id);
-
 
 
     customerClient.on("join-room", (data) => {
