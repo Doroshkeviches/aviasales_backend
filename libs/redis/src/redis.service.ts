@@ -6,6 +6,7 @@ import { RequestDto } from "@app/types/request.dto";
 import { MessageForm } from "@app/types/message.form";
 import { RoomDto } from "@app/types/room.dto";
 import { EXPIRE_IN_24H } from "@app/types/chat.constants";
+import {MessageDto} from "@app/types";
 
 @Injectable()
 export class RedisService {
@@ -17,7 +18,7 @@ export class RedisService {
     this.client = new Redis({ host, port });
   }
 
-  async saveMessage(message: MessageForm) {
+  async saveMessage(message: MessageDto) {
     await this.client.zadd(
       `room:${message.room_id}:messages`,
       message.created_at,
