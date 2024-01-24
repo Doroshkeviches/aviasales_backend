@@ -1,4 +1,5 @@
 import {
+  BaseWsExceptionFilter,
   ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
@@ -22,12 +23,11 @@ import { MessageForm } from "@app/types/message.form";
 import { RoomDto } from "@app/types/room.dto";
 import { UserPermissions } from "@prisma/client";
 import { MessageDto } from "@app/types";
-import { WsExceptionFilter } from "@app/exceptions/ws-exception.filter";
 
 @WebSocketGateway({
   cors: true,
 })
-@UseFilters(WsExceptionFilter)
+@UseFilters(BaseWsExceptionFilter)
 export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
   constructor(
     private readonly redisService: RedisService,
@@ -81,7 +81,7 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
 
     if (errors) throw new WsException("Invalid form");
 
-    client.join(data.room_id);
+    client.join(form.room_id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -130,7 +130,7 @@ export class ChatGateway implements OnGatewayDisconnect, OnGatewayConnection {
     const messageDto = MessageDto.toEntity(form);
     await this.redisService.saveMessage(messageDto);
 
-    this.server.to(data.room_id).emit("message", messageDto);
+    this.server.to(messageDto.room_id).emit("message", messageDto);
   }
 
   async handleDisconnect(client: Socket) {}

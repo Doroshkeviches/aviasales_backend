@@ -11,7 +11,6 @@ import { UserPermissions, UserRoles } from "@prisma/client";
 import { PERMISSION_KEY } from "../decorators/permission.decorator";
 import { SecurityService } from "@app/security";
 import { UserSessionDto } from "@app/security/dtos/UserSessionDto";
-import { ApiException } from "@app/exceptions/api-exception";
 import { ErrorCodes } from "@app/exceptions/enums/error-codes.enum";
 
 export const CurrentUser = createParamDecorator(
@@ -67,7 +66,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
 
   private async validateTokenAndGetUser(
     authHeader: string,
-  ): Promise<UserSessionDto> {
+  ) {
     const token = authHeader.split(" ")[1];
     const decodedUser = UserSessionDto.fromPayload(
       this.jwtService.verify(token),
@@ -76,7 +75,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") implements CanActivate {
     if (!user) {
       throw new UnauthorizedException(ErrorCodes.NotAuthorizedRequest);
     }
-    return decodedUser;
+    return user;
   }
 
   private async validatePermissions(
